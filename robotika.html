@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#f7f7f4">
+    <title>Komponen Robotika - Cetakin</title>
+    <meta name="description"
+        content="Temukan sensor, driver, motor, dan komponen robotika. Pelajari wiring dan cara menggunakannya lewat panduan Cetakin.">
+    <link rel="icon" href="./assets/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./catalog.css">
+    <link rel="stylesheet" href="./guide.css">
+    <script src="./guide-index.js" defer></script>
+    <script src="./guide-core.js" defer></script>
+    <script src="./site-config.js" defer>
+    </script>
+    <script src="./contact.js" defer>
+    </script>
+    <script src="./app.js" defer>
+    </script>
+    <script src="./catalog-core.js" defer>
+    </script>
+    <script src="./catalog.js" defer>
+    </script>
+</head>
+
+<body data-page="catalog" data-catalog-type="robotika">
+    <a class="skip-link" href="#konten">Lewati ke konten</a>
+    <header class="site-header" id="atas">
+        <div class="nav-shell container">
+            <a class="brand" href="./index.html" aria-label="Beranda Cetakin">
+                <img src="./assets/logo.png" alt="Cetakin" width="532" height="169">
+            </a>
+            <nav class="desktop-nav" aria-label="Navigasi utama">
+                <a href="./index.html">Beranda</a>
+                <a href="./robotika.html">Robotika</a>
+                <a href="./panduan.html">Panduan</a>
+                <a href="./gantungan-kunci.html">Gantungan Kunci</a>
+                <a href="./clicker.html">Clicker custom</a>
+            </nav>
+            <a class="nav-cta" data-wa-context="general"
+                href="https://wa.me/6285822801431?text=Halo%20Kak%2C%20saya%20ingin%20bertanya%20tentang%20Cetakin.">Hubungi
+                kami ↗</a>
+            <button class="menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false"
+                aria-controls="menu-ponsel">
+                <span>
+                </span>
+                <span>
+                </span>
+            </button>
+        </div>
+        <nav class="mobile-nav" id="menu-ponsel" aria-label="Navigasi ponsel" hidden>
+            <a href="./index.html">Beranda</a>
+            <a href="./robotika.html">Komponen Robotika</a>
+            <a href="./panduan.html">Panduan komponen</a>
+            <a href="./gantungan-kunci.html">Gantungan Kunci</a>
+            <a href="./clicker.html">Clicker custom</a>
+            <a data-wa-context="general" href="https://wa.me/6285822801431">Hubungi kami</a>
+        </nav>
+    </header>
+    <main id="konten" class="catalog-main">
+        <section class="catalog-hero container">
+            <nav class="breadcrumbs" aria-label="Breadcrumb">
+                <a href="./index.html">Beranda</a>
+                <span aria-hidden="true">/</span>
+                <span aria-current="page">Komponen Robotika</span>
+            </nav>
+            <div class="catalog-title-row">
+                <div>
+                    <span class="section-index">RANCANG. RAKIT. GERAKKAN.</span>
+                    <h1>Rakit sesuai<br>
+                        <em>keinginanmu!</em>
+                    </h1>
+                </div>
+                <div class="catalog-intro">
+                    <p>Sensor, driver, motor, dan bagian lain untuk melengkapi rakitan. Pilih komponennya, lalu ikuti
+                        panduan untuk mulai menguji.</p>
+                    <a class="inline-link" href="./panduan.html">Buka panduan komponen ↗</a>
+                </div>
+            </div>
+        </section>
+        <section class="container catalog-body" aria-label="Katalog Komponen Robotika">
+            <div class="demo-notice" id="demo-notice" hidden>
+                <span aria-hidden="true">◈</span>
+                <p>
+                    <strong>Pratinjau katalog.</strong> Produk, harga, stok, dan gambar di halaman ini adalah contoh
+                    untuk mencoba fitur.
+                </p>
+            </div>
+            <div class="data-status" role="status" aria-live="polite">
+                <p id="data-status">Memuat katalog…</p>
+                <button class="text-button" id="retry-data" type="button" hidden>Coba lagi ↻</button>
+            </div>
+            <noscript>
+                <p class="catalog-error">Aktifkan JavaScript untuk memuat katalog, atau <a
+                        href="https://wa.me/6285822801431">hubungi kami melalui WhatsApp</a>.</p>
+            </noscript>
+            <div class="catalog-layout">
+                <aside class="filter-panel">
+                    <form id="catalog-filters" role="search">
+                        <div class="filter-heading">
+                            <h2>Temukan produk</h2>
+                            <button type="reset" class="text-button">Reset</button>
+                        </div>
+                        <label for="search">Cari produk</label>
+                        <div class="search-wrap">
+                            <span aria-hidden="true">⌕</span>
+                            <input id="search" type="search" placeholder="Nama atau kata kunci" autocomplete="off">
+                        </div>
+                        <label for="group-filter">Kategori</label>
+                        <select id="group-filter">
+                            <option value="">Semua kategori</option>
+                        </select>
+                        <fieldset class="price-filter">
+                            <legend>Harga (Rp)</legend>
+                            <div>
+                                <label for="min-price" class="sr-only">Harga minimum</label>
+                                <input id="min-price" type="number" min="0" step="1" inputmode="numeric"
+                                    placeholder="Minimum">
+                                <span aria-hidden="true">—</span>
+                                <label for="max-price" class="sr-only">Harga maksimum</label>
+                                <input id="max-price" type="number" min="0" step="1" inputmode="numeric"
+                                    placeholder="Maksimum">
+                            </div>
+                            <p id="price-error" class="field-error" hidden>Harga minimum tidak boleh lebih besar dari
+                                maksimum.</p>
+                        </fieldset>
+                        <label class="stock-filter">
+                            <input id="ready-stock" type="checkbox">
+                            <span>Hanya stok tersedia</span>
+                        </label>
+                    </form>
+                    <div class="filter-help">
+                        <span>Belum menemukan yang pas?</span>
+                        <a data-wa-context="custom" href="https://wa.me/6285822801431">Diskusikan cetak kustom ↗</a>
+                    </div>
+                </aside>
+                <div class="catalog-results">
+                    <div class="results-toolbar">
+                        <p id="result-count" aria-live="polite">Menyiapkan produk…</p>
+                        <div>
+                            <label for="sort">Urutkan</label>
+                            <select id="sort">
+                                <option value="featured">Pilihan Cetakin</option>
+                                <option value="price-low">Harga terendah</option>
+                                <option value="price-high">Harga tertinggi</option>
+                                <option value="name">Nama A–Z</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="product-grid" class="product-grid" aria-busy="true">
+                    </div>
+                    <div id="empty-state" class="empty-state" hidden>
+                        <span aria-hidden="true">⌕</span>
+                        <h2>Belum ada yang cocok.</h2>
+                        <p>Coba kata kunci lain atau longgarkan filter pilihanmu.</p>
+                        <button type="button" class="button button-dark" id="reset-empty">Reset filter</button>
+                    </div>
+                    <button id="load-more" class="button load-more" type="button" hidden>Tampilkan lebih banyak
+                        ↓</button>
+                </div>
+            </div>
+        </section>
+        <section class="catalog-bottom container">
+            <p>Sudah punya file atau ukuran sendiri?</p>
+            <a data-wa-context="custom" href="https://wa.me/6285822801431">Bicarakan proyek cetak 3D-mu ↗</a>
+        </section>
+    </main>
+    <footer class="site-footer catalog-footer">
+        <div class="container footer-inner">
+            <a href="./index.html" aria-label="Beranda Cetakin">
+                <img src="./assets/logo.png" alt="Cetakin" width="532" height="169">
+            </a>
+            <p>Ide kecil jadi bentuk nyata.</p>
+            <span>© <span id="year">2026</span> Cetakin · <a href="./admin.html" style="opacity:0.75;">Portal Admin</a></span>
+            <a href="#atas">Kembali ke atas ↑</a>
+        </div>
+    </footer>
+</body>
+
+</html>

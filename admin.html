@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f7f4" />
+  <title>Portal Keuangan & Katalog — Cetakin Cloud</title>
+  <link rel="icon" type="image/png" href="./assets/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./admin.css" />
+  <script src="./finance-core.js" defer></script>
+  <script src="./admin.js" defer></script>
+</head>
+
+<body class="admin-body">
+
+  <!-- 1. LAYAR LOGIN ROLE-BASED -->
+  <section id="login-view" class="login-screen">
+    <div class="login-card">
+      <div class="login-brand">
+        <a href="./index.html" aria-label="Kembali ke Beranda Cetakin">
+          <img src="./assets/logo.png" alt="Cetakin" width="400" height="133" />
+        </a>
+        <span class="login-badge">CLOUD ERP</span>
+      </div>
+      <h1>Portal Kelola<br /><em>Cetakin.</em></h1>
+      <p class="login-sub">Sistem Keuangan Terpadu (3D Print &amp; Komponen Robotika), Kalkulator HPP, dan Manajemen Katalog.</p>
+
+      <div class="role-quick-pills" aria-label="Pilih akun cepat">
+        <button type="button" class="role-pill-btn active" data-fill-user="owner" data-fill-pass="cetakin123">
+          👑 Super Owner
+          <small>Semua Bisnis</small>
+        </button>
+        <button type="button" class="role-pill-btn" data-fill-user="admin3d" data-fill-pass="print123">
+          🖨️ Admin 3D
+          <small>3D Print &amp; Ganci</small>
+        </button>
+        <button type="button" class="role-pill-btn" data-fill-user="adminrobo" data-fill-pass="robo123">
+          🤖 Admin Robo
+          <small>Robotika</small>
+        </button>
+      </div>
+
+      <form id="login-form">
+        <div class="form-field" style="margin-bottom: 14px;">
+          <label for="login-username">Username Akun</label>
+          <input id="login-username" type="text" value="owner" required autocomplete="username" />
+        </div>
+        <div class="form-field" style="margin-bottom: 18px;">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" value="cetakin123" required autocomplete="current-password" />
+        </div>
+        <p id="login-error" class="field-error" hidden style="color: #dc2626; font-size: 13px; margin-bottom: 12px;"></p>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 15px;">
+          Masuk ke Dashboard ↗
+        </button>
+      </form>
+
+      <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #eceeed; display: flex; justify-content: space-between; font-size: 12px; color: #65717b;">
+        <a href="./index.html">← Kembali ke Website Publik</a>
+        <span>1 QRIS · 2 Bisnis</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. APLIKASI UTAMA ADMIN & OWNER -->
+  <div id="app-view" hidden>
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <div class="admin-brand-group">
+          <a href="./index.html" title="Lihat Website Publik">
+            <img src="./assets/logo.png" alt="Cetakin" />
+          </a>
+          <span id="user-role-badge" class="role-tag" data-role="owner">SUPER OWNER</span>
+        </div>
+
+        <!-- Switcher Unit Bisnis (Muncul penuh untuk Super Owner) -->
+        <div id="unit-switcher" class="unit-switcher" role="group" aria-label="Pilih Unit Bisnis">
+          <button type="button" class="unit-btn active" data-unit="3d-print">🖨️ Jasa 3D Print &amp; Ganci</button>
+          <button type="button" class="unit-btn" data-unit="robotika">🤖 Komponen Robotika</button>
+        </div>
+
+        <div class="admin-user-actions">
+          <div style=" display:flex; align-items:center; gap:6px;">
+            <label for="global-month-filter" class="sr-only">Filter Bulan</label>
+            <input id="global-month-filter" type="month" style="border:1px solid #c9d0d5; border-radius:100px; padding:6px 12px; font-size:12px; font-weight:700; background:#fff;" title="Filter Bulan Laporan (Kosongkan untuk Semua Waktu)" />
+          </div>
+          <a href="./robotika.html" target="_blank" class="btn btn-outline btn-sm">Lihat Web ↗</a>
+          <button id="logout-btn" type="button" class="btn btn-danger btn-sm">Keluar</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigasi Tab Desktop -->
+    <nav class="admin-nav-bar" aria-label="Menu Kelola">
+      <div class="admin-nav-inner">
+        <button type="button" class="tab-btn active" data-tab="tab-dashboard">📊 Ringkasan &amp; QRIS</button>
+        <button type="button" class="tab-btn" data-tab="tab-ledger">📝 Kasir, Pesanan &amp; Mutasi</button>
+        <button type="button" class="tab-btn" data-tab="tab-calculator">🧮 Kalkulator HPP</button>
+        <button type="button" class="tab-btn" data-tab="tab-catalog">📦 CRUD Katalog</button>
+        <button type="button" class="tab-btn" data-tab="tab-settings">⚙️ Pengaturan &amp; Akun</button>
+      </div>
+    </nav>
+
+    <main class="admin-main">
+
+      <!-- =========================================================
+           TAB 1: RINGKASAN KEUANGAN, REKONSILIASI 1 QRIS, & BAGI LABA
+           ========================================================= -->
+      <section id="tab-dashboard" class="panel-section active">
+
+        <!-- Banner Rekonsiliasi 1 QRIS Bersama (Khusus Super Owner) -->
+        <div id="shared-qris-box" class="qris-shared-card" hidden>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
+            <div>
+              <span class="badge badge-info" style="background:rgba(56,189,248,0.2); color:#7dd3fc; margin-bottom:8px;">REKONSILIASI 1 QRIS BERSAMA (MERCHANT)</span>
+              <h2 style="margin:0; font-size:24px;">Pembagian Uang Masuk dari 1 QRIS Cetakin</h2>
+              <p style="margin:6px 0 0; font-size:13px; color:#cbd5e1;">Memisahkan otomatis uang yang mengendap di GoPay Merchant / QRIS antara bisnis <strong>3D Print</strong> dan <strong>Komponen Robotika</strong>.</p>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:11px; letter-spacing:0.1em; color:#94a3b8; font-weight:700;">TOTAL SALDO MERCHANT QRIS SAAT INI</span>
+              <div id="qris-total-balance" style="font-family:var(--display); font-size:32px; font-weight:800; color:#38bdf8;">Rp 0</div>
+              <button id="open-qris-payout-btn" type="button" class="btn btn-primary btn-sm" style="margin-top:8px;">
+                💸 Catat Pencairan QRIS ke Bank Usaha
+              </button>
+            </div>
+          </div>
+
+          <div class="qris-split-bars">
+            <div class="qris-split-item">
+              <div style="display:flex; justify-content:space-between; font-size:12px; color:#fdba74;">
+                <span>🖨️ HAK SALDO QRIS: 3D PRINT &amp; GANCI</span>
+                <span id="qris-3d-pct">0%</span>
+              </div>
+              <strong id="qris-3d-balance">Rp 0</strong>
+              <small id="qris-3d-inflow" style="color:#cbd5e1; font-size:11px;">Total masuk QRIS: Rp 0</small>
+            </div>
+            <div class="qris-split-item">
+              <div style="display:flex; justify-content:space-between; font-size:12px; color:#7dd3fc;">
+                <span>🤖 HAK SALDO QRIS: KOMPONEN ROBOTIKA</span>
+                <span id="qris-robo-pct">0%</span>
+              </div>
+              <strong id="qris-robo-balance">Rp 0</strong>
+              <small id="qris-robo-inflow" style="color:#cbd5e1; font-size:11px;">Total masuk QRIS: Rp 0</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Judul Divisi Aktif -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+          <div>
+            <span id="active-unit-pill" class="section-index">DIVISI AKTIF</span>
+            <h2 id="active-unit-title" style="font-size:28px; margin:4px 0 0;">Laporan Keuangan Jasa 3D Print &amp; Ganci</h2>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-primary btn-sm" data-goto-tab="tab-ledger">+ Input Penjualan / Kas</button>
+            <button type="button" class="btn btn-outline btn-sm" data-goto-tab="tab-calculator">Buka Kalkulator HPP</button>
+          </div>
+        </div>
+
+        <!-- 4 Kartu KPI Utama -->
+        <div class="kpi-grid">
+          <article class="kpi-card highlight-orange">
+            <span class="kpi-label">PENJUALAN SELESAI (OMZET)</span>
+            <div id="kpi-revenue" class="kpi-value">Rp 0</div>
+            <span id="kpi-revenue-sub" class="kpi-sub">Dari pesanan berstatus Selesai</span>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-label">TOTAL HPP &amp; BIAYA KELOLA</span>
+            <div id="kpi-hpp" class="kpi-value">Rp 0</div>
+            <span id="kpi-hpp-sub" class="kpi-sub">Termasuk HPP batch &amp; biaya luar HPP</span>
+          </article>
+          <article class="kpi-card highlight-blue">
+            <span class="kpi-label">LABA KELOLA BERSIH</span>
+            <div id="kpi-profit" class="kpi-value">Rp 0</div>
+            <span id="kpi-profit-sub" class="kpi-sub">Omzet dikurangi HPP &amp; biaya</span>
+          </article>
+          <article class="kpi-card highlight-sky">
+            <span class="kpi-label">KAS CAIR SIap BAGI HASIL</span>
+            <div id="kpi-freecash" class="kpi-value">Rp 0</div>
+            <span id="kpi-freecash-sub" class="kpi-sub">Aman dibagi setelah potong DP &amp; kas min.</span>
+          </article>
+        </div>
+
+        <div class="two-col-grid">
+          <!-- Posisi Kas Usaha per Akun -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>🏦 Posisi Saldo Akun Kas Usaha</h3>
+                <p>Saldo tercatat otomatis dari setiap mutasi uang masuk dan keluar divisi ini.</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Akun Uang</th>
+                    <th>Saldo Awal</th>
+                    <th>Uang Masuk</th>
+                    <th>Uang Keluar</th>
+                    <th>Saldo Akhir</th>
+                  </tr>
+                </thead>
+                <tbody id="account-balances-tbody"></tbody>
+              </table>
+            </div>
+            <div style="margin-top:14px; padding:12px; background:var(--paper); border-radius:12px; font-size:12px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+              <span>🔒 DP Pelanggan Ditahan: <strong id="stat-dp-held">Rp 0</strong></span>
+              <span>👷 Upah Belum Dibayar: <strong id="stat-unpaid-wage">Rp 0</strong></span>
+              <span>🛡️ Kas Minimum: <strong id="stat-min-reserve">Rp 0</strong></span>
+            </div>
+          </div>
+
+          <!-- Usulan Pembagian Laba & Pos Alokasi -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>🍰 Perhitungan Pembagian Hasil &amp; Pos Dana</h3>
+                <p>Otomatis membagi laba yang sudah didukung uang cair (Bank + Tunai).</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Pos Pembagian</th>
+                    <th>Porsi (%)</th>
+                    <th>Nominal Alokasi</th>
+                  </tr>
+                </thead>
+                <tbody id="allocation-tbody"></tbody>
+              </table>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin:12px 0 0;">
+              💡 <strong>Catatan sesuai Excel:</strong> Saldo di Merchant (QRIS) yang belum cair ke Bank tidak ikut dibagi sampai dicairkan. Sisa pembulatan/batas cicilan otomatis masuk ke <em>Cadangan Usaha</em>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pelacakan Utang Talangan Mesin & Modal + Upah Kerja -->
+        <div class="two-col-grid">
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>💳 Pelacakan Talangan Alat &amp; Modal</h3>
+                <p>Status kewajiban pengembalian modal/mesin ke pemilik dana.</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Kode</th>
+                    <th>Pemilik Dana</th>
+                    <th>Awal + Tambah</th>
+                    <th>Sudah Dicicil</th>
+                    <th>Sisa Talangan</th>
+                  </tr>
+                </thead>
+                <tbody id="advances-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>👷 Rekap Upah Kerja Aktif</h3>
+                <p>Upah produksi tercatat dalam HPP vs yang sudah dibayarkan dari kas.</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Pekerja</th>
+                    <th>Upah Tercatat</th>
+                    <th>Sudah Dibayar</th>
+                    <th>Belum Dibayar</th>
+                  </tr>
+                </thead>
+                <tbody id="wages-summary-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           TAB 2: KASIR CEPAT, PESANAN, MUTASI KAS, & UPAH KERJA
+           ========================================================= -->
+      <section id="tab-ledger" class="panel-section">
+        <div class="two-col-grid">
+
+          <!-- Form Input Pesanan / Penjualan Baru -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3 id="order-form-title">🛒 Input Penjualan / Pesanan Baru</h3>
+                <p>Catat penjualan produk atau jasa. Bisa otomatis potong stok &amp; catat kas masuk QRIS/Tunai.</p>
+              </div>
+            </div>
+
+            <form id="order-form">
+              <div class="form-grid">
+                <div class="form-field full-width">
+                  <label for="ord-catalog-pick">Pilih Cepat dari Katalog <small>(Opsional — otomatis isi harga, HPP &amp; potong stok)</small></label>
+                  <select id="ord-catalog-pick">
+                    <option value="">-- Input Manual / Jasa Kustom --</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="ord-date">Tanggal Pesan</label>
+                  <input id="ord-date" type="date" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="ord-customer">Nama Pelanggan</label>
+                  <input id="ord-customer" type="text" placeholder="Contoh: Budi / Umum" required />
+                </div>
+
+                <div class="form-field full-width">
+                  <label for="ord-product-name">Nama Produk / Pekerjaan</label>
+                  <input id="ord-product-name" type="text" placeholder="Contoh: Arduino Uno R3 / Cetak Bracket" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="ord-qty">Jumlah (Unit/Pcs)</label>
+                  <input id="ord-qty" type="number" min="1" value="1" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="ord-netbill">Total Tagihan Neto (Rp)</label>
+                  <input id="ord-netbill" type="number" min="0" placeholder="Contoh: 80000" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="ord-hpp">Total HPP Batch (Rp) <small>(Modal)</small></label>
+                  <input id="ord-hpp" type="number" min="0" value="0" required />
+                </div>
+
+                <div class="form-field" id="ord-wage-field">
+                  <label for="ord-wage">Upah dlm HPP (Rp) <small>(Khusus 3D)</small></label>
+                  <input id="ord-wage" type="number" min="0" value="0" />
+                </div>
+
+                <div class="form-field">
+                  <label for="ord-status">Status Pesanan</label>
+                  <select id="ord-status">
+                    <option value="Selesai">Selesai (Laba Diakui)</option>
+                    <option value="Proses">Proses (Masih Dikerjakan)</option>
+                    <option value="Batal">Batal</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="ord-pay-account">Langsung Dibayar Ke Akun?</label>
+                  <select id="ord-pay-account">
+                    <option value="Merchant">✅ Ya, Masuk QRIS (Merchant)</option>
+                    <option value="Bank usaha">✅ Ya, Transfer Bank Usaha</option>
+                    <option value="Kas tunai">✅ Ya, Tunai (Cash)</option>
+                    <option value="NONE">⏳ Belum Dibayar (Catat Tagihan Saja)</option>
+                  </select>
+                </div>
+
+                <div class="form-field full-width" style="background:var(--paper); padding:10px 14px; border-radius:12px;">
+                  <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0;">
+                    <input id="ord-deduct-stock" type="checkbox" checked style="width:18px; height:18px;" />
+                    <span>Kurangi stok produk di katalog secara otomatis (jika memilih produk katalog)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="margin-top:16px; display:flex; justify-content:flex-end; gap:10px;">
+                <button type="submit" class="btn btn-primary">💾 Simpan Pesanan &amp; Transaksi</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Form Input Mutasi Kas Manual (Belanja Bahan, Pencairan, Bagi Laba, Cicilan) -->
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>💸 Catat Mutasi Kas / Pengeluaran / Pencairan</h3>
+                <p>Catat belanja filamen/komponen, pencairan QRIS, cicilan talangan, atau bagi laba.</p>
+              </div>
+            </div>
+
+            <form id="mutation-form">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="mut-date">Tanggal Transaksi</label>
+                  <input id="mut-date" type="date" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="mut-type">Jenis Transaksi</label>
+                  <select id="mut-type" required>
+                    <option value="Pembayaran pelanggan">Pembayaran pelanggan (Pelunasan/DP)</option>
+                    <option value="Transfer internal">Transfer internal (Pencairan QRIS → Bank)</option>
+                    <option value="Pembelian bahan">Pembelian bahan / Kulakan stok</option>
+                    <option value="Biaya di luar HPP">Biaya di luar HPP (Potongan QRIS/Iklan/Ongkir)</option>
+                    <option value="Biaya tercakup HPP">Biaya tercakup HPP (Listrik/Kemasan)</option>
+                    <option value="Bayar upah">Bayar upah kerja</option>
+                    <option value="Cicilan talangan">Cicilan talangan (Bayar utang alat/modal)</option>
+                    <option value="Bagi laba">Bagi laba ke Owner/Partner</option>
+                    <option value="Talangan masuk">Talangan baru (Pinjaman modal masuk)</option>
+                    <option value="Setoran modal">Setoran modal usaha</option>
+                    <option value="Retur penjualan">Retur penjualan / Refund</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="mut-from">Dari Akun (Sumber)</label>
+                  <select id="mut-from" required>
+                    <option value="Pelanggan">Pelanggan</option>
+                    <option value="Merchant">Merchant (QRIS)</option>
+                    <option value="Bank usaha">Bank usaha</option>
+                    <option value="Kas tunai">Kas tunai</option>
+                    <option value="Saya">Uang Pribadi Saya (Talangan/Modal)</option>
+                    <option value="Partner">Uang Pribadi Partner (Talangan/Modal)</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="mut-to">Ke Akun (Tujuan)</label>
+                  <select id="mut-to" required>
+                    <option value="Merchant">Merchant (QRIS)</option>
+                    <option value="Bank usaha">Bank usaha</option>
+                    <option value="Kas tunai">Kas tunai</option>
+                    <option value="Pemasok">Pemasok / Toko Bahan</option>
+                    <option value="Saya">Pribadi Saya</option>
+                    <option value="Partner">Pribadi Partner</option>
+                    <option value="Pelanggan">Pelanggan (Refund)</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="mut-amount">Nominal (Rp)</label>
+                  <input id="mut-amount" type="number" min="1" placeholder="Contoh: 150000" required />
+                </div>
+
+                <div class="form-field">
+                  <label for="mut-order-id">ID Pesanan Terkait <small>(Opsional)</small></label>
+                  <input id="mut-order-id" type="text" placeholder="Contoh: ORD-3D-001" />
+                </div>
+
+                <div class="form-field">
+                  <label for="mut-advance-code">Kode Talangan / Pihak <small>(Jika relevan)</small></label>
+                  <select id="mut-advance-code">
+                    <option value="">-- Tidak ada --</option>
+                    <option value="TL-MESIN">TL-MESIN (Talangan Printer 3D)</option>
+                    <option value="TL-MODAL">TL-MODAL (Talangan Modal 3D)</option>
+                    <option value="TL-ROBO">TL-ROBO (Talangan Stok Robotika)</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="mut-desc">Keterangan Singkat</label>
+                  <input id="mut-desc" type="text" placeholder="Contoh: Beli PETG Hitam 1kg" required />
+                </div>
+              </div>
+
+              <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn-dark">➕ Catat Mutasi Kas</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Daftar Pesanan Divisi Ini -->
+        <div class="card-box">
+          <div class="card-box-header">
+            <div>
+              <h3>📋 Daftar Pesanan &amp; Status Pembayaran</h3>
+              <p>Klik tombol status untuk mengubah Proses → Selesai. HPP dan Laba otomatis dihitung.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID &amp; Tanggal</th>
+                  <th>Pelanggan &amp; Produk</th>
+                  <th>Qty</th>
+                  <th>Tagihan Neto</th>
+                  <th>HPP Batch</th>
+                  <th>Dibayar</th>
+                  <th>Laba</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="orders-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Daftar Mutasi Uang & Catatan Upah Kerja -->
+        <div class="two-col-grid">
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>📑 Riwayat Mutasi Kas</h3>
+                <p>Catatan aliran uang masuk, keluar, dan transfer antar akun.</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID &amp; Tgl</th>
+                    <th>Jenis &amp; Ket.</th>
+                    <th>Aliran Akun</th>
+                    <th>Nominal</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="mutations-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>⏱️ Catat Jam Kerja / Upah Produksi</h3>
+                <p>Catat waktu kerja aktif (menit) agar upah per orang tercatat rapi.</p>
+              </div>
+            </div>
+            <form id="wage-form" style="margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--line);">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="wage-order-id">ID Pesanan</label>
+                  <input id="wage-order-id" type="text" placeholder="ORD-3D-001" required />
+                </div>
+                <div class="form-field">
+                  <label for="wage-worker">Pekerja</label>
+                  <select id="wage-worker">
+                    <option value="Saya">Saya (Naufal)</option>
+                    <option value="Partner">Partner</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="wage-minutes">Durasi Aktif (Menit)</label>
+                  <input id="wage-minutes" type="number" min="1" value="30" required />
+                </div>
+                <div class="form-field">
+                  <label for="wage-task">Pekerjaan</label>
+                  <input id="wage-task" type="text" placeholder="Slicing &amp; post-processing" required />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-outline btn-sm" style="margin-top:12px;">+ Tambah Catatan Kerja</button>
+            </form>
+
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tgl &amp; Order</th>
+                    <th>Pekerja</th>
+                    <th>Menit</th>
+                    <th>Upah</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="wages-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           TAB 3: KALKULATOR HPP (JASA 3D PRINT, CLICKER, & ROBOTIKA)
+           ========================================================= -->
+      <section id="tab-calculator" class="panel-section">
+
+        <!-- Sub-pilihan jenis kalkulator -->
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+          <button type="button" class="btn btn-dark calc-mode-btn" data-calc-mode="jasa-3d">🖨️ Kalkulator HPP Jasa 3D Print</button>
+          <button type="button" class="btn btn-outline calc-mode-btn" data-calc-mode="clicker">⌨️ Kalkulator HPP Clicker Custom</button>
+          <button type="button" class="btn btn-outline calc-mode-btn" data-calc-mode="robotika">🤖 Kalkulator HPP Kulakan Robotika</button>
+        </div>
+
+        <!-- 3A. KALKULATOR JASA 3D PRINT -->
+        <div id="calc-box-jasa-3d" class="card-box">
+          <div class="card-box-header">
+            <div>
+              <h2>🖨️ Kalkulator HPP &amp; Harga Saran Jasa 3D Print</h2>
+              <p>Rumus identik dengan spreadsheet <code>Keuangan_dan_HPP_3D_Print.xlsm</code> (Termasuk Tarif Layer 0.10mm–0.30mm, Cadangan Gagal 10%, &amp; Proteksi Margin).</p>
+            </div>
+          </div>
+
+          <div class="two-col-grid">
+            <form id="calc-jasa-form" class="form-grid">
+              <div class="form-field full-width">
+                <label for="cj-name">Nama Order / Cetakan</label>
+                <input id="cj-name" type="text" value="Cetak Bracket Robot" />
+              </div>
+              <div class="form-field">
+                <label for="cj-units">Jumlah Unit Jadi (pcs)</label>
+                <input id="cj-units" type="number" min="1" value="4" />
+              </div>
+              <div class="form-field">
+                <label for="cj-layer">Ketebalan Layer (mm)</label>
+                <select id="cj-layer">
+                  <option value="0.30">0.30 mm (Tarif Rp 350/g · Komp. 400)</option>
+                  <option value="0.28">0.28 mm (Tarif Rp 450/g · Komp. 500)</option>
+                  <option value="0.20" selected>0.20 mm (Tarif Rp 600/g · Komp. 700)</option>
+                  <option value="0.16">0.16 mm (Tarif Rp 800/g · Komp. 900)</option>
+                  <option value="0.12">0.12 mm (Tarif Rp 900/g · Komp. 1.000)</option>
+                  <option value="0.10">0.10 mm (Tarif Rp 1.100/g · Komp. 1.200)</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="cj-petg">Berat Model PETG (gram)</label>
+                <input id="cj-petg" type="number" min="0" step="0.1" value="180" />
+              </div>
+              <div class="form-field">
+                <label for="cj-support">Support / Purge (gram)</label>
+                <input id="cj-support" type="number" min="0" step="0.1" value="20" />
+              </div>
+              <div class="form-field">
+                <label for="cj-hours">Waktu Print Slicer (Jam)</label>
+                <input id="cj-hours" type="number" min="0" step="0.1" value="6" />
+              </div>
+              <div class="form-field">
+                <label for="cj-active-hours">Kerja Aktif Batch (Jam) <small>(30m = 0.5)</small></label>
+                <input id="cj-active-hours" type="number" min="0" step="0.1" value="1.5" />
+              </div>
+              <div class="form-field">
+                <label for="cj-packaging">Kemasan Batch (Rp) <small>(Kosong = default)</small></label>
+                <input id="cj-packaging" type="number" min="0" placeholder="Otomatis Rp2.000/unit" />
+              </div>
+              <div class="form-field">
+                <label for="cj-other">Biaya Lain Batch (Rp)</label>
+                <input id="cj-other" type="number" min="0" value="3000" />
+              </div>
+              <div class="form-field">
+                <label for="cj-discount">Diskon Batch (Rp)</label>
+                <input id="cj-discount" type="number" min="0" value="0" />
+              </div>
+              <div class="form-field">
+                <label for="cj-sell-unit">Harga Jual Disepakati / Unit (Rp)</label>
+                <input id="cj-sell-unit" type="number" min="0" placeholder="Kosong = pakai Harga Saran" />
+              </div>
+            </form>
+
+            <div>
+              <div class="calc-result-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                  <span style="font-size:11px; letter-spacing:0.1em; color:#94a3b8; font-weight:700;">HASIL PERHITUNGAN OTOMATIS</span>
+                  <span id="cj-res-status" class="badge badge-success">Memenuhi target</span>
+                </div>
+
+                <div class="calc-result-grid">
+                  <div class="calc-stat accent">
+                    <span>Harga Saran / Unit</span>
+                    <strong id="cj-res-suggested-unit">Rp 30.000</strong>
+                  </div>
+                  <div class="calc-stat accent">
+                    <span>Total Tagihan Batch</span>
+                    <strong id="cj-res-batch-total">Rp 120.000</strong>
+                  </div>
+                  <div class="calc-stat">
+                    <span>HPP Lengkap / Batch</span>
+                    <strong id="cj-res-hpp-batch">Rp 78.511</strong>
+                  </div>
+                  <div class="calc-stat">
+                    <span>HPP / Unit</span>
+                    <strong id="cj-res-hpp-unit">Rp 19.628</strong>
+                  </div>
+                  <div class="calc-stat">
+                    <span>Harga Impas / Unit</span>
+                    <strong id="cj-res-breakeven">Rp 19.628</strong>
+                  </div>
+                  <div class="calc-stat">
+                    <span>Tarif Dasar Layer (<span id="cj-res-grams">200</span>g)</span>
+                    <strong id="cj-res-base-tariff">Rp 120.000</strong>
+                  </div>
+                  <div class="calc-stat">
+                    <span>Laba Bersih Batch</span>
+                    <strong id="cj-res-profit" style="color:#4ade80;">Rp 41.489</strong>
+                  </div>
+                  <div class="calc-stat">
+                    <span>Margin Laba Aktual</span>
+                    <strong id="cj-res-margin">34.6%</strong>
+                  </div>
+                </div>
+
+                <div style="margin-top:16px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.12); font-size:12px; color:#cbd5e1; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                  <span>Filamen: <b id="cj-res-fil">Rp 0</b></span>
+                  <span>Listrik: <b id="cj-res-elec">Rp 0</b></span>
+                  <span>Mesin+Rawat: <b id="cj-res-mach">Rp 0</b></span>
+                  <span>Upah: <b id="cj-res-labor">Rp 0</b></span>
+                  <span>Cadangan 10%: <b id="cj-res-fail">Rp 0</b></span>
+                </div>
+
+                <div style="margin-top:18px;">
+                  <button id="cj-save-order-btn" type="button" class="btn btn-primary" style="width:100%;">
+                    📥 Masukkan Hasil Ini ke Form Pesanan 3D Print
+                  </button>
+                </div>
+              </div>
+
+              <!-- Teaser Fitur Slicer AI Masa Depan -->
+              <div class="slicer-ai-teaser">
+                <div>
+                  <span class="badge badge-info">COMING SOON · FITUR TAHAP BERIKUTNYA</span>
+                  <h4 style="margin:6px 0 4px; font-size:15px;">📸 Auto-Estimator dari Screenshot Slicer (Bambu Studio / Anycubic)</h4>
+                  <p style="margin:0; font-size:12px; color:var(--muted);">Slot modul sudah disiapkan untuk membaca otomatis berat gram &amp; jam cetak dari gambar Slicer menggunakan Gemini Vision API.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3B. KALKULATOR HPP CLICKER CUSTOM -->
+        <div id="calc-box-clicker" class="card-box" hidden>
+          <div class="card-box-header">
+            <div>
+              <h2>⌨️ Kalkulator HPP Clicker Keyboard Custom (1–7 Tombol)</h2>
+              <p>Menghitung biaya Blue Switch, Tali Anyam, Gantungan Kunci, PETG, Listrik, Penyusutan, &amp; Upah Rakit.</p>
+            </div>
+          </div>
+
+          <div class="two-col-grid">
+            <form id="calc-clicker-form" class="form-grid">
+              <div class="form-field">
+                <label for="cc-buttons">Jumlah Tombol / Huruf (1–7)</label>
+                <input id="cc-buttons" type="number" min="1" max="7" value="5" />
+              </div>
+              <div class="form-field">
+                <label for="cc-units">Unit Jadi per Batch</label>
+                <input id="cc-units" type="number" min="1" value="1" />
+              </div>
+              <div class="form-field">
+                <label for="cc-petg">PETG per Unit (gram)</label>
+                <input id="cc-petg" type="number" min="1" step="0.5" value="24" />
+              </div>
+              <div class="form-field">
+                <label for="cc-support">Support / Sisa per Batch (g)</label>
+                <input id="cc-support" type="number" min="0" step="0.5" value="2" />
+              </div>
+              <div class="form-field">
+                <label for="cc-print-hours">Jam Cetak per Batch</label>
+                <input id="cc-print-hours" type="number" min="0.1" step="0.1" value="1.0" />
+              </div>
+              <div class="form-field">
+                <label for="cc-active-hours">Jam Kerja Aktif Batch</label>
+                <input id="cc-active-hours" type="number" min="0" step="0.1" value="0.25" />
+              </div>
+              <div class="form-field">
+                <label for="cc-sell-unit">Harga Jual Dipilih / Unit (Rp)</label>
+                <input id="cc-sell-unit" type="number" min="0" placeholder="Kosong = pakai Harga Saran" />
+              </div>
+            </form>
+
+            <div class="calc-result-panel">
+              <span style="font-size:11px; letter-spacing:0.1em; color:#94a3b8; font-weight:700;">HASIL HPP CLICKER KEYBOARD</span>
+              <div class="calc-result-grid">
+                <div class="calc-stat accent">
+                  <span>Harga Saran / Unit</span>
+                  <strong id="cc-res-suggested">Rp 0</strong>
+                </div>
+                <div class="calc-stat">
+                  <span>HPP Lengkap / Unit</span>
+                  <strong id="cc-res-hpp-unit">Rp 0</strong>
+                </div>
+                <div class="calc-stat">
+                  <span>HPP Lengkap / Batch</span>
+                  <strong id="cc-res-hpp-batch">Rp 0</strong>
+                </div>
+                <div class="calc-stat">
+                  <span>Laba Usaha / Batch</span>
+                  <strong id="cc-res-profit" style="color:#4ade80;">Rp 0</strong>
+                </div>
+              </div>
+              <div style="margin-top:16px; font-size:12px; color:#cbd5e1; display:flex; flex-wrap:wrap; gap:10px;">
+                <span>Switch: <b id="cc-res-switch">Rp 0</b>/u</span>
+                <span>Tali: <b id="cc-res-cord">Rp 0</b>/u</span>
+                <span>Ring Ganci: <b id="cc-res-ring">Rp 0</b>/u</span>
+                <span>Kemasan: <b id="cc-res-pack">Rp 0</b>/u</span>
+              </div>
+              <button id="cc-save-order-btn" type="button" class="btn btn-primary" style="width:100%; margin-top:18px;">
+                📥 Masukkan ke Form Pesanan 3D Print
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3C. KALKULATOR HPP KULAKAN KOMPONEN ROBOTIKA -->
+        <div id="calc-box-robotika" class="card-box" hidden>
+          <div class="card-box-header">
+            <div>
+              <h2>🤖 Kalkulator HPP &amp; Harga Jual Komponen Robotika</h2>
+              <p>Hitung HPP modal per pcs setelah ditambah ongkir kargo/kulakan &amp; biaya kemasan, lalu tentukan harga jual di katalog.</p>
+            </div>
+          </div>
+
+          <div class="two-col-grid">
+            <form id="calc-robo-form" class="form-grid">
+              <div class="form-field full-width">
+                <label for="cr-name">Nama Komponen Robotika</label>
+                <input id="cr-name" type="text" value="ESP32 Type-C Development Board" />
+              </div>
+              <div class="form-field">
+                <label for="cr-units">Jumlah Barang Dibeli / Terjual (pcs)</label>
+                <input id="cr-units" type="number" min="1" value="10" />
+              </div>
+              <div class="form-field">
+                <label for="cr-buy-unit">Harga Beli Supplier / Pcs (Rp)</label>
+                <input id="cr-buy-unit" type="number" min="0" value="48000" />
+              </div>
+              <div class="form-field">
+                <label for="cr-ship-unit">Alokasi Ongkir Kulakan / Pcs (Rp)</label>
+                <input id="cr-ship-unit" type="number" min="0" value="2500" />
+              </div>
+              <div class="form-field">
+                <label for="cr-pack-unit">Biaya Plastik Antistatik / Packing / Pcs</label>
+                <input id="cr-pack-unit" type="number" min="0" value="1000" />
+              </div>
+              <div class="form-field">
+                <label for="cr-target-margin">Target Margin Laba (0.05 – 0.80)</label>
+                <input id="cr-target-margin" type="number" min="0.05" max="0.80" step="0.05" value="0.30" />
+              </div>
+              <div class="form-field">
+                <label for="cr-sell-unit">Harga Jual Katalog / Pcs (Rp)</label>
+                <input id="cr-sell-unit" type="number" min="0" placeholder="Kosong = pakai Harga Saran" />
+              </div>
+            </form>
+
+            <div class="calc-result-panel">
+              <span style="font-size:11px; letter-spacing:0.1em; color:#94a3b8; font-weight:700;">HASIL HPP KOMPONEN ROBOTIKA</span>
+              <div class="calc-result-grid">
+                <div class="calc-stat accent">
+                  <span>HPP Modal / Pcs</span>
+                  <strong id="cr-res-hpp-unit">Rp 51.500</strong>
+                </div>
+                <div class="calc-stat accent">
+                  <span>Harga Jual Saran / Pcs</span>
+                  <strong id="cr-res-suggested">Rp 74.000</strong>
+                </div>
+                <div class="calc-stat">
+                  <span>Total Modal Batch</span>
+                  <strong id="cr-res-hpp-batch">Rp 515.000</strong>
+                </div>
+                <div class="calc-stat">
+                  <span>Estimasi Laba Batch</span>
+                  <strong id="cr-res-profit" style="color:#4ade80;">Rp 225.000</strong>
+                </div>
+              </div>
+              <button id="cr-save-order-btn" type="button" class="btn btn-primary" style="width:100%; margin-top:18px;">
+                📥 Masukkan ke Form Penjualan Robotika
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           TAB 4: CRUD KATALOG VISUAL (RAMAH HP & ADMIN NON-IT)
+           ========================================================= -->
+      <section id="tab-catalog" class="panel-section">
+        <div class="card-box">
+          <div class="card-box-header">
+            <div>
+              <h2>📦 Kelola Produk Katalog Website</h2>
+              <p>Ubah stok dengan 1 klik (<code>+</code> / <code>−</code>), sembunyikan/tampilkan produk, atau tambah produk baru tanpa perlu menyentuh kodingan maupun CSV.</p>
+            </div>
+            <button id="add-product-btn" type="button" class="btn btn-primary">
+              ➕ Tambah Produk Baru
+            </button>
+          </div>
+
+          <!-- Filter & Pencarian Katalog Admin -->
+          <div class="form-grid" style="margin-bottom:20px;">
+            <div class="form-field">
+              <label for="cat-search">Cari Nama / Kode Produk</label>
+              <input id="cat-search" type="search" placeholder="Ketik Arduino, Servo, Toothless..." />
+            </div>
+            <div class="form-field">
+              <label for="cat-type-filter">Jenis Katalog</label>
+              <select id="cat-type-filter">
+                <option value="">Semua Jenis</option>
+                <option value="robotika">🤖 Komponen Robotika</option>
+                <option value="gantungan-kunci">🔑 Gantungan Kunci (3D)</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="cat-status-filter">Status Tampil di Web</label>
+              <select id="cat-status-filter">
+                <option value="">Semua Status</option>
+                <option value="active">✅ Ditampilkan (Aktif)</option>
+                <option value="inactive">🙈 Disembunyikan (Draft)</option>
+              </select>
+            </div>
+          </div>
+
+          <p id="cat-admin-count" style="font-size:13px; font-weight:700; color:var(--muted); margin-bottom:14px;">Memuat produk…</p>
+
+          <div id="admin-catalog-grid" class="admin-catalog-grid"></div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           TAB 5: PENGATURAN PARAMETER EXCEL, SALDO AWAL, & PASSWORD
+           ========================================================= -->
+      <section id="tab-settings" class="panel-section">
+        <div class="two-col-grid">
+          <div class="card-box" id="owner-settings-card">
+            <div class="card-box-header">
+              <div>
+                <h3>⚙️ Parameter Biaya HPP &amp; Saldo Awal (Super Owner)</h3>
+                <p>Sesuaikan harga bahan PETG, tarif listrik, harga switch, dan saldo awal pembukuan.</p>
+              </div>
+            </div>
+
+            <form id="settings-form">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="set-petg">Harga Filamen PETG / kg (Rp)</label>
+                  <input id="set-petg" type="number" min="1000" />
+                </div>
+                <div class="form-field">
+                  <label for="set-elec">Tarif Listrik / kWh (Rp)</label>
+                  <input id="set-elec" type="number" min="100" />
+                </div>
+                <div class="form-field">
+                  <label for="set-power">Daya Rata-rata Printer (Watt)</label>
+                  <input id="set-power" type="number" min="10" />
+                </div>
+                <div class="form-field">
+                  <label for="set-labor">Upah Kerja Aktif / Jam (Rp)</label>
+                  <input id="set-labor" type="number" min="0" />
+                </div>
+                <div class="form-field">
+                  <label for="set-switch">Harga Blue Switch / pcs (Rp)</label>
+                  <input id="set-switch" type="number" min="0" />
+                </div>
+                <div class="form-field">
+                  <label for="set-ring">Harga Ring Gantungan Kunci / pcs (Rp)</label>
+                  <input id="set-ring" type="number" min="0" />
+                </div>
+                <div class="form-field">
+                  <label for="set-pack">Biaya Kemasan Default / Unit (Rp)</label>
+                  <input id="set-pack" type="number" min="0" />
+                </div>
+                <div class="form-field">
+                  <label for="set-minorder">Minimum Order Jasa Print (Rp)</label>
+                  <input id="set-minorder" type="number" min="0" />
+                </div>
+                <div class="form-field">
+                  <label for="set-reserve-3d">Kas Minimum Disisihkan 3D Print (Rp)</label>
+                  <input id="set-reserve-3d" type="number" min="0" />
+                </div>
+                <div class="form-field">
+                  <label for="set-reserve-robo">Kas Minimum Disisihkan Robotika (Rp)</label>
+                  <input id="set-reserve-robo" type="number" min="0" />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top:18px;">💾 Simpan Parameter Usaha</button>
+            </form>
+          </div>
+
+          <div class="card-box">
+            <div class="card-box-header">
+              <div>
+                <h3>🔐 Keamanan &amp; Ganti Password Akun</h3>
+                <p>Ubah password login Anda atau reset password admin partner.</p>
+              </div>
+            </div>
+            <form id="password-form">
+              <div class="form-grid">
+                <div class="form-field full-width" id="pass-target-wrap">
+                  <label for="pass-target">Akun yang Diubah</label>
+                  <select id="pass-target">
+                    <option value="owner">owner (Super Owner)</option>
+                    <option value="admin3d">admin3d (Admin 3D Print)</option>
+                    <option value="adminrobo">adminrobo (Admin Robotika)</option>
+                  </select>
+                </div>
+                <div class="form-field full-width">
+                  <label for="pass-old">Password Lama <small>(Kosongkan jika Anda Super Owner)</small></label>
+                  <input id="pass-old" type="password" placeholder="Masukkan password saat ini" />
+                </div>
+                <div class="form-field full-width">
+                  <label for="pass-new">Password Baru</label>
+                  <input id="pass-new" type="password" placeholder="Minimal 4 karakter" required />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-dark" style="margin-top:18px;">Perbarui Password</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bilah Navigasi Bawah Khusus Mobile (Smartphone) -->
+    <nav class="mobile-bottom-nav" aria-label="Navigasi Bawah Ponsel">
+      <div class="mobile-bottom-nav-grid">
+        <button type="button" class="mob-tab-btn active" data-tab="tab-dashboard">
+          <span class="mob-icon">📊</span>
+          <span>Ringkasan</span>
+        </button>
+        <button type="button" class="mob-tab-btn" data-tab="tab-ledger">
+          <span class="mob-icon">📝</span>
+          <span>Kasir/Kas</span>
+        </button>
+        <button type="button" class="mob-tab-btn" data-tab="tab-calculator">
+          <span class="mob-icon">🧮</span>
+          <span>Kalkulator</span>
+        </button>
+        <button type="button" class="mob-tab-btn" data-tab="tab-catalog">
+          <span class="mob-icon">📦</span>
+          <span>Katalog</span>
+        </button>
+        <button type="button" class="mob-tab-btn" data-tab="tab-settings">
+          <span class="mob-icon">⚙️</span>
+          <span>Setelan</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- MODAL TAMBAH / EDIT PRODUK KATALOG -->
+  <div id="product-modal" class="modal-backdrop" hidden>
+    <div class="modal-box" role="dialog" aria-labelledby="prod-modal-title">
+      <div class="card-box-header" style="margin-bottom:14px;">
+        <h3 id="prod-modal-title">Tambah Produk Katalog</h3>
+        <button id="close-prod-modal" type="button" class="btn btn-outline btn-sm">✕ Tutup</button>
+      </div>
+
+      <form id="product-form">
+        <input id="pf-edit-mode" type="hidden" value="create" />
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="pf-type">Jenis Katalog</label>
+            <select id="pf-type" required>
+              <option value="robotika">🤖 Komponen Robotika</option>
+              <option value="gantungan-kunci">🔑 Gantungan Kunci (3D)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="pf-id">Kode Unik Produk (ID)</label>
+            <input id="pf-id" type="text" placeholder="Contoh: 01-105 atau esp32-cam" required />
+          </div>
+          <div class="form-field full-width">
+            <label for="pf-name">Nama Produk Lengkap</label>
+            <input id="pf-name" type="text" placeholder="Contoh: Sensor Ultrasonic HC-SR04" required />
+          </div>
+          <div class="form-field" id="pf-category-wrap">
+            <label for="pf-category">Kategori Robotika</label>
+            <input id="pf-category" type="text" list="category-suggestions" placeholder="Contoh: Sensor / Microcontroller" />
+            <datalist id="category-suggestions">
+              <option value="Microcontroller"></option>
+              <option value="Sensor"></option>
+              <option value="Driver Motor"></option>
+              <option value="aktuator"></option>
+              <option value="Power Supply"></option>
+              <option value="Display"></option>
+              <option value="Kabel Jumper"></option>
+              <option value="PCB"></option>
+              <option value="Perlengkapan Solder"></option>
+            </datalist>
+          </div>
+          <div class="form-field" id="pf-origin-wrap" hidden>
+            <label for="pf-origin">Asal Desain / Seri Ganci</label>
+            <input id="pf-origin" type="text" placeholder="Contoh: How to Train Your Dragon / Desain Cetakin" />
+          </div>
+          <div class="form-field">
+            <label for="pf-price">Harga Jual Publik (Rp)</label>
+            <input id="pf-price" type="number" min="100" step="100" placeholder="Contoh: 25000" required />
+          </div>
+          <div class="form-field">
+            <label for="pf-cost">HPP / Harga Modal Beli (Rp) <small>(Rahasia Admin)</small></label>
+            <input id="pf-cost" type="number" min="0" step="100" placeholder="Contoh: 15000" />
+          </div>
+          <div class="form-field">
+            <label for="pf-stock">Stok Tersedia (pcs)</label>
+            <input id="pf-stock" type="number" min="0" value="5" required />
+          </div>
+          <div class="form-field">
+            <label for="pf-weight">Berat (gram) <small>(Opsional)</small></label>
+            <input id="pf-weight" type="number" min="0" placeholder="Contoh: 15" />
+          </div>
+          <div class="form-field">
+            <label for="pf-material">Material <small>(Opsional)</small></label>
+            <input id="pf-material" type="text" placeholder="Contoh: PETG / PCB FR4" />
+          </div>
+          <div class="form-field">
+            <label for="pf-dimensions">Ukuran / Dimensi <small>(Opsional)</small></label>
+            <input id="pf-dimensions" type="text" placeholder="Contoh: 45 x 20 x 15 mm" />
+          </div>
+          <div class="form-field full-width">
+            <label for="pf-image-url">URL Gambar atau Upload Foto Produk dari HP/Laptop</label>
+            <input id="pf-image-url" type="text" placeholder="https://... atau klik tombol pilih foto di bawah" />
+            <div style="display:flex; align-items:center; gap:10px; margin-top:6px;">
+              <input id="pf-image-file" type="file" accept="image/*" style="font-size:12px;" />
+              <small style="color:var(--muted);">Otomatis dikompres agar ringan &amp; cepat dimuat</small>
+            </div>
+          </div>
+          <div class="form-field full-width">
+            <label for="pf-desc">Deskripsi Produk</label>
+            <textarea id="pf-desc" rows="3" placeholder="Jelaskan kegunaan dan spesifikasi singkat produk..." required></textarea>
+          </div>
+          <div class="form-field">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input id="pf-active" type="checkbox" checked style="width:18px; height:18px;" />
+              <span>Tampilkan di Katalog Publik (Aktif)</span>
+            </label>
+          </div>
+          <div class="form-field">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input id="pf-featured" type="checkbox" style="width:18px; height:18px;" />
+              <span>Jadikan Produk Pilihan (Featured)</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" id="cancel-prod-modal" class="btn btn-outline">Batal</button>
+          <button type="submit" class="btn btn-primary">💾 Simpan Produk</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL PENCAIRAN 1 QRIS BERSAMA -->
+  <div id="qris-payout-modal" class="modal-backdrop" hidden>
+    <div class="modal-box" role="dialog" aria-labelledby="qris-modal-title">
+      <div class="card-box-header">
+        <div>
+          <h3 id="qris-modal-title">💸 Catat Pencairan Saldo 1 QRIS Bersama</h3>
+          <p>Pindahkan saldo dari Merchant (QRIS) ke rekening Bank Usaha masing-masing divisi secara akurat.</p>
+        </div>
+        <button id="close-qris-modal" type="button" class="btn btn-outline btn-sm">✕</button>
+      </div>
+
+      <form id="qris-payout-form">
+        <div class="form-grid">
+          <div class="form-field full-width">
+            <label for="qp-date">Tanggal Pencairan</label>
+            <input id="qp-date" type="date" required />
+          </div>
+          <div class="form-field">
+            <label for="qp-amount-3d">Pencairan Jatah 3D Print (Rp)</label>
+            <input id="qp-amount-3d" type="number" min="0" value="0" />
+          </div>
+          <div class="form-field">
+            <label for="qp-mdr-3d">Potongan MDR QRIS 3D Print (Rp)</label>
+            <input id="qp-mdr-3d" type="number" min="0" value="0" />
+          </div>
+          <div class="form-field">
+            <label for="qp-amount-robo">Pencairan Jatah Robotika (Rp)</label>
+            <input id="qp-amount-robo" type="number" min="0" value="0" />
+          </div>
+          <div class="form-field">
+            <label for="qp-mdr-robo">Potongan MDR QRIS Robotika (Rp)</label>
+            <input id="qp-mdr-robo" type="number" min="0" value="0" />
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--muted); margin-top:12px;">
+          Sistem akan otomatis membuat transaksi <strong>Transfer internal (Merchant → Bank usaha)</strong> pada buku kas 3D Print dan buku kas Robotika secara terpisah.
+        </p>
+        <div style="margin-top:18px; display:flex; justify-content:flex-end; gap:10px;">
+          <button type="submit" class="btn btn-primary">✅ Proses Pencairan QRIS</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notifikasi -->
+  <div id="toast" class="toast-Message" hidden role="status" aria-live="polite"></div>
+
+</body>
+
+</html>

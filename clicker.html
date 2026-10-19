@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f7f4">
+  <title>Rakit Clicker Custom - Cetakin</title>
+  <meta name="description"
+    content="Rakit gantungan clicker keyboard custom 1–7 tombol. Pilih base, font, 12 simbol dua warna, dan empat warna PETG untuk keycap serta simbolnya. Pre-order lewat WhatsApp.">
+  <link rel="icon" href="./assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./clicker.css">
+  <script src="./site-config.js" defer></script>
+  <script src="./contact.js" defer></script>
+  <script src="./app.js" defer></script>
+  <script src="./clicker-assets.js" defer></script>
+  <script src="./clicker-core.js" defer></script>
+  <script src="./clicker.js" defer></script>
+</head>
+
+<body class="clicker-page" id="atas">
+  <a class="skip-link" href="#konten">Lewati ke konten</a>
+  <header class="site-header">
+    <div class="nav-shell container">
+      <a class="brand" href="./index.html" aria-label="Beranda Cetakin"><img src="./assets/logo.png" alt="Cetakin"
+          width="866" height="288"></a>
+      <nav class="desktop-nav" aria-label="Navigasi utama">
+        <a href="./index.html">Beranda</a><a href="./clicker.html" aria-current="page">Clicker custom</a><a
+          href="./robotika.html">Robotika</a><a href="./panduan.html">Panduan</a><a
+          href="./gantungan-kunci.html">Ganci</a>
+      </nav>
+      <a class="nav-cta" data-wa-context="general" href="https://wa.me/6285822801431">Hubungi kami ↗</a>
+      <button class="menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false"
+        aria-controls="menu-ponsel"><span></span><span></span></button>
+    </div>
+    <nav class="mobile-nav" id="menu-ponsel" aria-label="Navigasi ponsel" hidden>
+      <a href="./index.html">Beranda</a><a href="./clicker.html" aria-current="page">Clicker custom</a><a
+        href="./robotika.html">Komponen Robotika</a><a href="./panduan.html">Panduan komponen</a><a
+        href="./gantungan-kunci.html">Gantungan Kunci</a><a href="#pesanan">Ringkasan pesanan</a>
+    </nav>
+  </header>
+  <main id="konten" class="container clicker-main">
+    <nav class="clicker-breadcrumb" aria-label="Breadcrumb"><a href="./index.html">Beranda</a><span
+        aria-hidden="true">/</span><span aria-current="page">Clicker custom</span></nav>
+    <section class="builder-intro" aria-labelledby="builder-title">
+      <div><span class="section-index">CLICKER LAB / PRE-ORDER</span>
+        <h1 id="builder-title">Kecil bentuknya.<br><em>Kamu banget.</em></h1>
+      </div>
+      <div class="intro-detail">
+        <p>Nama, inisial, atau simbol favoritmu. Susun clicker sendiri, pilih warna setiap bagiannya, lalu kirim
+          desainmu ke kami.</p>
+        <div class="intro-tags"><span>1–7 tombol</span><span>4 warna PETG</span><span>Mulai Rp14.000</span></div>
+      </div>
+    </section>
+    <noscript>
+      <p class="builder-warning">Aktifkan JavaScript untuk menyusun desain dan menghitung harga, atau <a
+          href="https://wa.me/6285822801431">hubungi Cetakin melalui WhatsApp</a>.</p>
+    </noscript>
+    <div id="link-notice" class="builder-warning" role="status" hidden></div>
+    <div class="builder-layout" id="builder" hidden>
+      <div class="builder-display">
+        <section class="design-stage" aria-labelledby="preview-title">
+          <div class="stage-top">
+            <h2 id="preview-title">DESAIN PILIHANMU</h2><span class="live-badge"><i></i> LIVE PREVIEW</span>
+          </div>
+          <div class="stage-canvas"><span class="stage-side" aria-hidden="true">CETAKIN / CUSTOM SERIES</span>
+            <div id="design-preview"></div><span class="stage-star" aria-hidden="true">✳</span>
+          </div>
+          <div class="stage-bottom"><span id="design-caption">4 tombol · Flexi compact</span><span>PETG /
+              PRE-ORDER</span></div>
+        </section>
+        <p class="preview-explanation">Ilustrasi tampak atas, bukan foto atau ukuran cetak final. Urutan dimulai dari
+          lubang gantungan ke bawah. Klik tombol untuk mengeditnya.</p>
+        <div class="design-tools"><button type="button" id="download-design">Unduh gambar <span
+              aria-hidden="true">↓</span></button><button type="button" id="copy-design-link">Salin link desain <span
+              aria-hidden="true">↗</span></button></div>
+        <section class="order-card" id="pesanan" aria-labelledby="order-title">
+          <div class="order-heading">
+            <h2 id="order-title">Siap jadi milikmu?</h2><span class="preorder-pill">PRE-ORDER</span>
+          </div>
+          <p id="order-summary" class="order-summary"></p>
+          <div class="order-quantity"><label for="order-quantity">Jumlah produk</label>
+            <div><input id="order-quantity" type="number" min="1" max="99" step="1" value="1" inputmode="numeric"
+                aria-describedby="quantity-help"><span>pcs</span></div>
+          </div>
+          <p id="quantity-help" class="control-help">Semua pcs memakai desain yang sama.</p>
+          <div class="order-price">
+            <div><span>Subtotal</span><strong id="order-total">Rp26.000</strong></div>
+            <p id="unit-price">Rp26.000 / pcs</p>
+          </div>
+          <p class="order-small">Belum termasuk ongkir. Desain dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.
+          </p>
+          <div id="design-errors" class="builder-warning" role="status" hidden></div>
+          <a id="order-now" class="button button-dark" aria-disabled="true">Pesan sekarang <span
+              aria-hidden="true">↗</span></a>
+          <p class="wa-help">Detail desain otomatis menjadi draf chat. Tekan kirim di WhatsApp untuk menghubungi admin.
+          </p>
+          <details class="message-details">
+            <summary>Lihat format chat pesanan</summary><label class="sr-only" for="wa-message">Draf pesan
+              WhatsApp</label><textarea id="wa-message" readonly rows="12"></textarea><button type="button"
+              id="copy-order-text">Salin teks pesanan</button>
+          </details>
+        </section>
+      </div>
+      <form class="builder-controls" id="customizer" novalidate>
+        <fieldset class="builder-section">
+          <legend><span>01</span> Mulai dari susunannya</legend>
+          <div class="section-body">
+            <div class="field-label">Jumlah tombol <span>Harga untuk 1 pcs</span></div>
+            <div class="count-options" id="count-options" role="group" aria-label="Jumlah tombol"></div>
+            <label for="quick-text" class="field-label">Isi huruf sekaligus <span>Opsional</span></label>
+            <input id="quick-text" type="text" maxlength="7" placeholder="Contoh: NAMA" autocomplete="off"
+              spellcheck="false" aria-describedby="quick-help">
+            <p id="quick-help" class="control-help">A–Z dan angka 1–9. Mengisi teks mengganti semua tombol; tambahkan
+              simbol setelahnya.</p>
+            <div class="field-label">Pilih tombol yang mau diedit</div>
+            <div id="key-slots" class="key-slots" role="group" aria-label="Urutan tombol dari gantungan ke bawah"></div>
+            <div class="key-editor">
+              <div class="editor-heading"><strong id="editor-title">Tombol 1</strong><span>DARI ATAS KE BAWAH</span>
+              </div>
+              <div class="key-types" role="group" aria-label="Isi tombol"><button type="button" data-key-type="letter"
+                  aria-pressed="true">Huruf / angka</button><button type="button" data-key-type="emoji"
+                  aria-pressed="false">Simbol / emoji</button></div>
+              <div id="letter-editor"><label for="single-letter">Huruf atau angka</label><input id="single-letter"
+                  type="text" maxlength="1" autocomplete="off" spellcheck="false" aria-describedby="letter-help">
+                <p id="letter-help" class="control-help">Satu huruf A–Z atau angka 1–9.</p>
+              </div>
+              <div id="emoji-editor" hidden>
+                <div id="emoji-options" class="emoji-options" role="group" aria-label="12 simbol yang tersedia"></div>
+                <p class="control-help">Pilih satu dari 12 simbol. Warna keycap dan warna simbol bisa dipilih sendiri di
+                  bawah. Gunakan dua warna berbeda agar simbol terlihat. Setiap simbol mengisi satu tombol dan dihitung
+                  dalam harga.</p>
+              </div>
+              <div class="field-label">Warna keycap <span id="cap-color-label">Putih</span></div>
+              <div class="swatch-options" id="cap-colors" role="group" aria-label="Warna keycap tombol terpilih"></div>
+              <div id="ink-controls">
+                <div class="field-label"><b id="ink-part-label">Warna huruf</b><span id="ink-color-label">Hitam</span>
+                </div>
+                <div class="swatch-options" id="ink-colors" role="group" aria-label="Warna huruf tombol terpilih"></div>
+                <p id="color-relief-note" class="control-help" hidden>Warna sama: huruf terlihat dari bentuk timbulnya.
+                  Pilih warna berbeda jika ingin tulisan lebih kontras.</p>
+              </div>
+              <button type="button" id="apply-colors" class="apply-colors">Terapkan warna ini ke semua tombol ↗</button>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset class="builder-section">
+          <legend><span>02</span> Pilih rumah tombolnya</legend>
+          <div class="section-body">
+            <div class="mode-options" role="group" aria-label="Jenis base">
+              <button type="button" data-mode="solid" aria-pressed="false"><b>Solid</b><span>Badan utuh, susunan
+                  tetap.</span><small>1–7 tombol</small></button>
+              <button type="button" data-mode="flexi" aria-pressed="false"><b>Flexi</b><span>Bersendi, lebih
+                  renggang.</span><small>2–7 tombol</small></button>
+              <button type="button" data-mode="compact" aria-pressed="true"><b>Flexi compact</b><span>Bersendi, jarak
+                  lebih rapat.</span><small>2–7 tombol</small></button>
+            </div>
+            <p id="base-help" class="control-help">Flexi bergerak pada sendinya; bahan PETG tetap kaku. Untuk satu
+              tombol, gunakan Solid.</p>
+            <div class="field-label">Bentuk base</div>
+            <div id="shape-options" class="shape-options" role="group" aria-label="Bentuk base"></div>
+            <div class="field-label">Warna base <span id="base-color-label">Sky blue</span></div>
+            <div id="base-colors" class="swatch-options" role="group" aria-label="Warna base"></div>
+          </div>
+        </fieldset>
+        <fieldset class="builder-section">
+          <legend><span>03</span> Beri sedikit kepribadian</legend>
+          <div class="section-body">
+            <div class="field-label">Font huruf & angka</div>
+            <div id="font-options" class="font-options" role="group" aria-label="Font huruf dan angka"></div>
+            <p class="control-help">Satu font untuk seluruh huruf/angka. Bentuk simbol mengikuti pilihan di atas.</p>
+            <label for="order-note" class="field-label">Catatan untuk admin <span>Opsional</span></label><textarea
+              id="order-note" rows="3" maxlength="300"
+              placeholder="Ada detail tambahan yang ingin kamu diskusikan?"></textarea>
+            <div class="controls-finish"><a href="#pesanan">Lihat ringkasan & pesan ↑</a><button type="button"
+                id="reset-design">Reset desain</button></div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+    <section class="clicker-info" aria-labelledby="info-title">
+      <div class="info-heading"><span class="section-index">SEBELUM JADI MILIKMU</span>
+        <h2 id="info-title">Pilih. Susun.<br><em>Kami cetakin.</em></h2>
+      </div>
+      <div class="info-content">
+        <details open>
+          <summary>Berapa harga clicker-ku?</summary>
+          <p>Harga mengikuti jumlah tombol, termasuk simbol. Pilihan base, font, dan empat warna di halaman ini memakai
+            harga yang sama.</p>
+          <div id="price-list" class="price-list"></div>
+        </details>
+        <details>
+          <summary>Bagaimana cara pre-order?</summary>
+          <p>Susun desain lalu klik Pesan sekarang. Admin menerima urutan tombol, warna setiap bagian, jenis base, font,
+            jumlah produk, dan subtotal. Kami konfirmasi desain, ongkir, serta estimasi pengerjaan sebelum pesanan
+            diproses.</p>
+        </details>
+        <details>
+          <summary>Bisa kirim gambar desainnya juga?</summary>
+          <p>Gunakan Unduh gambar, lalu lampirkan gambar tersebut di chat WhatsApp. Tautan WhatsApp mengisi teks
+            pesanan; gambar perlu dilampirkan sendiri. Link desain juga ikut masuk ke chat agar admin bisa membuka
+            susunan yang sama.</p>
+        </details>
+        <details>
+          <summary>Apa bedanya solid, flexi, dan compact?</summary>
+          <p>Solid adalah satu badan utuh. Flexi punya sendi antartombol dengan jarak lebih renggang. Flexi compact
+            memakai sendi yang lebih rapat. Semuanya berbahan PETG; versi flexi lentur karena sendi, bukan karena
+            filamennya seperti karet.</p>
+        </details>
+        <details>
+          <summary>Apakah preview sama persis dengan hasil cetak?</summary>
+          <p>Preview menunjukkan susunan, bentuk simbol, font, dan kombinasi warna. Warna layar, detail permukaan cetak,
+            ukuran sendi, dan hasil rakitan bisa berbeda. Admin memeriksa kecocokan desain sebelum produksi.</p>
+        </details>
+      </div>
+    </section>
+    <p class="design-credit">Mekanisme diadaptasi dari <a
+        href="https://makerworld.com/en/models/2297614-keyboard-clicker-fidget" target="_blank"
+        rel="noopener noreferrer">Keyboard clicker fidget — CHB 3D PRINTING</a>, <a
+        href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.
+      Modifikasi: bentuk base, susunan solid/flexi, keycap rounded, huruf, dan simbol dua warna.</p>
+  </main>
+  <div class="mobile-order-bar" id="mobile-order-bar" hidden>
+    <div><span>Subtotal</span><strong id="mobile-total">Rp26.000</strong></div><a href="#pesanan">Ringkasan & pesan
+      ↗</a>
+  </div>
+  <p id="builder-status" class="builder-toast" role="status" aria-live="polite"></p>
+  <footer class="site-footer">
+    <div class="container footer-inner"><a href="./index.html" aria-label="Beranda Cetakin"><img src="./assets/logo.png"
+          alt="Cetakin" width="866" height="288"></a>
+      <p>Ide kecil jadi bentuk nyata.</p><span>© <span id="year">2026</span> Cetakin</span><a href="#atas">Kembali ke
+        atas ↑</a>
+    </div>
+  </footer>
+</body>
+
+</html>
