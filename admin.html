@@ -598,13 +598,17 @@
               <h2>🖨️ Kalkulator HPP &amp; Harga Saran Jasa 3D Print</h2>
               <p>Rumus identik dengan spreadsheet <code>Keuangan_dan_HPP_3D_Print.xlsm</code> (Termasuk Tarif Layer 0.10mm–0.30mm, Cadangan Gagal 10%, &amp; Proteksi Margin).</p>
             </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm jasa-preset-btn" data-preset="bracket">Contoh: Bracket Robot (4 pcs)</button>
+              <button type="button" class="btn btn-outline btn-sm jasa-preset-btn" data-preset="dino">Order: Ganci Dino (1 pcs)</button>
+            </div>
           </div>
 
           <div class="two-col-grid">
             <form id="calc-jasa-form" class="form-grid">
               <div class="form-field full-width">
                 <label for="cj-name">Nama Order / Cetakan</label>
-                <input id="cj-name" type="text" value="Cetak Bracket Robot" />
+                <input id="cj-name" type="text" value="Contoh: bracket robot" />
               </div>
               <div class="form-field">
                 <label for="cj-units">Jumlah Unit Jadi (pcs)</label>
@@ -631,15 +635,15 @@
               </div>
               <div class="form-field">
                 <label for="cj-hours">Waktu Print Slicer (Jam)</label>
-                <input id="cj-hours" type="number" min="0" step="0.1" value="6" />
+                <input id="cj-hours" type="number" min="0" step="0.05" value="6" />
               </div>
               <div class="form-field">
                 <label for="cj-active-hours">Kerja Aktif Batch (Jam) <small>(30m = 0.5)</small></label>
-                <input id="cj-active-hours" type="number" min="0" step="0.1" value="1.5" />
+                <input id="cj-active-hours" type="number" min="0" step="0.05" value="1.5" />
               </div>
               <div class="form-field">
                 <label for="cj-packaging">Kemasan Batch (Rp) <small>(Kosong = default)</small></label>
-                <input id="cj-packaging" type="number" min="0" placeholder="Otomatis Rp2.000/unit" />
+                <input id="cj-packaging" type="number" min="0" placeholder="Otomatis Rp700/unit" />
               </div>
               <div class="form-field">
                 <label for="cj-other">Biaya Lain Batch (Rp)</label>
@@ -673,15 +677,15 @@
                   </div>
                   <div class="calc-stat">
                     <span>HPP Lengkap / Batch</span>
-                    <strong id="cj-res-hpp-batch">Rp 78.511</strong>
+                    <strong id="cj-res-hpp-batch">Rp 72.380</strong>
                   </div>
                   <div class="calc-stat">
                     <span>HPP / Unit</span>
-                    <strong id="cj-res-hpp-unit">Rp 19.628</strong>
+                    <strong id="cj-res-hpp-unit">Rp 18.095</strong>
                   </div>
                   <div class="calc-stat">
                     <span>Harga Impas / Unit</span>
-                    <strong id="cj-res-breakeven">Rp 19.628</strong>
+                    <strong id="cj-res-breakeven">Rp 18.095</strong>
                   </div>
                   <div class="calc-stat">
                     <span>Tarif Dasar Layer (<span id="cj-res-grams">200</span>g)</span>
@@ -689,11 +693,11 @@
                   </div>
                   <div class="calc-stat">
                     <span>Laba Bersih Batch</span>
-                    <strong id="cj-res-profit" style="color:#4ade80;">Rp 41.489</strong>
+                    <strong id="cj-res-profit" style="color:#4ade80;">Rp 47.620</strong>
                   </div>
                   <div class="calc-stat">
                     <span>Margin Laba Aktual</span>
-                    <strong id="cj-res-margin">34.6%</strong>
+                    <strong id="cj-res-margin">39.7%</strong>
                   </div>
                 </div>
 
@@ -729,7 +733,7 @@
           <div class="card-box-header">
             <div>
               <h2>⌨️ Kalkulator HPP Clicker Keyboard Custom (1–7 Tombol)</h2>
-              <p>Menghitung biaya Blue Switch, Tali Anyam, Gantungan Kunci, PETG, Listrik, Penyusutan, &amp; Upah Rakit.</p>
+              <p>Menghitung biaya Blue Switch, Tali Anyam, Gantungan Kunci, PETG, Listrik, Penyusutan, &amp; Upah Rakit sesuai tabel <code>Clicker</code> di Spreadsheet.</p>
             </div>
           </div>
 
@@ -745,23 +749,23 @@
               </div>
               <div class="form-field">
                 <label for="cc-petg">PETG per Unit (gram)</label>
-                <input id="cc-petg" type="number" min="1" step="0.5" value="24" />
+                <input id="cc-petg" type="number" min="1" step="0.001" value="46.21" />
               </div>
               <div class="form-field">
                 <label for="cc-support">Support / Sisa per Batch (g)</label>
-                <input id="cc-support" type="number" min="0" step="0.5" value="2" />
+                <input id="cc-support" type="number" min="0" step="0.5" value="5" />
               </div>
               <div class="form-field">
                 <label for="cc-print-hours">Jam Cetak per Batch</label>
-                <input id="cc-print-hours" type="number" min="0.1" step="0.1" value="1.0" />
+                <input id="cc-print-hours" type="number" min="0.1" step="0.05" value="1.7" />
               </div>
               <div class="form-field">
                 <label for="cc-active-hours">Jam Kerja Aktif Batch</label>
-                <input id="cc-active-hours" type="number" min="0" step="0.1" value="0.25" />
+                <input id="cc-active-hours" type="number" min="0" step="0.01" value="0.05" />
               </div>
               <div class="form-field">
                 <label for="cc-sell-unit">Harga Jual Dipilih / Unit (Rp)</label>
-                <input id="cc-sell-unit" type="number" min="0" placeholder="Kosong = pakai Harga Saran" />
+                <input id="cc-sell-unit" type="number" min="0" value="32000" placeholder="Kosong = pakai Harga Saran" />
               </div>
             </form>
 
@@ -803,63 +807,91 @@
           <div class="card-box-header">
             <div>
               <h2>🤖 Kalkulator HPP &amp; Harga Jual Komponen Robotika</h2>
-              <p>Hitung HPP modal per pcs setelah ditambah ongkir kargo/kulakan &amp; biaya kemasan, lalu tentukan harga jual di katalog.</p>
+              <p>Terintegrasi dengan 94 data ter-audit: alokasi biaya usaha tetap (Rp 646.853), kemasan antistatik, dan margin target 20%.</p>
             </div>
           </div>
 
           <div class="two-col-grid">
             <form id="calc-robo-form" class="form-grid">
+              <div class="form-field full-width" style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; border: 1px solid #334155;">
+                <label for="cr-preset-picker" style="color:#38bdf8; font-weight:700;">⚡ Pilih dari Data Ter-Audit (94 Komponen &amp; Varian)</label>
+                <select id="cr-preset-picker" class="form-select" style="width:100%; font-size:13px; padding:8px; border-radius:6px; background:#0f172a; color:#f8fafc; border:1px solid #475569;">
+                  <option value="">-- Mode Kustom / Pilih Komponen Ter-Audit --</option>
+                </select>
+                <small style="display:block; margin-top:4px; color:#94a3b8; font-size:11px;">
+                  Pilih komponen untuk otomatis memuat HPP stok audited, alokasi biaya usaha, kemasan, dan harga pasar pesaing (Banjar/Adawwino).
+                </small>
+              </div>
+
               <div class="form-field full-width">
-                <label for="cr-name">Nama Komponen Robotika</label>
-                <input id="cr-name" type="text" value="ESP32 Type-C Development Board" />
+                <label for="cr-name">Nama Komponen / SKU</label>
+                <input id="cr-name" type="text" value="ESP32 CH340 Type C WROOM WIFI Bluetooth BLE" />
               </div>
               <div class="form-field">
-                <label for="cr-units">Jumlah Barang Dibeli / Terjual (pcs)</label>
-                <input id="cr-units" type="number" min="1" value="10" />
+                <label for="cr-units">Jumlah Barang (pcs / paket)</label>
+                <input id="cr-units" type="number" min="1" value="1" />
               </div>
               <div class="form-field">
-                <label for="cr-buy-unit">Harga Beli Supplier / Pcs (Rp)</label>
-                <input id="cr-buy-unit" type="number" min="0" value="48000" />
+                <label for="cr-buy-unit">HPP Stok Supplier / Unit (Rp)</label>
+                <input id="cr-buy-unit" type="number" min="0" value="65000" />
               </div>
               <div class="form-field">
-                <label for="cr-ship-unit">Alokasi Ongkir Kulakan / Pcs (Rp)</label>
-                <input id="cr-ship-unit" type="number" min="0" value="2500" />
+                <label for="cr-ship-unit">Alokasi Biaya Usaha / Unit (Rp)</label>
+                <input id="cr-ship-unit" type="number" min="0" value="8808" />
               </div>
               <div class="form-field">
-                <label for="cr-pack-unit">Biaya Plastik Antistatik / Packing / Pcs</label>
-                <input id="cr-pack-unit" type="number" min="0" value="1000" />
+                <label for="cr-pack-unit">Biaya Kemasan Packing / Unit (Rp)</label>
+                <input id="cr-pack-unit" type="number" min="0" value="200" />
               </div>
               <div class="form-field">
-                <label for="cr-target-margin">Target Margin Laba (0.05 – 0.80)</label>
-                <input id="cr-target-margin" type="number" min="0.05" max="0.80" step="0.05" value="0.30" />
+                <label for="cr-target-margin">Target Margin Bersih (0.05 – 0.80)</label>
+                <input id="cr-target-margin" type="number" min="0.05" max="0.80" step="0.05" value="0.20" />
               </div>
               <div class="form-field">
-                <label for="cr-sell-unit">Harga Jual Katalog / Pcs (Rp)</label>
+                <label for="cr-sell-unit">Harga Jual Usulan / Pcs (Rp)</label>
                 <input id="cr-sell-unit" type="number" min="0" placeholder="Kosong = pakai Harga Saran" />
               </div>
             </form>
 
             <div class="calc-result-panel">
-              <span style="font-size:11px; letter-spacing:0.1em; color:#94a3b8; font-weight:700;">HASIL HPP KOMPONEN ROBOTIKA</span>
+              <span style="font-size:11px; letter-spacing:0.1em; color:#94a3b8; font-weight:700;">HASIL HPP &amp; STATUS PENJUALAN</span>
               <div class="calc-result-grid">
-                <div class="calc-stat accent">
-                  <span>HPP Modal / Pcs</span>
-                  <strong id="cr-res-hpp-unit">Rp 51.500</strong>
+                <div class="calc-stat">
+                  <span>HPP Modal Stok</span>
+                  <strong id="cr-res-hpp-unit">Rp 65.000</strong>
                 </div>
                 <div class="calc-stat accent">
-                  <span>Harga Jual Saran / Pcs</span>
-                  <strong id="cr-res-suggested">Rp 74.000</strong>
+                  <span>Biaya Penuh (Impas)</span>
+                  <strong id="cr-res-full-cost">Rp 74.008</strong>
+                </div>
+                <div class="calc-stat accent">
+                  <span>Harga Jual Usulan</span>
+                  <strong id="cr-res-suggested">Rp 93.550</strong>
                 </div>
                 <div class="calc-stat">
-                  <span>Total Modal Batch</span>
-                  <strong id="cr-res-hpp-batch">Rp 515.000</strong>
+                  <span>Status Penutupan</span>
+                  <strong id="cr-res-status" style="font-size:12px; color:#4ade80;">MENUTUP + SURPLUS</strong>
                 </div>
                 <div class="calc-stat">
-                  <span>Estimasi Laba Batch</span>
-                  <strong id="cr-res-profit" style="color:#4ade80;">Rp 225.000</strong>
+                  <span>Laba Kotor Stok</span>
+                  <strong id="cr-res-gross-profit" style="color:#38bdf8;">Rp 28.550</strong>
+                </div>
+                <div class="calc-stat">
+                  <span>Laba Bersih Sisa</span>
+                  <strong id="cr-res-profit" style="color:#4ade80;">Rp 19.542</strong>
                 </div>
               </div>
-              <button id="cr-save-order-btn" type="button" class="btn btn-primary" style="width:100%; margin-top:18px;">
+
+              <div id="cr-res-market-box" style="margin-top:12px; font-size:12px; color:#cbd5e1; background:rgba(15,23,42,0.6); padding:10px; border-radius:6px; border:1px solid #334155;">
+                <div style="font-weight:700; color:#94a3b8; font-size:11px; margin-bottom:4px;">📊 PERBANDINGAN PASAR</div>
+                <div style="display:flex; justify-content:space-between; gap:10px;">
+                  <span>Banjar Robotika: <b id="cr-res-banjar">-</b></span>
+                  <span>Adawwino: <b id="cr-res-adawwino">-</b></span>
+                </div>
+                <div id="cr-res-notes" style="margin-top:4px; font-size:11px; color:#94a3b8; font-style:italic;"></div>
+              </div>
+
+              <button id="cr-save-order-btn" type="button" class="btn btn-primary" style="width:100%; margin-top:14px;">
                 📥 Masukkan ke Form Penjualan Robotika
               </button>
             </div>
@@ -1083,8 +1115,12 @@
             <input id="pf-price" type="number" min="100" step="100" placeholder="Contoh: 25000" required />
           </div>
           <div class="form-field">
-            <label for="pf-cost">HPP / Harga Modal Beli (Rp) <small>(Rahasia Admin)</small></label>
-            <input id="pf-cost" type="number" min="0" step="100" placeholder="Contoh: 15000" />
+            <label for="pf-cost">HPP / Modal Beli Stok (Rp) <small>(Rahasia Admin)</small></label>
+            <input id="pf-cost" type="number" min="0" step="50" placeholder="Contoh: 15000" />
+          </div>
+          <div class="form-field">
+            <label for="pf-cost-full">Biaya Penuh / Impas (Rp) <small>(HPP + Usaha + Packing)</small></label>
+            <input id="pf-cost-full" type="number" min="0" step="50" placeholder="Contoh: 17500" />
           </div>
           <div class="form-field">
             <label for="pf-stock">Stok Tersedia (pcs)</label>
@@ -1177,6 +1213,71 @@
           <button type="submit" class="btn btn-primary">✅ Proses Pencairan QRIS</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL PRATINJAU & UNDUH NOTA PEMBELIAN (PDF / PNG / CETAK) -->
+  <div id="invoice-modal" class="modal-backdrop" hidden>
+    <div class="modal-box invoice-modal-box" role="dialog" aria-labelledby="invoice-modal-title">
+      <div class="invoice-modal-toolbar">
+        <div>
+          <h3 id="invoice-modal-title" style="margin:0; font-family:var(--display); font-size:18px;">🧾 Pratinjau &amp; Unduh Nota Pembeli</h3>
+          <p style="margin:2px 0 0; font-size:12px; color:var(--muted);">Dokumen resmi untuk pelanggan — informasi internal (HPP, modal &amp; laba) otomatis disembunyikan.</p>
+        </div>
+        <div class="invoice-toolbar-actions">
+          <button id="toggle-invoice-edit-btn" type="button" class="btn btn-outline btn-sm">✏️ Sesuaikan Isi</button>
+          <button id="download-invoice-png-btn" type="button" class="btn btn-dark btn-sm" title="Unduh sebagai gambar HD untuk dikirim ke WhatsApp">🖼️ Unduh PNG</button>
+          <button id="download-invoice-pdf-btn" type="button" class="btn btn-primary btn-sm" title="Unduh file PDF resmi siap kirim">📥 Unduh Nota PDF</button>
+          <button id="print-invoice-btn" type="button" class="btn btn-outline btn-sm" title="Cetak langsung ke printer / Save as PDF">🖨️ Cetak</button>
+          <button id="close-invoice-modal" type="button" class="btn btn-outline btn-sm" aria-label="Tutup">✕</button>
+        </div>
+      </div>
+
+      <!-- Panel Kustomisasi Cepat (Opsional, bisa dibuka jika ingin mengubah catatan/diskon/ongkir sebelum unduh) -->
+      <div id="invoice-edit-panel" class="invoice-edit-panel" hidden>
+        <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px;">
+          <div class="form-field">
+            <label for="inv-customer">Nama Pembeli di Nota</label>
+            <input id="inv-customer" type="text" />
+          </div>
+          <div class="form-field">
+            <label for="inv-pay-method">Metode Pembayaran</label>
+            <select id="inv-pay-method">
+              <option value="QRIS Cetakin">QRIS Cetakin</option>
+              <option value="Transfer Bank">Transfer Bank</option>
+              <option value="Tunai (Cash)">Tunai (Cash)</option>
+              <option value="COD / Saat Pengambilan">COD / Saat Pengambilan</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="inv-paid-amount">Nominal Telah Dibayar (Rp)</label>
+            <input id="inv-paid-amount" type="number" min="0" step="500" />
+          </div>
+          <div class="form-field">
+            <label for="inv-discount">Diskon Ditampilkan (Rp)</label>
+            <input id="inv-discount" type="number" min="0" step="500" value="0" />
+          </div>
+          <div class="form-field">
+            <label for="inv-shipping">Ongkir / Tambahan (Rp)</label>
+            <input id="inv-shipping" type="number" min="0" step="500" value="0" />
+          </div>
+          <div class="form-field">
+            <label for="inv-spec">Detail / Spesifikasi Item</label>
+            <input id="inv-spec" type="text" placeholder="Contoh: Bahan PETG · Warna Hitam" />
+          </div>
+          <div class="form-field full-width">
+            <label for="inv-note">Catatan &amp; Garansi untuk Pembeli</label>
+            <input id="inv-note" type="text" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Lembar Kertas Nota (Live Preview & Print Area) -->
+      <div class="invoice-preview-scroll">
+        <div id="invoice-paper" class="invoice-paper" data-unit="3d-print">
+          <!-- Dirender secara dinamis oleh admin.js -->
+        </div>
+      </div>
     </div>
   </div>
 

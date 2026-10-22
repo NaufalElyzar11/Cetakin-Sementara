@@ -2,15 +2,19 @@
 
 Website profil dan katalog Cetakin dalam satu folder mandiri, memakai HTML, CSS, dan JavaScript tanpa PHP, dependensi aplikasi, atau proses build.
 
-## Jalankan lokal
+## Jalankan lokal (Full-Stack Node.js + Express.js)
 
-Jalankan dari folder `website`:
+Jalankan server backend + frontend dari folder proyek:
 
 ```powershell
-python -m http.server 4173 --bind 127.0.0.1
+node server.js
 ```
 
-Buka `http://127.0.0.1:4173/`. Gunakan server lokal; membuka HTML melalui `file://` tidak mendukung pemuatan CSV dengan baik.
+Lalu buka di browser:
+- **Website Katalog Publik**: `http://localhost:8080/`
+- **Portal Admin & Keuangan (`owner`, `admin_3d`, `admin_robotika`)**: `http://localhost:8080/admin.html`
+
+> **Catatan**: Jangan lagi menggunakan `python -m http.server 4173` karena fitur Login, Keuangan, dan CRUD Katalog membutuhkan backend API Express.js (`server.js`).
 
 ## Halaman dan fitur
 

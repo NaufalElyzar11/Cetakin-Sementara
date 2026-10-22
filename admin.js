@@ -35,11 +35,22 @@
       headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(options.body);
     }
-    const res = await fetch(url, { ...options, headers });
+    let res;
+    try {
+      res = await fetch(url, { ...options, headers });
+    } catch (_) {
+      throw new Error('Server backend belum menyala. Jalankan "node server.js" lalu buka http://localhost:8080/admin.html');
+    }
     const data = await res.json().catch(() => ({}));
-    if (res.status === 401) {
+    if (res.status === 401 && !url.includes('/api/auth/login')) {
       logout();
       throw new Error(data.error || 'Sesi berakhir, silakan login ulang.');
+    }
+    if (res.status === 404 || res.status === 405 || res.status === 501) {
+      throw new Error(
+        data.error ||
+        'API tidak ditemukan (HTTP ' + res.status + '). Pastikan Anda menjalankan "node server.js" (bukan python http.server / Live Server) dan membuka http://localhost:8080/admin.html'
+      );
     }
     if (!res.ok || data.ok === false) {
       throw new Error(data.error || `Gagal menghubungi server (HTTP ${res.status})`);
@@ -62,7 +73,12 @@
   $('#login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const errEl = $('#login-error');
+    const submitBtn = $('#login-submit-btn');
     errEl.hidden = true;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Memproses Login...';
+    }
     try {
       const username = $('#login-username').value.trim();
       const password = $('#login-password').value;
@@ -73,10 +89,15 @@
       state.token = res.token;
       state.user = res.user;
       localStorage.setItem('cetakin_token', res.token);
-      enterApp();
+      await enterApp();
     } catch (err) {
       errEl.textContent = err.message;
       errEl.hidden = false;
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Masuk ke Portal Cetakin →';
+      }
     }
   });
 
@@ -100,7 +121,7 @@
     try {
       const res = await apiFetch('./api/auth/me');
       state.user = res.user;
-      enterApp();
+      await enterApp();
     } catch (_) {
       logout();
     }
@@ -145,8 +166,12 @@
     }
 
     updateUnitButtons();
-    await Promise.all([loadDashboardData(), loadAdminCatalog()]);
     runAllCalculators();
+    try {
+      await Promise.all([loadDashboardData(), loadAdminCatalog()]);
+    } catch (err) {
+      showToast('Gagal memuat sebagian data: ' + err.message);
+    }
   }
 
   function updateUnitButtons() {
@@ -357,7 +382,8 @@
         <td><strong style="color:${o.profit >= 0 ? '#16a34a' : '#dc2626'};">${money(o.profit)}</strong></td>
         <td><span class="badge ${badgeClass}">${o.status}</span></td>
         <td>
-          <div style="display:flex; gap:6px;">
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-dark btn-sm" data-invoice-order="${o.id}" title="Lihat &amp; Unduh Nota Pembeli (PDF/PNG)">🧾 Nota</button>
             ${o.status !== 'Selesai' ? `<button type="button" class="btn btn-outline btn-sm" data-complete-order="${o.id}" title="Tandai Selesai">✓ Selesai</button>` : ''}
             <button type="button" class="btn btn-danger btn-sm" data-del-order="${o.id}" title="Hapus">🗑</button>
           </div>
@@ -365,6 +391,12 @@
       `;
       tbody.appendChild(tr);
     }
+
+    tbody.querySelectorAll('[data-invoice-order]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        openInvoiceModal(btn.dataset.invoiceOrder);
+      });
+    });
 
     tbody.querySelectorAll('[data-complete-order]').forEach((btn) => {
       btn.addEventListener('click', async () => {
@@ -711,6 +743,29 @@
     $('#cc-res-pack').textContent = money(res.packagingCostUnit);
   }
 
+  function populateRoboPresets() {
+    const picker = $('#cr-preset-picker');
+    if (!picker || !window.CetakinFinance?.ROBOTIKA_PRESETS) return;
+    if (picker.dataset.populated === 'true') return;
+
+    picker.replaceChildren();
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = '-- Mode Kustom / Pilih dari 94 Komponen Ter-Audit --';
+    picker.appendChild(defaultOpt);
+
+    for (let i = 0; i < window.CetakinFinance.ROBOTIKA_PRESETS.length; i++) {
+      const p = window.CetakinFinance.ROBOTIKA_PRESETS[i];
+      const opt = document.createElement('option');
+      opt.value = i;
+      const unitLabel = p.sellUnitQty > 1 ? ` (${p.sellUnitQty} pcs/paket)` : '';
+      const flag = p.statusBiaya === 'BELUM MENUTUP' ? ' ⚠️ [RUGI]' : '';
+      opt.textContent = `[${p.sku}] ${p.name}${unitLabel} — Jual: ${money(p.hargaJualUsulan)} | HPP: ${money(p.hppStok)}${flag}`;
+      picker.appendChild(opt);
+    }
+    picker.dataset.populated = 'true';
+  }
+
   function runRoboCalc() {
     if (!window.CetakinFinance) return;
     const settings = state.dashboard?.settings || window.CetakinFinance.DEFAULT_SETTINGS;
@@ -720,26 +775,128 @@
       shippingAllocationUnit: $('#cr-ship-unit').value,
       packagingUnit: $('#cr-pack-unit').value,
       targetMargin: $('#cr-target-margin').value,
-      sellingPriceUnit: $('#cr-sell-unit').value
+      sellingPriceUnit: $('#cr-sell-unit').value,
+      sku: state.activeRoboPreset?.sku || '',
+      name: $('#cr-name').value
     }, settings);
 
     state.lastRoboCalc = res;
 
-    $('#cr-res-hpp-unit').textContent = money(res.hppUnit);
-    $('#cr-res-suggested').textContent = money(res.suggestedPriceUnit);
-    $('#cr-res-hpp-batch').textContent = money(res.hppBatch);
-    $('#cr-res-profit').textContent = money(res.profitBatch);
+    if ($('#cr-res-hpp-unit')) $('#cr-res-hpp-unit').textContent = money(res.baseHppUnit || res.buyPriceUnit);
+    if ($('#cr-res-full-cost')) $('#cr-res-full-cost').textContent = money(res.fullCostUnit || res.hppUnit);
+    if ($('#cr-res-suggested')) $('#cr-res-suggested').textContent = money(res.suggestedPriceUnit);
+    if ($('#cr-res-hpp-batch')) $('#cr-res-hpp-batch').textContent = money(res.hppBatch);
+    if ($('#cr-res-gross-profit')) $('#cr-res-gross-profit').textContent = money(res.grossProfitBatch);
+    if ($('#cr-res-profit')) $('#cr-res-profit').textContent = money(res.profitBatch);
+
+    const statusEl = $('#cr-res-status');
+    if (statusEl) {
+      if (res.costStatus === 'BELUM MENUTUP') {
+        statusEl.textContent = `⚠️ BELUM MENUTUP (Rugi -${money(Math.abs(res.profitBatch))})`;
+        statusEl.style.color = '#ef4444';
+      } else {
+        statusEl.textContent = `● MENUTUP + SURPLUS (+${money(res.profitBatch)})`;
+        statusEl.style.color = '#4ade80';
+      }
+    }
+
+    const banjar = state.activeRoboPreset?.acuanBanjar || res.competitorBanjar;
+    const adawwino = state.activeRoboPreset?.acuanAdawwino || res.competitorAdawwino;
+    if ($('#cr-res-banjar')) $('#cr-res-banjar').textContent = banjar ? money(banjar) : '-';
+    if ($('#cr-res-adawwino')) $('#cr-res-adawwino').textContent = adawwino ? money(adawwino) : '-';
+
+    const notesEl = $('#cr-res-notes');
+    if (notesEl) {
+      if (res.costStatus === 'BELUM MENUTUP') {
+        notesEl.textContent = '⚠️ Peringatan Audit: Harga jual usulan masih di bawah biaya penuh pengadaan & kemasan. Diusulkan penyesuaian harga.';
+        notesEl.style.color = '#f87171';
+      } else if (state.activeRoboPreset?.catatan) {
+        notesEl.textContent = state.activeRoboPreset.catatan;
+        notesEl.style.color = '#94a3b8';
+      } else {
+        notesEl.textContent = `Margin Bersih: ${(res.actualMargin * 100).toFixed(1)}% setelah pemulihan biaya usaha tetap & kemasan`;
+        notesEl.style.color = '#94a3b8';
+      }
+    }
   }
 
   function runAllCalculators() {
+    populateRoboPresets();
     runJasaPrintCalc();
     runClickerCalc();
     runRoboCalc();
   }
 
+  $$('.jasa-preset-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const p = btn.dataset.preset;
+      if (p === 'dino') {
+        $('#cj-name').value = 'Ganci Dino';
+        $('#cj-units').value = 1;
+        $('#cj-layer').value = '0.20';
+        $('#cj-petg').value = 12;
+        $('#cj-support').value = 0;
+        $('#cj-hours').value = 0.75;
+        $('#cj-active-hours').value = 0.1;
+        $('#cj-packaging').value = 0;
+        $('#cj-other').value = 0;
+        $('#cj-discount').value = 0;
+        $('#cj-sell-unit').value = 12000;
+      } else {
+        $('#cj-name').value = 'Contoh: bracket robot';
+        $('#cj-units').value = 4;
+        $('#cj-layer').value = '0.20';
+        $('#cj-petg').value = 180;
+        $('#cj-support').value = 20;
+        $('#cj-hours').value = 6;
+        $('#cj-active-hours').value = 1.5;
+        $('#cj-packaging').value = '';
+        $('#cj-other').value = 3000;
+        $('#cj-discount').value = 0;
+        $('#cj-sell-unit').value = '';
+      }
+      runJasaPrintCalc();
+    });
+  });
+
+  $('#cc-buttons')?.addEventListener('change', () => {
+    const b = Math.min(7, Math.max(1, Math.floor(Number($('#cc-buttons').value) || 5)));
+    const preset = window.CetakinFinance?.CLICKER_PRESETS?.[b];
+    if (preset) {
+      const units = Math.max(1, Math.floor(Number($('#cc-units').value) || 1));
+      $('#cc-petg').value = preset.petgPerUnitGrams;
+      $('#cc-support').value = preset.supportBatchGrams;
+      $('#cc-print-hours').value = +(preset.printHoursBatch * units).toFixed(2);
+      $('#cc-active-hours').value = +(preset.activeHoursBatch * units).toFixed(2);
+      $('#cc-sell-unit').value = preset.sellingPriceUnit;
+    }
+    runClickerCalc();
+  });
+
   $('#calc-jasa-form')?.addEventListener('input', runJasaPrintCalc);
   $('#calc-clicker-form')?.addEventListener('input', runClickerCalc);
   $('#calc-robo-form')?.addEventListener('input', runRoboCalc);
+
+  $('#cr-preset-picker')?.addEventListener('change', (e) => {
+    const idx = e.target.value;
+    if (idx === '' || !window.CetakinFinance?.ROBOTIKA_PRESETS) {
+      state.activeRoboPreset = null;
+      return;
+    }
+    const p = window.CetakinFinance.ROBOTIKA_PRESETS[Number(idx)];
+    if (!p) return;
+
+    state.activeRoboPreset = p;
+    $('#cr-name').value = p.name;
+    $('#cr-units').value = p.sellUnitQty || 1;
+    $('#cr-buy-unit').value = Math.round(p.hppStok);
+    $('#cr-ship-unit').value = Math.round(p.alokasiBiayaUsaha);
+    $('#cr-pack-unit').value = Math.round(p.kemasan);
+    $('#cr-target-margin').value = 0.20;
+    $('#cr-sell-unit').value = p.hargaJualUsulan;
+
+    runRoboCalc();
+  });
 
   // Tombol 1-Klik Salin Hasil Kalkulator ke Form Pesanan
   $('#cj-save-order-btn')?.addEventListener('click', () => {
@@ -832,14 +989,25 @@
 
         <div class="admin-prod-prices">
           <div>
-            <span>Harga Jual Publik</span>
+            <span>Harga Publik</span>
             <strong>${money(p.price)}</strong>
           </div>
           <div>
-            <span>HPP / Modal Beli</span>
+            <span>HPP Stok</span>
             <strong style="color:#0284c7;">${money(p.cost_price || 0)}</strong>
           </div>
+          ${p.cost_full ? `
+          <div>
+            <span>Biaya Penuh</span>
+            <strong style="color:#a855f7;">${money(p.cost_full)}</strong>
+          </div>
+          ` : ''}
         </div>
+        ${p.cost_status === 'BELUM MENUTUP' || (p.cost_full && p.price < p.cost_full) ? `
+          <div style="font-size:11px; color:#ef4444; font-weight:700; margin-top:4px;">
+            ⚠️ Di bawah Biaya Penuh (Rugi Modal)
+          </div>
+        ` : ''}
 
         <div class="admin-prod-controls">
           <div class="quick-stock-stepper" title="Ubah stok cepat">
@@ -946,6 +1114,7 @@
       $('#pf-origin').value = 'Desain Cetakin';
       $('#pf-price').value = '';
       $('#pf-cost').value = '';
+      if ($('#pf-cost-full')) $('#pf-cost-full').value = '';
       $('#pf-stock').value = 5;
       $('#pf-weight').value = '';
       $('#pf-material').value = defaultType === 'gantungan-kunci' ? 'PETG' : '';
@@ -967,6 +1136,7 @@
       $('#pf-origin').value = prod.origin || '';
       $('#pf-price').value = prod.price;
       $('#pf-cost').value = prod.cost_price || 0;
+      if ($('#pf-cost-full')) $('#pf-cost-full').value = prod.cost_full || '';
       $('#pf-stock').value = prod.stock;
       $('#pf-weight').value = prod.weight_grams || '';
       $('#pf-material').value = prod.material || '';
@@ -1018,6 +1188,7 @@
       origin: $('#pf-origin').value.trim(),
       price: Number($('#pf-price').value) || 0,
       cost_price: Number($('#pf-cost').value) || 0,
+      cost_full: Number($('#pf-cost-full')?.value) || 0,
       stock: Number($('#pf-stock').value) || 0,
       weight_grams: $('#pf-weight').value.trim(),
       material: $('#pf-material').value.trim(),
@@ -1101,6 +1272,998 @@
     } catch (err) {
       showToast(err.message);
     }
+  });
+
+  // =========================================================
+  // 8. GENERATOR NOTA PEMBELI (LIVE PREVIEW, PDF & PNG HD)
+  // =========================================================
+  const INDO_MONTHS = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
+
+  function formatIndoDate(dateStr) {
+    if (!dateStr) return '-';
+    const parts = String(dateStr).slice(0, 10).split('-');
+    if (parts.length !== 3) return dateStr;
+    const y = parts[0];
+    const m = parseInt(parts[1], 10);
+    const d = parseInt(parts[2], 10);
+    if (!m || !d) return dateStr;
+    return `${d} ${INDO_MONTHS[m - 1] || parts[1]} ${y}`;
+  }
+
+  function terbilangKata(n) {
+    const num = Math.floor(Math.abs(Number(n) || 0));
+    const angka = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
+    if (num < 12) return angka[num];
+    if (num < 20) return `${terbilangKata(num - 10)} Belas`;
+    if (num < 100) return `${terbilangKata(Math.floor(num / 10))} Puluh ${terbilangKata(num % 10)}`.trim();
+    if (num < 200) return `Seratus ${terbilangKata(num - 100)}`.trim();
+    if (num < 1000) return `${terbilangKata(Math.floor(num / 100))} Ratus ${terbilangKata(num % 100)}`.trim();
+    if (num < 2000) return `Seribu ${terbilangKata(num - 1000)}`.trim();
+    if (num < 1000000) return `${terbilangKata(Math.floor(num / 1000))} Ribu ${terbilangKata(num % 1000)}`.trim();
+    if (num < 1000000000) return `${terbilangKata(Math.floor(num / 1000000))} Juta ${terbilangKata(num % 1000000)}`.trim();
+    return `${terbilangKata(Math.floor(num / 1000000000))} Miliar ${terbilangKata(num % 1000000000)}`.trim();
+  }
+
+  function terbilangRupiah(n) {
+    const val = Math.max(0, Math.round(Number(n) || 0));
+    if (val === 0) return 'Nol Rupiah';
+    return `${terbilangKata(val).replace(/\s+/g, ' ').trim()} Rupiah`;
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  let cachedLogoImg = null;
+  function loadLogoImage() {
+    if (cachedLogoImg) return Promise.resolve(cachedLogoImg);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        cachedLogoImg = img;
+        resolve(img);
+      };
+      img.onerror = () => resolve(null);
+      img.src = './assets/logo.png';
+    });
+  }
+
+  function findOrderById(orderId) {
+    const units = state.dashboard?.units || {};
+    for (const uKey of Object.keys(units)) {
+      const found = (units[uKey]?.orders || []).find((o) => o.id === orderId);
+      if (found) return { order: found, unitData: units[uKey] };
+    }
+    return null;
+  }
+
+  function openInvoiceModal(orderId) {
+    const match = findOrderById(orderId);
+    if (!match) {
+      showToast('Data pesanan tidak ditemukan.');
+      return;
+    }
+    const { order, unitData } = match;
+    state.activeInvoiceOrder = order;
+
+    // Deteksi metode pembayaran dari mutasi terkait
+    const relatedMut = (unitData.mutations || []).find(
+      (m) => m.orderId === order.id && m.type === 'Pembayaran pelanggan'
+    );
+    let defaultMethod = 'QRIS Cetakin';
+    if (relatedMut) {
+      if (relatedMut.toAccount === 'Bank usaha') defaultMethod = 'Transfer Bank';
+      else if (relatedMut.toAccount === 'Kas tunai') defaultMethod = 'Tunai (Cash)';
+      else defaultMethod = 'QRIS Cetakin';
+    }
+
+    // Jika status pesanan sudah Selesai namun mutasi belum dicatat terpisah, default tampil Lunas agar nota pembeli rapi
+    const defaultPaid = order.netPaid > 0
+      ? order.netPaid
+      : (order.status === 'Selesai' ? order.netBill : 0);
+
+    const isRobo = order.unit === 'robotika';
+    const prodMatch = (state.catalog || []).find(
+      (p) => p.id === order.productId || p.name.toLowerCase() === order.productName.toLowerCase()
+    );
+
+    const defaultSpec = isRobo
+      ? (prodMatch?.category ? `Kategori: ${prodMatch.category} · Kode: ${prodMatch.sku || prodMatch.id} · Lolos QC` : 'Komponen Elektronika & Robotika · Tested & QC Passed')
+      : (prodMatch?.material ? `Material Cetak: ${prodMatch.material} · Presisi Tinggi` : 'Cetak 3D Presisi · Material PETG/PLA Berkualitas');
+
+    const defaultNote = isRobo
+      ? 'Terima kasih telah berbelanja komponen di Cetakin! Barang telah melalui pengecekan fisik. Panduan rangkaian pinout & contoh kode program tersedia gratis di website Cetakin (menu Panduan).'
+      : 'Terima kasih telah mempercayakan pembuatan produk kustom & 3D print di Cetakin Studio! Simpan produk di tempat teduh dan hindari suhu ekstrem (>70°C) agar presisi tetap terjaga.';
+
+    $('#inv-customer').value = order.customer || 'Pelanggan';
+    $('#inv-pay-method').value = defaultMethod;
+    $('#inv-paid-amount').value = defaultPaid;
+    $('#inv-discount').value = 0;
+    $('#inv-shipping').value = 0;
+    $('#inv-spec').value = defaultSpec;
+    $('#inv-note').value = defaultNote;
+
+    $('#invoice-edit-panel').hidden = true;
+    $('#invoice-modal').hidden = false;
+    renderInvoicePreview();
+  }
+
+  function getInvoiceViewModel() {
+    const order = state.activeInvoiceOrder;
+    if (!order) return null;
+
+    const isRobo = order.unit === 'robotika';
+    const customer = ($('#inv-customer')?.value || order.customer || 'Pelanggan').trim();
+    const payMethod = $('#inv-pay-method')?.value || 'QRIS Cetakin';
+    const discount = Math.max(0, Math.round(Number($('#inv-discount')?.value) || 0));
+    const shipping = Math.max(0, Math.round(Number($('#inv-shipping')?.value) || 0));
+    const paidAmount = Math.max(0, Math.round(Number($('#inv-paid-amount')?.value) || 0));
+    const spec = ($('#inv-spec')?.value || '').trim();
+    const buyerNote = ($('#inv-note')?.value || '').trim();
+
+    const qty = Math.max(1, Number(order.quantity) || 1);
+    const netBillBase = Math.max(0, Number(order.netBill) || 0);
+    // Subtotal produk sebelum diskon (agar jika admin isi diskon Rp 5.000, harga barang terlihat Rp X+5.000 lalu dipotong Rp 5.000)
+    const itemSubtotal = netBillBase + discount;
+    const unitPrice = Math.round(itemSubtotal / qty);
+    const grandTotal = Math.max(0, netBillBase + shipping);
+    const remaining = Math.max(0, grandTotal - paidAmount);
+
+    let payStatus = 'LUNAS';
+    let payBadgeClass = 'paid';
+    let payStampText = '✓ LUNAS (PAID)';
+    if (order.status === 'Batal') {
+      payStatus = 'BATAL';
+      payBadgeClass = 'unpaid';
+      payStampText = '✖ PESANAN DIBATALKAN';
+    } else if (paidAmount >= grandTotal && grandTotal > 0) {
+      payStatus = 'LUNAS';
+      payBadgeClass = 'paid';
+      payStampText = '✓ LUNAS (PAID)';
+    } else if (paidAmount > 0 && paidAmount < grandTotal) {
+      payStatus = 'DP / SEBAGIAN';
+      payBadgeClass = 'partial';
+      payStampText = '⏳ DP / BELUM LUNAS';
+    } else {
+      payStatus = 'BELUM DIBAYAR';
+      payBadgeClass = 'unpaid';
+      payStampText = '❗ BELUM DIBAYAR';
+    }
+
+    const invoiceNo = `INV/${(order.date || '2026-10').slice(0, 7).replace('-', '/')}/${order.id}`;
+
+    return {
+      order,
+      isRobo,
+      unit: order.unit,
+      invoiceNo,
+      orderDateFormatted: formatIndoDate(order.date),
+      completedDateFormatted: order.completedDate ? formatIndoDate(order.completedDate) : (order.status === 'Selesai' ? formatIndoDate(order.date) : 'Sedang Diproses'),
+      customer,
+      productName: order.productName,
+      spec,
+      qty,
+      unitPrice,
+      itemSubtotal,
+      discount,
+      shipping,
+      grandTotal,
+      paidAmount,
+      remaining,
+      payMethod,
+      payStatus,
+      payBadgeClass,
+      payStampText,
+      terbilang: `# ${terbilangRupiah(grandTotal)} #`,
+      buyerNote
+    };
+  }
+
+  function renderInvoicePreview() {
+    const vm = getInvoiceViewModel();
+    const paper = $('#invoice-paper');
+    if (!vm || !paper) return;
+
+    paper.dataset.unit = vm.unit;
+    const divisionLabel = vm.isRobo
+      ? '🤖 DIVISI KOMPONEN ELEKTRONIKA & ROBOTIKA'
+      : '🖨️ DIVISI CETAK 3D & MERCHANDISE KUSTOM';
+    const serviceCategoryName = vm.isRobo
+      ? 'Penjualan Komponen Robotika & Sensor'
+      : 'Jasa 3D Printing & Gantungan Kunci Kustom';
+
+    paper.innerHTML = `
+      <div class="inv-top-ribbon"></div>
+      <div class="inv-body">
+        <div class="inv-header">
+          <div class="inv-brand-col">
+            <div class="inv-brand-row">
+              <img class="inv-logo" src="./assets/logo.png" alt="Cetakin" />
+              <span class="inv-unit-pill">${divisionLabel}</span>
+            </div>
+            <p class="inv-studio-name">Studio Cetakin Banjarbaru</p>
+            <p class="inv-studio-addr">
+              Jl. Dahlina Raya III, Guntung Paikat, Kec. Banjarbaru Selatan<br />
+              Kota Banjarbaru, Kalimantan Selatan 70714 · WA: 0858-2280-1431
+            </p>
+          </div>
+
+          <div class="inv-doc-col">
+            <h2 class="inv-doc-title">NOTA PEMBELIAN</h2>
+            <div class="inv-doc-sub">OFFICIAL INVOICE &amp; RECEIPT</div>
+            <div class="inv-doc-number">${escapeHtml(vm.invoiceNo)}</div>
+            <div>
+              <span class="inv-status-stamp ${vm.payBadgeClass}">${escapeHtml(vm.payStampText)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inv-meta-grid">
+          <div class="inv-meta-card">
+            <div class="inv-meta-label">Diterbitkan Untuk Pembeli</div>
+            <h4 class="inv-customer-name">${escapeHtml(vm.customer)}</h4>
+            <div class="inv-meta-rows">
+              <div class="inv-meta-row">
+                <span>Layanan Divisi</span>
+                <strong>${escapeHtml(serviceCategoryName)}</strong>
+              </div>
+              <div class="inv-meta-row">
+                <span>Status Pesanan</span>
+                <strong>${escapeHtml(vm.order.status === 'Selesai' ? '✓ Selesai & Siap Diserahkan' : vm.order.status)}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="inv-meta-card">
+            <div class="inv-meta-label">Rincian Transaksi</div>
+            <div class="inv-meta-rows" style="margin-top:4px;">
+              <div class="inv-meta-row">
+                <span>ID Pesanan</span>
+                <strong>#${escapeHtml(vm.order.id)}</strong>
+              </div>
+              <div class="inv-meta-row">
+                <span>Tanggal Pesanan</span>
+                <strong>${escapeHtml(vm.orderDateFormatted)}</strong>
+              </div>
+              <div class="inv-meta-row">
+                <span>Tanggal Selesai</span>
+                <strong>${escapeHtml(vm.completedDateFormatted)}</strong>
+              </div>
+              <div class="inv-meta-row">
+                <span>Metode Pembayaran</span>
+                <strong>${escapeHtml(vm.payMethod)}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <table class="inv-items-table">
+          <thead>
+            <tr>
+              <th style="width:46px; text-align:center;">No</th>
+              <th>Deskripsi Produk / Layanan</th>
+              <th style="width:90px; text-align:center;">Jumlah</th>
+              <th style="width:140px; text-align:right;">Harga Satuan</th>
+              <th style="width:150px; text-align:right;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align:center; font-weight:700; color:#64748b;">1</td>
+              <td>
+                <div class="inv-item-title">${escapeHtml(vm.productName)}</div>
+                ${vm.spec ? `<div class="inv-item-spec">${escapeHtml(vm.spec)}</div>` : ''}
+              </td>
+              <td style="text-align:center; font-weight:700;">${vm.qty} pcs</td>
+              <td style="text-align:right;">${money(vm.unitPrice)}</td>
+              <td style="text-align:right; font-weight:800; color:#0f172a;">${money(vm.itemSubtotal)}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="inv-bottom-grid">
+          <div>
+            <div class="inv-terbilang-box">
+              <span>Terbilang Dalam Rupiah</span>
+              <strong>${escapeHtml(vm.terbilang)}</strong>
+            </div>
+            <div class="inv-notes-box">
+              <strong>📌 Catatan &amp; Informasi Pembeli</strong>
+              <div>${escapeHtml(vm.buyerNote)}</div>
+            </div>
+          </div>
+
+          <div class="inv-summary-box">
+            <div class="inv-sum-row">
+              <span>Subtotal Pesanan</span>
+              <strong>${money(vm.itemSubtotal)}</strong>
+            </div>
+            ${vm.discount > 0 ? `
+              <div class="inv-sum-row" style="color:#16a34a;">
+                <span>Potongan / Diskon</span>
+                <strong>- ${money(vm.discount)}</strong>
+              </div>
+            ` : ''}
+            ${vm.shipping > 0 ? `
+              <div class="inv-sum-row">
+                <span>Biaya Pengiriman / Tambahan</span>
+                <strong>+ ${money(vm.shipping)}</strong>
+              </div>
+            ` : ''}
+            <div class="inv-sum-row total">
+              <span>TOTAL TAGIHAN</span>
+              <strong>${money(vm.grandTotal)}</strong>
+            </div>
+            <div class="inv-sum-row" style="margin-top:6px;">
+              <span>Telah Dibayar (${escapeHtml(vm.payMethod)})</span>
+              <strong style="color:#15803d;">${money(vm.paidAmount)}</strong>
+            </div>
+            <div class="inv-sum-row" style="border-top:1px dashed #cbd5e1; margin-top:4px; padding-top:8px;">
+              <span style="font-weight:700; color:#0f172a;">Sisa Tagihan</span>
+              <strong style="color:${vm.remaining > 0 ? '#dc2626' : '#15803d'}; font-size:14px;">
+                ${vm.remaining > 0 ? money(vm.remaining) : 'Rp 0 (LUNAS)'}
+              </strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="inv-footer">
+          <div class="inv-footer-left">
+            <strong style="color:#0f172a;">Terima kasih atas kepercayaan Anda berbelanja di Cetakin!</strong><br />
+            Simpan nota ini sebagai bukti transaksi resmi. Untuk konsultasi cetak 3D lanjutan atau bantuan teknis komponen,<br />
+            hubungi WhatsApp kami di <strong>0858-2280-1431</strong>.
+          </div>
+          <div class="inv-footer-sign">
+            <div style="font-size:11px; color:#64748b;">Banjarbaru, ${escapeHtml(vm.completedDateFormatted !== 'Sedang Diproses' ? vm.completedDateFormatted : vm.orderDateFormatted)}</div>
+            <div class="inv-stamp-badge">CETAKIN STUDIO · VERIFIED</div>
+            <div style="font-size:12px; font-weight:800; color:#0f172a;">Tim Admin Cetakin</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Helper Canvas: Menggambar kotak bersudut membulat
+  function drawRoundRect(ctx, x, y, w, h, r) {
+    const radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + w, y, x + w, y + h, radius);
+    ctx.arcTo(x + w, y + h, x, y + h, radius);
+    ctx.arcTo(x, y + h, x, y, radius);
+    ctx.arcTo(x, y, x + w, y, radius);
+    ctx.closePath();
+  }
+
+  // Helper Canvas: Membungkus teks multiline
+  function wrapCanvasText(ctx, text, maxWidth) {
+    const words = String(text || '').split(/\s+/);
+    const lines = [];
+    let current = '';
+    for (const word of words) {
+      const test = current ? `${current} ${word}` : word;
+      if (ctx.measureText(test).width > maxWidth && current) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = test;
+      }
+    }
+    if (current) lines.push(current);
+    return lines.length ? lines : [''];
+  }
+
+  // Merender Nota ke Canvas HD (1600px lebar) untuk ekspor PDF & PNG tajam
+  async function renderInvoiceToCanvas(vm) {
+    const logoImg = await loadLogoImage();
+    const W = 1600;
+    const H = 1920;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const accentMain = vm.isRobo ? '#0284c7' : '#ea580c';
+    const accentDark = vm.isRobo ? '#0c4a6e' : '#0f172a';
+    const accentSoftBg = vm.isRobo ? '#f0f9ff' : '#fff7ed';
+    const accentSoftBorder = vm.isRobo ? '#bae6fd' : '#fed7aa';
+    const accentText = vm.isRobo ? '#0369a1' : '#c2410c';
+
+    // 1. Background Putih Bersih
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, W, H);
+
+    // 2. Top Ribbon Gradient
+    const grad = ctx.createLinearGradient(0, 0, W, 0);
+    if (vm.isRobo) {
+      grad.addColorStop(0, '#0284c7');
+      grad.addColorStop(0.55, '#2563eb');
+      grad.addColorStop(1, '#0ea5e9');
+    } else {
+      grad.addColorStop(0, '#ff6b2b');
+      grad.addColorStop(0.55, '#ea580c');
+      grad.addColorStop(1, '#f59e0b');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, 18);
+
+    const padX = 80;
+    let curY = 74;
+
+    // 3. Header Kiri: Logo + Pill Divisi + Alamat
+    let pillX = padX;
+    if (logoImg && logoImg.naturalWidth > 0) {
+      const logoH = 76;
+      const logoW = (logoImg.naturalWidth / logoImg.naturalHeight) * logoH;
+      ctx.drawImage(logoImg, padX, curY - 6, logoW, logoH);
+      pillX = padX + logoW + 24;
+    } else {
+      ctx.font = '800 44px Outfit, sans-serif';
+      ctx.fillStyle = '#0f172a';
+      ctx.fillText('CETAKIN.', padX, curY + 46);
+      pillX = padX + 230;
+    }
+
+    // Division Pill
+    const divText = vm.isRobo
+      ? 'DIVISI KOMPONEN ELEKTRONIKA & ROBOTIKA'
+      : 'DIVISI CETAK 3D & MERCHANDISE KUSTOM';
+    ctx.font = '800 18px Outfit, sans-serif';
+    const pillW = ctx.measureText(divText).width + 36;
+    drawRoundRect(ctx, pillX, curY + 12, pillW, 42, 21);
+    ctx.fillStyle = accentSoftBg;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = accentSoftBorder;
+    ctx.stroke();
+    ctx.fillStyle = accentText;
+    ctx.fillText(divText, pillX + 18, curY + 39);
+
+    // Studio Address
+    ctx.font = '800 28px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('Studio Cetakin Banjarbaru', padX, curY + 114);
+
+    ctx.font = '500 22px "DM Sans", sans-serif';
+    ctx.fillStyle = '#475569';
+    ctx.fillText('Jl. Dahlina Raya III, Guntung Paikat, Kec. Banjarbaru Selatan', padX, curY + 148);
+    ctx.fillText('Kota Banjarbaru, Kalimantan Selatan 70714 · WA: 0858-2280-1431', padX, curY + 180);
+
+    // 4. Header Kanan: NOTA PEMBELIAN + No Nota + Status Stamp
+    ctx.textAlign = 'right';
+    ctx.font = '800 48px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('NOTA PEMBELIAN', W - padX, curY + 42);
+
+    ctx.font = '700 19px Outfit, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('OFFICIAL INVOICE & RECEIPT', W - padX, curY + 74);
+
+    // Nomor Nota Box
+    ctx.font = '700 25px Outfit, monospace';
+    const invNoW = ctx.measureText(vm.invoiceNo).width + 44;
+    drawRoundRect(ctx, W - padX - invNoW, curY + 92, invNoW, 48, 12);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.stroke();
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(vm.invoiceNo, W - padX - 22, curY + 125);
+
+    // Status Stamp Badge
+    ctx.font = '800 22px Outfit, sans-serif';
+    const stampW = ctx.measureText(vm.payStampText).width + 48;
+    drawRoundRect(ctx, W - padX - stampW, curY + 154, stampW, 46, 23);
+    if (vm.payBadgeClass === 'paid') {
+      ctx.fillStyle = '#dcfce7';
+      ctx.strokeStyle = '#86efac';
+    } else if (vm.payBadgeClass === 'partial') {
+      ctx.fillStyle = '#fef3c7';
+      ctx.strokeStyle = '#fcd34d';
+    } else {
+      ctx.fillStyle = '#fee2e2';
+      ctx.strokeStyle = '#fca5a5';
+    }
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.fillStyle = vm.payBadgeClass === 'paid' ? '#15803d' : vm.payBadgeClass === 'partial' ? '#b45309' : '#b91c1c';
+    ctx.fillText(vm.payStampText, W - padX - 24, curY + 185);
+    ctx.textAlign = 'left';
+
+    // Divider Line
+    curY += 235;
+    ctx.beginPath();
+    ctx.moveTo(padX, curY);
+    ctx.lineTo(W - padX, curY);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#f1f5f9';
+    ctx.stroke();
+
+    // 5. Dua Kartu Informasi Pembeli & Rincian Transaksi
+    curY += 36;
+    const cardGap = 32;
+    const cardW = (W - padX * 2 - cardGap) / 2;
+    const cardH = 230;
+
+    // Card Kiri: Pembeli
+    drawRoundRect(ctx, padX, curY, cardW, cardH, 22);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.stroke();
+
+    ctx.font = '800 19px Outfit, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('DITERBITKAN UNTUK PEMBELI', padX + 32, curY + 42);
+
+    ctx.font = '800 35px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(vm.customer, padX + 32, curY + 92);
+
+    const serviceCat = vm.isRobo ? 'Komponen Robotika & Sensor' : 'Jasa Cetak 3D & Merchandise';
+    ctx.font = '500 22px "DM Sans", sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('Layanan Divisi', padX + 32, curY + 144);
+    ctx.fillText('Status Pesanan', padX + 32, curY + 188);
+
+    ctx.textAlign = 'right';
+    ctx.font = '700 22px "DM Sans", sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(serviceCat, padX + cardW - 32, curY + 144);
+    ctx.fillStyle = vm.order.status === 'Selesai' ? '#15803d' : '#d97706';
+    ctx.fillText(vm.order.status === 'Selesai' ? '✓ Selesai & Siap Diserahkan' : vm.order.status, padX + cardW - 32, curY + 188);
+    ctx.textAlign = 'left';
+
+    // Card Kanan: Rincian Transaksi
+    const rightCardX = padX + cardW + cardGap;
+    drawRoundRect(ctx, rightCardX, curY, cardW, cardH, 22);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.stroke();
+
+    ctx.font = '800 19px Outfit, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('RINCIAN TRANSAKSI', rightCardX + 32, curY + 42);
+
+    const metaRows = [
+      ['ID Pesanan', `#${vm.order.id}`],
+      ['Tanggal Pesanan', vm.orderDateFormatted],
+      ['Tanggal Selesai', vm.completedDateFormatted],
+      ['Metode Pembayaran', vm.payMethod]
+    ];
+    let metaY = curY + 84;
+    for (const [label, val] of metaRows) {
+      ctx.font = '500 21px "DM Sans", sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.fillText(label, rightCardX + 32, metaY);
+
+      ctx.textAlign = 'right';
+      ctx.font = '700 21px "DM Sans", sans-serif';
+      ctx.fillStyle = '#0f172a';
+      ctx.fillText(val, rightCardX + cardW - 32, metaY);
+      ctx.textAlign = 'left';
+      metaY += 36;
+    }
+
+    // 6. Tabel Daftar Item Pesanan
+    curY += cardH + 40;
+    const tableW = W - padX * 2;
+    const thH = 66;
+
+    ctx.font = '500 22px "DM Sans", sans-serif';
+    const specLines = vm.spec ? wrapCanvasText(ctx, vm.spec, 680) : [];
+    const rowH = Math.max(125, 84 + specLines.length * 30);
+
+    // Table Outer Box
+    drawRoundRect(ctx, padX, curY, tableW, thH + rowH, 22);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.stroke();
+
+    // Table Header
+    ctx.save();
+    drawRoundRect(ctx, padX, curY, tableW, thH + 20, 22);
+    ctx.clip();
+    ctx.fillStyle = accentDark;
+    ctx.fillRect(padX, curY, tableW, thH);
+    ctx.restore();
+
+    ctx.font = '700 20px Outfit, sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('NO', padX + 32, curY + 41);
+    ctx.fillText('DESKRIPSI PRODUK / LAYANAN', padX + 110, curY + 41);
+    ctx.textAlign = 'center';
+    ctx.fillText('JUMLAH', padX + 910, curY + 41);
+    ctx.textAlign = 'right';
+    ctx.fillText('HARGA SATUAN', padX + 1160, curY + 41);
+    ctx.fillText('SUBTOTAL', W - padX - 36, curY + 41);
+    ctx.textAlign = 'left';
+
+    // Table Row Content
+    const itemY = curY + thH + 48;
+    ctx.font = '700 24px "DM Sans", sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('1', padX + 38, itemY);
+
+    ctx.font = '800 28px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    const titleLines = wrapCanvasText(ctx, vm.productName, 700);
+    let textY = itemY;
+    for (const tl of titleLines) {
+      ctx.fillText(tl, padX + 110, textY);
+      textY += 34;
+    }
+
+    ctx.font = '500 21px "DM Sans", sans-serif';
+    ctx.fillStyle = '#64748b';
+    for (const sl of specLines) {
+      ctx.fillText(sl, padX + 110, textY);
+      textY += 29;
+    }
+
+    ctx.textAlign = 'center';
+    ctx.font = '700 25px "DM Sans", sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(`${vm.qty} pcs`, padX + 910, itemY);
+
+    ctx.textAlign = 'right';
+    ctx.font = '600 25px "DM Sans", sans-serif';
+    ctx.fillStyle = '#334155';
+    ctx.fillText(money(vm.unitPrice), padX + 1160, itemY);
+
+    ctx.font = '800 27px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText(money(vm.itemSubtotal), W - padX - 36, itemY);
+    ctx.textAlign = 'left';
+
+    // 7. Bagian Bawah: Kiri (Terbilang & Catatan) | Kanan (Ringkasan Tagihan)
+    curY += thH + rowH + 42;
+    const leftColW = 790;
+    const rightColW = tableW - leftColW - 44;
+    const rightColX = padX + leftColW + 44;
+
+    // Terbilang Box
+    ctx.font = '700 23px "DM Sans", sans-serif';
+    const terbLines = wrapCanvasText(ctx, vm.terbilang, leftColW - 60);
+    const terbBoxH = 66 + terbLines.length * 32;
+
+    drawRoundRect(ctx, padX, curY, leftColW, terbBoxH, 16);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+    ctx.fillStyle = accentMain;
+    ctx.fillRect(padX, curY, 10, terbBoxH);
+
+    ctx.font = '800 18px Outfit, sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('TERBILANG DALAM RUPIAH', padX + 32, curY + 36);
+
+    ctx.font = 'italic 700 23px "DM Sans", sans-serif';
+    ctx.fillStyle = '#0f172a';
+    let ty = curY + 70;
+    for (const line of terbLines) {
+      ctx.fillText(line, padX + 32, ty);
+      ty += 31;
+    }
+
+    // Notes Box
+    const noteBoxY = curY + terbBoxH + 26;
+    ctx.font = '500 21px "DM Sans", sans-serif';
+    const noteLines = wrapCanvasText(ctx, vm.buyerNote, leftColW - 64);
+    const noteBoxH = 74 + noteLines.length * 31;
+
+    drawRoundRect(ctx, padX, noteBoxY, leftColW, noteBoxH, 18);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.setLineDash([8, 6]);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.font = '800 20px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('CATATAN & GARANSI LAYANAN CETAKIN', padX + 28, noteBoxY + 38);
+
+    ctx.font = '500 21px "DM Sans", sans-serif';
+    ctx.fillStyle = '#475569';
+    let ny = noteBoxY + 74;
+    for (const nl of noteLines) {
+      ctx.fillText(nl, padX + 28, ny);
+      ny += 30;
+    }
+
+    // Summary Box (Kanan)
+    const sumBoxH = 340 + (vm.discount > 0 ? 42 : 0) + (vm.shipping > 0 ? 42 : 0);
+    drawRoundRect(ctx, rightColX, curY, rightColW, sumBoxH, 22);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.stroke();
+
+    let sy = curY + 48;
+    const drawSumLine = (label, val, valColor = '#0f172a', isBold = false) => {
+      ctx.font = `${isBold ? '700' : '500'} 23px "DM Sans", sans-serif`;
+      ctx.fillStyle = '#475569';
+      ctx.fillText(label, rightColX + 32, sy);
+
+      ctx.textAlign = 'right';
+      ctx.font = `700 24px "DM Sans", sans-serif`;
+      ctx.fillStyle = valColor;
+      ctx.fillText(val, rightColX + rightColW - 32, sy);
+      ctx.textAlign = 'left';
+      sy += 44;
+    };
+
+    drawSumLine('Subtotal Pesanan', money(vm.itemSubtotal));
+    if (vm.discount > 0) {
+      drawSumLine('Potongan / Diskon', `- ${money(vm.discount)}`, '#16a34a');
+    }
+    if (vm.shipping > 0) {
+      drawSumLine('Biaya Pengiriman', `+ ${money(vm.shipping)}`);
+    }
+
+    // Highlighted Total Bar
+    drawRoundRect(ctx, rightColX + 22, sy - 16, rightColW - 44, 72, 16);
+    ctx.fillStyle = accentDark;
+    ctx.fill();
+
+    ctx.font = '800 24px Outfit, sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('TOTAL TAGIHAN', rightColX + 46, sy + 29);
+
+    ctx.textAlign = 'right';
+    ctx.font = '800 32px Outfit, sans-serif';
+    ctx.fillStyle = vm.isRobo ? '#38bdf8' : '#fdba74';
+    ctx.fillText(money(vm.grandTotal), rightColX + rightColW - 46, sy + 31);
+    ctx.textAlign = 'left';
+
+    sy += 96;
+    drawSumLine(`Telah Dibayar (${vm.payMethod})`, money(vm.paidAmount), '#15803d');
+
+    // Sisa Tagihan
+    ctx.beginPath();
+    ctx.setLineDash([6, 5]);
+    ctx.moveTo(rightColX + 32, sy - 22);
+    ctx.lineTo(rightColX + rightColW - 32, sy - 22);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.font = '800 24px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('Sisa Tagihan', rightColX + 32, sy + 16);
+
+    ctx.textAlign = 'right';
+    ctx.font = '800 26px Outfit, sans-serif';
+    ctx.fillStyle = vm.remaining > 0 ? '#dc2626' : '#15803d';
+    ctx.fillText(vm.remaining > 0 ? money(vm.remaining) : 'Rp 0 (LUNAS)', rightColX + rightColW - 32, sy + 16);
+    ctx.textAlign = 'left';
+
+    // 8. Footer & Stempel Digital Resmi
+    const footerY = H - 205;
+    ctx.beginPath();
+    ctx.moveTo(padX, footerY);
+    ctx.lineTo(W - padX, footerY);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.stroke();
+
+    ctx.font = '700 22px "DM Sans", sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('Terima kasih atas kepercayaan Anda berbelanja di Cetakin Studio!', padX, footerY + 48);
+
+    ctx.font = '500 20px "DM Sans", sans-serif';
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('Simpan nota ini sebagai bukti transaksi resmi. Untuk konsultasi cetak 3D atau bantuan komponen,', padX, footerY + 82);
+    ctx.fillText('hubungi WhatsApp kami di 0858-2280-1431 · Jl. Dahlina Raya III, Banjarbaru Selatan.', padX, footerY + 112);
+
+    // Signature & Rotated Official Stamp
+    const signCenterX = W - padX - 180;
+    ctx.textAlign = 'center';
+    ctx.font = '500 20px "DM Sans", sans-serif';
+    ctx.fillStyle = '#64748b';
+    const signDate = vm.completedDateFormatted !== 'Sedang Diproses' ? vm.completedDateFormatted : vm.orderDateFormatted;
+    ctx.fillText(`Banjarbaru, ${signDate}`, signCenterX, footerY + 42);
+
+    ctx.save();
+    ctx.translate(signCenterX, footerY + 86);
+    ctx.rotate(-0.05);
+    drawRoundRect(ctx, -165, -24, 330, 48, 10);
+    ctx.fillStyle = accentSoftBg;
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = accentMain;
+    ctx.stroke();
+    ctx.font = '800 20px Outfit, sans-serif';
+    ctx.fillStyle = accentText;
+    ctx.fillText('CETAKIN STUDIO · VERIFIED', 0, 8);
+    ctx.restore();
+
+    ctx.font = '800 23px Outfit, sans-serif';
+    ctx.fillStyle = '#0f172a';
+    ctx.fillText('Tim Admin Cetakin', signCenterX, footerY + 142);
+    ctx.textAlign = 'left';
+
+    return canvas;
+  }
+
+  // Konversi Canvas ke File PDF 1.4 Murni (Tanpa Library Eksternal)
+  function canvasToPdfBlob(canvas) {
+    const jpegUrl = canvas.toDataURL('image/jpeg', 0.95);
+    const base64 = jpegUrl.split(',')[1];
+    const binStr = atob(base64);
+    const jpegBytes = new Uint8Array(binStr.length);
+    for (let i = 0; i < binStr.length; i++) {
+      jpegBytes[i] = binStr.charCodeAt(i);
+    }
+
+    const imgW = canvas.width;
+    const imgH = canvas.height;
+    // Ukuran halaman A4 Portrait (595.28 pt lebar, tinggi menyesuaikan rasio gambar)
+    const pdfW = 595.28;
+    const pdfH = Number(((imgH / imgW) * pdfW).toFixed(2));
+
+    const enc = new TextEncoder();
+    const chunks = [];
+    const offsets = [0];
+    let byteLen = 0;
+
+    const pushStr = (s) => {
+      const b = enc.encode(s);
+      chunks.push(b);
+      byteLen += b.length;
+    };
+    const pushBytes = (b) => {
+      chunks.push(b);
+      byteLen += b.length;
+    };
+
+    pushStr('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
+
+    // Obj 1: Catalog
+    offsets.push(byteLen);
+    pushStr('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+
+    // Obj 2: Pages
+    offsets.push(byteLen);
+    pushStr('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+
+    // Obj 3: Page
+    offsets.push(byteLen);
+    pushStr(
+      `3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /XObject << /Im0 4 0 R >> >> /MediaBox [0 0 ${pdfW} ${pdfH}] /Contents 5 0 R >>\nendobj\n`
+    );
+
+    // Obj 4: Image XObject (DCTDecode)
+    offsets.push(byteLen);
+    pushStr(
+      `4 0 obj\n<< /Type /XObject /Subtype /Image /Width ${imgW} /Height ${imgH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`
+    );
+    pushBytes(jpegBytes);
+    pushStr('\nendstream\nendobj\n');
+
+    // Obj 5: Page Content Stream
+    const streamCmd = `q\n${pdfW} 0 0 ${pdfH} 0 0 cm\n/Im0 Do\nQ\n`;
+    offsets.push(byteLen);
+    pushStr(`5 0 obj\n<< /Length ${streamCmd.length} >>\nstream\n${streamCmd}endstream\nendobj\n`);
+
+    // Xref Table
+    const xrefPos = byteLen;
+    pushStr('xref\n0 6\n0000000000 65535 f \n');
+    for (let i = 1; i <= 5; i++) {
+      pushStr(`${String(offsets[i]).padStart(10, '0')} 00000 n \n`);
+    }
+    pushStr(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF\n`);
+
+    return new Blob(chunks, { type: 'application/pdf' });
+  }
+
+  function makeSafeFileName(vm, ext) {
+    const cleanId = String(vm.order.id || 'ORD').replace(/[^a-zA-Z0-9_-]/g, '-');
+    const cleanCust = String(vm.customer || 'Pelanggan')
+      .trim()
+      .replace(/[^a-zA-Z0-9]+/g, '_')
+      .replace(/^_|_$/g, '');
+    return `Nota_Cetakin_${cleanId}_${cleanCust || 'Pelanggan'}.${ext}`;
+  }
+
+  function triggerBlobDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 500);
+  }
+
+  // Event Listeners Modal Nota
+  $('#close-invoice-modal')?.addEventListener('click', () => {
+    $('#invoice-modal').hidden = true;
+  });
+
+  $('#toggle-invoice-edit-btn')?.addEventListener('click', () => {
+    const panel = $('#invoice-edit-panel');
+    if (panel) panel.hidden = !panel.hidden;
+  });
+
+  $('#invoice-edit-panel')?.addEventListener('input', () => {
+    renderInvoicePreview();
+  });
+
+  $('#download-invoice-pdf-btn')?.addEventListener('click', async () => {
+    const vm = getInvoiceViewModel();
+    if (!vm) return;
+    const btn = $('#download-invoice-pdf-btn');
+    const prevText = btn.textContent;
+    try {
+      btn.disabled = true;
+      btn.textContent = '⏳ Menyiapkan PDF...';
+      const canvas = await renderInvoiceToCanvas(vm);
+      const pdfBlob = canvasToPdfBlob(canvas);
+      const fileName = makeSafeFileName(vm, 'pdf');
+      triggerBlobDownload(pdfBlob, fileName);
+      showToast(`✅ Nota PDF (${fileName}) berhasil diunduh!`);
+    } catch (err) {
+      showToast('Gagal membuat PDF: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = prevText;
+    }
+  });
+
+  $('#download-invoice-png-btn')?.addEventListener('click', async () => {
+    const vm = getInvoiceViewModel();
+    if (!vm) return;
+    const btn = $('#download-invoice-png-btn');
+    const prevText = btn.textContent;
+    try {
+      btn.disabled = true;
+      btn.textContent = '⏳ Menyiapkan PNG...';
+      const canvas = await renderInvoiceToCanvas(vm);
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const fileName = makeSafeFileName(vm, 'png');
+        triggerBlobDownload(blob, fileName);
+        showToast(`🖼️ Gambar Nota (${fileName}) siap dikirim ke WA!`);
+      }, 'image/png');
+    } catch (err) {
+      showToast('Gagal membuat gambar PNG: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = prevText;
+    }
+  });
+
+  $('#print-invoice-btn')?.addEventListener('click', () => {
+    const vm = getInvoiceViewModel();
+    if (!vm) return;
+    const prevTitle = document.title;
+    document.title = makeSafeFileName(vm, 'pdf').replace(/\.pdf$/, '');
+    document.body.classList.add('printing-invoice');
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-invoice');
+      document.title = prevTitle;
+    }, 400);
   });
 
   initSession();

@@ -22,22 +22,34 @@ test('Kalkulator HPP Jasa 3D Print sesuai dengan baseline Excel (Bracket 4 pcs, 
   assert.equal(res.baseRatePerGram, 600);
   assert.equal(res.baseTariffBatch, 120000);
   assert.equal(res.suggestedPriceUnit, 30000);
-  assert.equal(res.hppBatch, 78511);
+  assert.equal(res.hppBatch, 72380);
+  assert.equal(res.hppUnit, 18095);
+  assert.equal(res.actualProfitBatch, 47620);
   assert.equal(res.tariffStatus, 'Memenuhi target');
-  assert.ok(res.actualProfitBatch > 40000);
+
+  const dino = finance.calculateJasaPrint({
+    units: 1,
+    petgGrams: 12,
+    supportGrams: 0,
+    printHours: 0.75,
+    activeHours: 0.1,
+    packagingBatch: 0,
+    otherCost: 0,
+    discountBatch: 0,
+    layer: 0.20,
+    sellingPriceUnit: 12000
+  });
+  assert.equal(dino.hppBatch, 5143);
+  assert.equal(dino.suggestedPriceUnit, 10000);
 });
 
 test('Kalkulator HPP Clicker 5 Tombol & Robotika menghasilkan HPP dan Harga Saran valid', () => {
   const clicker = finance.calculateClicker({
     buttons: 5,
-    units: 2,
-    petgPerUnitGrams: 22,
-    supportBatchGrams: 4,
-    printHoursBatch: 1.8,
-    activeHoursBatch: 0.4
+    units: 1
   });
-  assert.ok(clicker.hppUnit > 10000);
-  assert.ok(clicker.suggestedPriceUnit >= clicker.breakEvenUnit);
+  assert.equal(clicker.hppUnit, 29616);
+  assert.equal(clicker.suggestedPriceUnit, 43000);
 
   const robo = finance.calculateRobotikaItem({
     units: 10,
@@ -49,6 +61,32 @@ test('Kalkulator HPP Clicker 5 Tombol & Robotika menghasilkan HPP dan Harga Sara
   assert.equal(robo.hppUnit, 51500);
   assert.equal(robo.hppBatch, 515000);
   assert.ok(robo.suggestedPriceUnit >= 73500);
+
+  // Verifikasi 94 Preset Ter-Audit Robotika
+  assert.equal(finance.ROBOTIKA_PRESETS.length, 94);
+
+  // 1. Uno R3 (O18/O06)
+  const uno = finance.calculateRobotikaItem({ presetSku: 'UNO' });
+  assert.equal(uno.buyPriceUnit, 51819);
+  assert.equal(uno.shippingAllocationUnit, 8694);
+  assert.equal(uno.packagingUnit, 200);
+  assert.equal(uno.fullCostUnit, 60713);
+  assert.equal(uno.suggestedPriceUnit, 80000);
+  assert.equal(uno.costStatus, 'MENUTUP + SURPLUS');
+
+  // 2. ESP32 (O16)
+  const esp = finance.calculateRobotikaItem({ presetSku: 'ESP' });
+  assert.equal(esp.buyPriceUnit, 65000);
+  assert.equal(esp.shippingAllocationUnit, 8808);
+  assert.equal(esp.fullCostUnit, 74008);
+  assert.equal(esp.suggestedPriceUnit, 93550);
+
+  // 3. SP20 (Spacer 20mm flagged 'BELUM MENUTUP')
+  const sp20 = finance.calculateRobotikaItem({ presetSku: 'SP20', sellingPriceUnit: 2050 });
+  assert.equal(sp20.buyPriceUnit, 2937);
+  assert.equal(sp20.fullCostUnit, 3137);
+  assert.equal(sp20.costStatus, 'BELUM MENUTUP');
+  assert.ok(sp20.profitBatch < 0);
 });
 
 test('API Server: Role Guard, CRUD Katalog, Keuangan 2 Divisi, dan Rekonsiliasi 1 QRIS Bersama', async () => {
