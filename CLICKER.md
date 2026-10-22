@@ -10,7 +10,7 @@ Halaman `clicker.html` berjalan sebagai HTML/CSS/JavaScript statis, sama seperti
 - Dua belas simbol dari koleksi `clicker_keycaps_simbol_2_warna`: Love, Bintang, Bunga, Awan, Bulan, Petir, Telapak, Kucing, Beruang, Labu, Hantu, dan Robot.
 - Base Solid (1–7), Flexi (2–7), dan Flexi compact (2–7).
 - Bentuk Silinder Beralur, Heksagon, Gear, Kaki Lucu, Love, dan Bunga 5 Kelopak.
-- Warna base dan setiap keycap: putih, hitam, sky blue, orange. Warna huruf maupun simbol dapat dipilih sendiri per tombol dari empat warna tersebut; tidak memakai emoji bawaan perangkat.
+- Warna base dan setiap keycap: putih, hitam, sky blue, orange, merah. Warna huruf maupun simbol dapat dipilih sendiri per tombol dari lima warna tersebut; tidak memakai emoji bawaan perangkat.
 - Huruf sewarna keycap tetap bisa dipesan sebagai huruf timbul satu warna, dengan catatan kontras pada editor.
 - Simbol tertanam rata pada muka keycap, sehingga warna simbol dan badan wajib berbeda. Pemesanan dan ekspor diblokir sampai kedua warna berbeda. Lubang mata Hantu dan Robot memperlihatkan warna badan; kelima bantalan Telapak memakai warna simbol yang sama.
 - Jumlah produk 1–99 pcs dengan desain yang sama, dan catatan maksimal 300 karakter.

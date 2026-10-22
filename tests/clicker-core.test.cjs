@@ -17,7 +17,7 @@ test('each two-color symbol occupies one priced slot, independent of font or bas
   assert.deepEqual(C.validate(state), []);
 });
 test('one-key designs use solid; imported values remain inside the printable catalog', () => {
-  const s = C.normalize({ ...letters(1), mode: 'flexi', base: 'red', font: '__proto__', shape: 'missing', quantity: 2.5 });
+  const s = C.normalize({ ...letters(1), mode: 'flexi', base: 'purple', font: '__proto__', shape: 'missing', quantity: 2.5 });
   assert.equal(s.mode, 'solid'); assert.equal(s.base, 'blue'); assert.equal(s.font, 'nunito'); assert.equal(s.shape, 'round'); assert.equal(s.quantity, 1);
   assert.throws(() => C.normalize({ keys: [] })); assert.throws(() => C.normalize({ keys: Array(8).fill(C.makeKey('A')) }));
 });
@@ -145,7 +145,7 @@ test('new base spacing accepts adjacent characters and survives sharing and What
   }
 });
 
-test('every symbol accepts all twelve distinct stock-color pairs in every font', () => {
+test('every symbol accepts all twenty distinct stock-color pairs in every font', () => {
   for (const value of symbolIds) for (const cap of Object.keys(C.COLORS)) for (const ink of Object.keys(C.COLORS)) {
     if (cap === ink) continue;
     for (const font of Object.keys(C.FONTS)) {
@@ -231,4 +231,39 @@ test('WhatsApp states each symbol body and ink color without catalog-color ambig
     assert.ok(text.includes('2. N | keycap Orange | huruf Putih'));
     assert.ok(!text.includes('mengikuti contoh katalog'));
   }
+});
+
+test('five stock colors include red; red works seamlessly across base, cap, ink, share link, and WhatsApp message', () => {
+  assert.deepEqual(Object.keys(C.COLORS), ['white', 'black', 'blue', 'orange', 'red']);
+  assert.deepEqual(C.COLORS.red, { label: 'Merah', hex: '#DE3636' });
+
+  // Base red, Keycap red, and Ink red on separate keys
+  const state = C.normalize({
+    ...letters(3),
+    base: 'red',
+    keys: [
+      { type: 'letter', value: 'R', cap: 'red', ink: 'white' },
+      { type: 'letter', value: 'E', cap: 'white', ink: 'red' },
+      symbolKey('symbol-love', 'black', 'red')
+    ]
+  });
+
+  assert.equal(state.base, 'red');
+  assert.equal(state.keys[0].cap, 'red');
+  assert.equal(state.keys[1].ink, 'red');
+  assert.equal(state.keys[2].ink, 'red');
+  assert.deepEqual(C.validate(state), []);
+
+  const encoded = C.encode(state);
+  const decoded = C.decode(encoded);
+  assert.deepEqual(decoded, state);
+
+  const text = C.message(state, 'https://cetakin.id/clicker.html');
+  assert.ok(text.includes('Warna base: Merah'));
+  assert.ok(text.includes('1. R | keycap Merah | huruf Putih'));
+  assert.ok(text.includes('2. E | keycap Putih | huruf Merah'));
+  assert.ok(text.includes(`3. ${C.assets.emojis['symbol-love'].label} | keycap Hitam | simbol Merah`));
+
+  const svg = C.preview(state);
+  assert.ok(svg.includes('fill="#DE3636"'));
 });
