@@ -1,11 +1,12 @@
 /**
  * Vercel Web Analytics Initialization
- * This script initializes Vercel Web Analytics across all pages
- * Using the official @vercel/analytics package
+ * Lightweight vanilla script integration (works natively in static HTML)
  */
-import { inject } from '@vercel/analytics';
+window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 
-// Initialize Vercel Web Analytics
-// In production, analytics will be automatically enabled
-// In development, debug mode will be active for testing
-inject();
+if (typeof window !== 'undefined' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+  const script = document.createElement('script');
+  script.defer = true;
+  script.src = '/_vercel/insights/script.js';
+  document.head.appendChild(script);
+}

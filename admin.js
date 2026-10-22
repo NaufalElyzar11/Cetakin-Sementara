@@ -29,6 +29,7 @@
   }
 
   async function apiFetch(url, options = {}) {
+    const targetUrl = url.startsWith('./api/') ? url.replace('./api/', '/api/') : url;
     const headers = { ...(options.headers || {}) };
     if (state.token) headers.Authorization = `Bearer ${state.token}`;
     if (options.body && typeof options.body === 'object') {
@@ -37,7 +38,7 @@
     }
     let res;
     try {
-      res = await fetch(url, { ...options, headers });
+      res = await fetch(targetUrl, { ...options, headers });
     } catch (_) {
       throw new Error('Server backend belum menyala. Jalankan "node server.js" lalu buka http://localhost:8080/admin.html');
     }

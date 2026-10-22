@@ -18,7 +18,16 @@ const loginLimiter = rateLimit({
   message: { ok: false, error: 'Terlalu banyak percobaan login. Silakan coba lagi beberapa menit.' }
 });
 
-// 1. Healthcheck Endpoint untuk Google Cloud Run
+// 1. Root & Healthcheck Endpoints
+router.get(['/', ''], (req, res) => {
+  res.json({
+    ok: true,
+    service: 'cetakin-cloud-erp',
+    status: 'online',
+    timestamp: new Date().toISOString()
+  });
+});
+
 router.get('/health', (req, res) => {
   res.json({ ok: true, status: 'healthy', service: 'cetakin-cloud-erp', timestamp: new Date().toISOString() });
 });
