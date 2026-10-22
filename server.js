@@ -42,9 +42,33 @@ app.use((req, res, next) => {
 // 5. Mount Enterprise REST API Router
 app.use('/api', apiRouter);
 
-// 6. Shortcut URL `/admin` menuju `admin.html`
-app.get(['/admin', '/admin/'], (req, res) => {
+// 6. Shortcut URL & Halaman Utama Cetakin
+app.get(['/', '/index.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get(['/admin', '/admin/', '/admin.html'], (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get(['/robotika', '/robotika/', '/robotika.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'robotika.html'));
+});
+
+app.get(['/clicker', '/clicker/', '/clicker.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'clicker.html'));
+});
+
+app.get(['/panduan', '/panduan/', '/panduan.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'panduan.html'));
+});
+
+app.get(['/gantungan-kunci', '/gantungan-kunci/', '/gantungan-kunci.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'gantungan-kunci.html'));
+});
+
+app.get(['/produk', '/produk/', '/produk.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'produk.html'));
 });
 
 // 7. Static File Serving untuk seluruh halaman publik & aset

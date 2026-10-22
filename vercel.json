@@ -1,10 +1,14 @@
 {
   "version": 2,
-  "rewrites": [
-    {
-      "source": "/(server\\.js|db\\.js|package\\.json|package-lock\\.json|src/.*|data/cetakin-db\\.json|tests/.*)",
-      "destination": "/api/index.js"
+  "functions": {
+    "server.js": {
+      "includeFiles": "{assets/**,data/**,panduan/**,*.css,*.js,*.html,*.png,*.ico,*.svg,*.json}"
     },
+    "api/index.js": {
+      "includeFiles": "{assets/**,data/**,panduan/**,*.css,*.js,*.html,*.png,*.ico,*.svg,*.json}"
+    }
+  },
+  "rewrites": [
     {
       "source": "/api",
       "destination": "/api/index.js"
