@@ -977,7 +977,7 @@ body.admin-body {
 .inv-studio-name {
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: 14px;
+  font-size: 15px;
   color: #0f172a;
   margin: 0 0 3px;
 }
@@ -1277,26 +1277,50 @@ body.admin-body {
   min-width: 175px;
 }
 
-.inv-stamp-badge {
-  display: inline-block;
-  padding: 5px 14px;
-  border: 2px solid rgba(2, 132, 199, 0.35);
-  border-radius: 8px;
-  color: #0369a1;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 800;
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  transform: rotate(-3deg);
-  margin: 8px 0 6px;
-  background: rgba(240, 249, 255, 0.6);
+.inv-stamp-seal {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 14px 4px;
+  border: 2px solid #0284c7;
+  outline: 1.5px dashed rgba(2, 132, 199, 0.45);
+  outline-offset: -4px;
+  border-radius: 9px;
+  background: rgba(240, 249, 255, 0.7);
+  transform: rotate(-3.5deg);
+  margin: 6px 0;
+  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.08);
+  user-select: none;
 }
 
-.invoice-paper[data-unit="3d-print"] .inv-stamp-badge {
-  border-color: rgba(234, 88, 12, 0.35);
+.invoice-paper[data-unit="3d-print"] .inv-stamp-seal {
+  border-color: #ea580c;
+  outline-color: rgba(234, 88, 12, 0.45);
+  background: rgba(255, 247, 237, 0.7);
+  box-shadow: 0 1px 4px rgba(234, 88, 12, 0.08);
+}
+
+.inv-stamp-logo {
+  height: 25px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
+}
+
+.inv-stamp-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #0369a1;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.invoice-paper[data-unit="3d-print"] .inv-stamp-sub {
   color: #c2410c;
-  background: rgba(255, 247, 237, 0.6);
 }
 
 /* Aturan Cetak Khusus Nota (@media print) */

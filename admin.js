@@ -1427,7 +1427,7 @@
 
     const defaultNote = isRobo
       ? 'Terima kasih telah berbelanja komponen di Cetakin! Barang telah melalui pengecekan fisik. Panduan rangkaian pinout & contoh kode program tersedia gratis di website Cetakin (menu Panduan).'
-      : 'Terima kasih telah mempercayakan pembuatan produk kustom & 3D print di Cetakin Studio! Simpan produk di tempat teduh dan hindari suhu ekstrem (>70°C) agar presisi tetap terjaga.';
+      : 'Terima kasih telah mempercayakan pembuatan produk kustom & 3D print di Cetakin! Simpan produk di tempat teduh dan hindari suhu ekstrem (>70°C) agar presisi tetap terjaga.';
 
     $('#inv-customer').value = order.customer || 'Pelanggan';
     $('#inv-pay-method').value = defaultMethod;
@@ -1535,7 +1535,7 @@
               <img class="inv-logo" src="./assets/logo.png" alt="Cetakin" />
               <span class="inv-unit-pill">${divisionLabel}</span>
             </div>
-            <p class="inv-studio-name">Studio Cetakin Banjarbaru</p>
+            <p class="inv-studio-name">Cetakin</p>
             <p class="inv-studio-addr">
               Jl. Dahlina Raya III, Guntung Paikat, Kec. Banjarbaru Selatan<br />
               Kota Banjarbaru, Kalimantan Selatan 70714 · WA: 0858-2280-1431
@@ -1668,9 +1668,12 @@
             hubungi WhatsApp kami di <strong>0858-2280-1431</strong>.
           </div>
           <div class="inv-footer-sign">
-            <div style="font-size:11px; color:#64748b;">Banjarbaru, ${escapeHtml(vm.completedDateFormatted !== 'Sedang Diproses' ? vm.completedDateFormatted : vm.orderDateFormatted)}</div>
-            <div class="inv-stamp-badge">CETAKIN STUDIO · VERIFIED</div>
-            <div style="font-size:12px; font-weight:800; color:#0f172a;">Tim Admin Cetakin</div>
+            <div style="font-size:11px; color:#64748b; margin-bottom:4px;">Banjarbaru, ${escapeHtml(vm.completedDateFormatted !== 'Sedang Diproses' ? vm.completedDateFormatted : vm.orderDateFormatted)}</div>
+            <div class="inv-stamp-seal">
+              <img class="inv-stamp-logo" src="./assets/logo.png" alt="Cetakin" />
+              <span class="inv-stamp-sub">★ TERVERIFIKASI RESMI ★</span>
+            </div>
+            <div style="font-size:12px; font-weight:800; color:#0f172a; margin-top:4px;">Tim Admin Cetakin</div>
           </div>
         </div>
       </div>
@@ -1773,10 +1776,10 @@
     ctx.fillStyle = accentText;
     ctx.fillText(divText, pillX + 18, curY + 39);
 
-    // Studio Address
+    // Address Header
     ctx.font = '800 28px Outfit, sans-serif';
     ctx.fillStyle = '#0f172a';
-    ctx.fillText('Studio Cetakin Banjarbaru', padX, curY + 114);
+    ctx.fillText('Cetakin', padX, curY + 114);
 
     ctx.font = '500 22px "DM Sans", sans-serif';
     ctx.fillStyle = '#475569';
@@ -2112,38 +2115,67 @@
 
     ctx.font = '700 22px "DM Sans", sans-serif';
     ctx.fillStyle = '#0f172a';
-    ctx.fillText('Terima kasih atas kepercayaan Anda berbelanja di Cetakin Studio!', padX, footerY + 48);
+    ctx.fillText('Terima kasih atas kepercayaan Anda berbelanja di Cetakin!', padX, footerY + 48);
 
     ctx.font = '500 20px "DM Sans", sans-serif';
     ctx.fillStyle = '#64748b';
     ctx.fillText('Simpan nota ini sebagai bukti transaksi resmi. Untuk konsultasi cetak 3D atau bantuan komponen,', padX, footerY + 82);
     ctx.fillText('hubungi WhatsApp kami di 0858-2280-1431 · Jl. Dahlina Raya III, Banjarbaru Selatan.', padX, footerY + 112);
 
-    // Signature & Rotated Official Stamp
+    // Signature & Rotated Official Stamp with Logo
     const signCenterX = W - padX - 180;
     ctx.textAlign = 'center';
     ctx.font = '500 20px "DM Sans", sans-serif';
     ctx.fillStyle = '#64748b';
     const signDate = vm.completedDateFormatted !== 'Sedang Diproses' ? vm.completedDateFormatted : vm.orderDateFormatted;
-    ctx.fillText(`Banjarbaru, ${signDate}`, signCenterX, footerY + 42);
+    ctx.fillText(`Banjarbaru, ${signDate}`, signCenterX, footerY + 32);
 
     ctx.save();
-    ctx.translate(signCenterX, footerY + 86);
-    ctx.rotate(-0.05);
-    drawRoundRect(ctx, -165, -24, 330, 48, 10);
+    ctx.translate(signCenterX, footerY + 88);
+    ctx.rotate(-0.06);
+
+    const sealW = 240;
+    const sealH = 78;
+    const sealR = 12;
+
+    // Stamp outer box
+    drawRoundRect(ctx, -sealW / 2, -sealH / 2, sealW, sealH, sealR);
     ctx.fillStyle = accentSoftBg;
     ctx.fill();
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 3.5;
     ctx.strokeStyle = accentMain;
     ctx.stroke();
-    ctx.font = '800 20px Outfit, sans-serif';
+
+    // Stamp inner dashed border
+    ctx.save();
+    ctx.setLineDash([6, 5]);
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = accentMain;
+    drawRoundRect(ctx, -sealW / 2 + 5, -sealH / 2 + 5, sealW - 10, sealH - 10, sealR - 3);
+    ctx.stroke();
+    ctx.restore();
+
+    // Stamp Logo
+    if (logoImg && logoImg.naturalWidth > 0) {
+      const stampLogoH = 34;
+      const stampLogoW = (logoImg.naturalWidth / logoImg.naturalHeight) * stampLogoH;
+      ctx.drawImage(logoImg, -stampLogoW / 2, -sealH / 2 + 8, stampLogoW, stampLogoH);
+    } else {
+      ctx.font = '800 24px Outfit, sans-serif';
+      ctx.fillStyle = accentText;
+      ctx.fillText('CETAKIN', 0, -sealH / 2 + 30);
+    }
+
+    // Stamp Text
+    ctx.font = '800 13px Outfit, sans-serif';
     ctx.fillStyle = accentText;
-    ctx.fillText('CETAKIN STUDIO · VERIFIED', 0, 8);
+    ctx.fillText('★ TERVERIFIKASI RESMI ★', 0, sealH / 2 - 12);
+
     ctx.restore();
 
     ctx.font = '800 23px Outfit, sans-serif';
     ctx.fillStyle = '#0f172a';
-    ctx.fillText('Tim Admin Cetakin', signCenterX, footerY + 142);
+    ctx.fillText('Tim Admin Cetakin', signCenterX, footerY + 154);
     ctx.textAlign = 'left';
 
     return canvas;
