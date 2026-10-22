@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-10-22T15:07:55.861Z",
+  "updatedAt": "2026-10-22T18:08:27.638Z",
   "users": [
     {
       "username": "owner",
@@ -1866,110 +1866,8 @@
       "competitor_adawwino": 10000
     }
   ],
-  "orders": [
-    {
-      "id": "01-03-0001",
-      "unit": "3d-print",
-      "date": "2026-10-15",
-      "completedDate": "2026-10-15",
-      "customer": "Kawan Fadli 1",
-      "productName": "Ganci kustom",
-      "quantity": 1,
-      "netBill": 12000,
-      "status": "Selesai",
-      "initialHpp": 11600,
-      "wageInHpp": 300,
-      "proofUrl": "",
-      "notes": "Pesanan 3D Print / Ganci kustom (dari Spreadsheet Keuangan)"
-    },
-    {
-      "id": "01-01-0001",
-      "unit": "3d-print",
-      "date": "2026-10-16",
-      "completedDate": "2026-10-16",
-      "customer": "Gya",
-      "productName": "Clicker nama",
-      "quantity": 1,
-      "netBill": 16300,
-      "status": "Selesai",
-      "initialHpp": 16300,
-      "wageInHpp": 750,
-      "proofUrl": "",
-      "notes": "Pesanan Clicker nama (dari Spreadsheet Keuangan)"
-    },
-    {
-      "id": "01-01-0002",
-      "unit": "3d-print",
-      "date": "2026-10-17",
-      "completedDate": "2026-10-17",
-      "customer": "Nadia",
-      "productName": "Clicker nama",
-      "quantity": 1,
-      "netBill": 21000,
-      "status": "Selesai",
-      "initialHpp": 14479,
-      "wageInHpp": 750,
-      "proofUrl": "",
-      "notes": "Pesanan Clicker nama (dari Spreadsheet Keuangan)"
-    },
-    {
-      "id": "01-03-0002",
-      "unit": "3d-print",
-      "date": "2026-10-18",
-      "completedDate": "2026-10-18",
-      "customer": "Kawan Fadli 2",
-      "productName": "Ganci Paus",
-      "quantity": 1,
-      "netBill": 17000,
-      "status": "Selesai",
-      "initialHpp": 14320,
-      "wageInHpp": 280,
-      "proofUrl": "",
-      "notes": "Pesanan 3D Print / Ganci Paus (dari Spreadsheet Keuangan)"
-    }
-  ],
+  "orders": [],
   "mutations": [],
-  "wages": [
-    {
-      "id": "UPH-0001",
-      "unit": "3d-print",
-      "date": "2026-10-15",
-      "orderId": "01-03-0001",
-      "worker": "Teman",
-      "minutes": 5,
-      "ratePerHour": 10000,
-      "task": "Pengerjaan Ganci kustom (Kawan Fadli 1)"
-    },
-    {
-      "id": "UPH-0002",
-      "unit": "3d-print",
-      "date": "2026-10-16",
-      "orderId": "01-01-0001",
-      "worker": "Saya",
-      "minutes": 5,
-      "ratePerHour": 10000,
-      "task": "Pengerjaan Clicker nama (Gya)"
-    },
-    {
-      "id": "UPH-0003",
-      "unit": "3d-print",
-      "date": "2026-10-17",
-      "orderId": "01-01-0002",
-      "worker": "Saya",
-      "minutes": 5,
-      "ratePerHour": 10000,
-      "task": "Pengerjaan Clicker nama (Nadia)"
-    },
-    {
-      "id": "UPH-0004",
-      "unit": "3d-print",
-      "date": "2026-10-18",
-      "orderId": "01-03-0002",
-      "worker": "Teman",
-      "minutes": 5,
-      "ratePerHour": 10000,
-      "task": "Pengerjaan Ganci Paus (Kawan Fadli 2)"
-    }
-  ],
+  "wages": [],
   "allocations": []
 }

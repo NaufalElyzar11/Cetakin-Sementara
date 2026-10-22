@@ -2293,6 +2293,7 @@
     const wageByOrder = {};
     let totalWagesRecorded = 0;
     const wageByWorker = { Saya: { recorded: 0, paid: 0 }, Partner: { recorded: 0, paid: 0 } };
+    const enrichedWages = [];
 
     for (const w of wages) {
       const amount = Math.round(((Number(w.minutes) || 0) / 60) * (Number(w.ratePerHour) || settings.laborRatePerHour));
@@ -2300,6 +2301,10 @@
       totalWagesRecorded += amount;
       const workerKey = w.worker === 'Saya' ? 'Saya' : 'Partner';
       wageByWorker[workerKey].recorded += amount;
+      enrichedWages.push({
+        ...w,
+        amount
+      });
     }
 
     // 2. Hitung pembayaran pelanggan & retur per pesanan dari Mutasi
@@ -2372,8 +2377,35 @@
         wageByWorker[wKey].paid += amt;
       }
 
-      // Talangan bertambah (jika dibayar pakai uang pribadi atau Talangan masuk)
-      if (m.advanceCode && advancesMap[m.advanceCode]) {
+      // Talangan bertambah atau dicicil (mendukung kode gabungan TL-3D yang otomatis membagi porsi Mesin 6jt-an vs Modal 1jt)
+      const isCombined3D = m.advanceCode === 'TL-3D' || m.advanceCode === 'TL-MESIN-MODAL' || m.advanceCode === 'TL-ALAT-MODAL';
+      if (isCombined3D && advancesMap['TL-MESIN'] && advancesMap['TL-MODAL']) {
+        const advMesin = advancesMap['TL-MESIN'];
+        const advModal = advancesMap['TL-MODAL'];
+        if (m.type === 'Cicilan talangan') {
+          // Bagi cicilan proporsional sesuai sisa kewajiban riil (mesin 6.38jt vs modal 1jt)
+          const remMesin = Math.max(0, advMesin.opening + advMesin.added - advMesin.repaid);
+          const remModal = Math.max(0, advModal.opening + advModal.added - advModal.repaid);
+          const totalRem = remMesin + remModal;
+          if (totalRem > 0) {
+            let mesinShare = Math.min(remMesin, Math.round(amt * (remMesin / totalRem)));
+            let modalShare = Math.min(remModal, amt - mesinShare);
+            if (amt - modalShare <= remMesin) {
+              mesinShare = amt - modalShare;
+            }
+            advMesin.repaid += mesinShare;
+            advModal.repaid += modalShare;
+          } else {
+            const mesinShare = Math.round(amt * (6383500 / 7383500));
+            advMesin.repaid += mesinShare;
+            advModal.repaid += (amt - mesinShare);
+          }
+        } else if (m.type === 'Talangan masuk' || m.fromAccount === 'Saya' || m.fromAccount === 'Teman' || m.fromAccount === 'Partner') {
+          const mesinShare = Math.round(amt * (6383500 / 7383500));
+          advMesin.added += mesinShare;
+          advModal.added += (amt - mesinShare);
+        }
+      } else if (m.advanceCode && advancesMap[m.advanceCode]) {
         if (m.type === 'Cicilan talangan') {
           advancesMap[m.advanceCode].repaid += amt;
         } else if (m.type === 'Talangan masuk' || m.fromAccount === 'Saya' || m.fromAccount === 'Teman' || m.fromAccount === 'Partner') {
@@ -2489,7 +2521,8 @@
       allocationBreakdown: breakdown,
       remainderToReserve,
       orders: enrichedOrders,
-      mutations
+      mutations,
+      wages: enrichedWages
     };
   }
 

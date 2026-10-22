@@ -451,14 +451,14 @@
 
                 <div class="form-field">
                   <label for="mut-order-id">ID Pesanan Terkait <small>(Opsional)</small></label>
-                  <input id="mut-order-id" type="text" placeholder="Contoh: ORD-3D-001" />
+                  <input id="mut-order-id" list="order-id-options" type="text" placeholder="Pilih / ketik (cth: ORD-3D-001)" /><datalist id="order-id-options"></datalist>
                 </div>
 
                 <div class="form-field">
                   <label for="mut-advance-code">Kode Talangan / Pihak <small>(Jika relevan)</small></label>
                   <select id="mut-advance-code">
                     <option value="">-- Tidak ada --</option>
-                    <option value="TL-MESIN">TL-MESIN (Talangan Printer 3D)</option>
+                    <option value="TL-3D">TL-3D (Talangan Mesin &amp; Modal 3D — Otomatis Dibagi)</option><option value="TL-MESIN">TL-MESIN (Khusus Mesin Saja)</option>
                     <option value="TL-MODAL">TL-MODAL (Talangan Modal 3D)</option>
                     <option value="TL-ROBO">TL-ROBO (Talangan Stok Robotika)</option>
                   </select>
@@ -541,7 +541,7 @@
               <div class="form-grid">
                 <div class="form-field">
                   <label for="wage-order-id">ID Pesanan</label>
-                  <input id="wage-order-id" type="text" placeholder="ORD-3D-001" required />
+                  <input id="wage-order-id" list="order-id-options" type="text" placeholder="Pilih / ketik (cth: ORD-3D-001)" required />
                 </div>
                 <div class="form-field">
                   <label for="wage-worker">Pekerja</label>

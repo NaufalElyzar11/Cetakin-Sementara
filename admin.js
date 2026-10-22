@@ -318,7 +318,13 @@
     // Tabel Talangan Alat & Modal
     const advTbody = $('#advances-tbody');
     advTbody.replaceChildren();
+    let totalOpening = 0;
+    let totalRepaid = 0;
+    let totalRemaining = 0;
     for (const adv of uData.advances) {
+      totalOpening += (adv.opening + adv.added);
+      totalRepaid += adv.repaid;
+      totalRemaining += adv.remaining;
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><span class="badge badge-warn">${adv.code}</span></td>
@@ -328,6 +334,19 @@
         <td><strong>${money(adv.remaining)}</strong></td>
       `;
       advTbody.appendChild(tr);
+    }
+    if (uData.advances && uData.advances.length > 1) {
+      const trTotal = document.createElement('tr');
+      trTotal.style.fontWeight = '700';
+      trTotal.style.background = '#f8fafc';
+      trTotal.innerHTML = `
+        <td><span class="badge badge-success">TL-GABUNGAN</span></td>
+        <td><strong>Total (${state.activeUnit === '3d-print' ? 'Mesin & Modal' : 'Semua'})</strong></td>
+        <td>${money(totalOpening)}</td>
+        <td style="color:#16a34a;">${money(totalRepaid)}</td>
+        <td><strong style="color:${totalRemaining > 0 ? '#d97706' : '#16a34a'};">${money(totalRemaining)}</strong></td>
+      `;
+      advTbody.appendChild(trTotal);
     }
 
     // Tabel Rekap Upah Kerja
@@ -352,6 +371,16 @@
   }
 
   function renderOrdersTable(orders) {
+    const datalist = $('#order-id-options');
+    if (datalist) {
+      datalist.replaceChildren();
+      for (const o of orders) {
+        const opt = document.createElement('option');
+        opt.value = o.id;
+        opt.label = `${o.productName} (${o.customer}) — Tagihan: ${money(o.netBill)}`;
+        datalist.appendChild(opt);
+      }
+    }
     const tbody = $('#orders-tbody');
     if (!tbody) return;
     tbody.replaceChildren();
@@ -480,27 +509,45 @@
     // Ambil daftar pesanan untuk info upah
     const uData = state.dashboard.units[state.activeUnit];
     if (!uData) return;
-    const rate = state.dashboard.settings?.laborRatePerHour || 15000;
+    const wagesList = uData.wages || [];
 
-    // Tampilkan ringkasan per order yang memiliki upah tercatat
-    const withWages = uData.orders.filter((o) => o.recordedWage > 0);
-    if (!withWages.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Belum ada catatan jam kerja.</td></tr>`;
+    if (!wagesList.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Belum ada catatan jam kerja tercatat.</td></tr>`;
       return;
     }
 
-    for (const o of withWages) {
-      const estMins = Math.round((o.recordedWage / rate) * 60);
+    for (const w of wagesList) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><strong>${o.id}</strong><div style="font-size:11px; color:var(--muted);">${o.date}</div></td>
-        <td>Tim Produksi</td>
-        <td>${estMins} mnt</td>
-        <td><strong>${money(o.recordedWage)}</strong></td>
-        <td><span class="badge badge-success">Masuk HPP</span></td>
+        <td>
+          <strong>${w.orderId || '-'}</strong>
+          <div style="font-size:11px; color:var(--muted);">${w.date}</div>
+        </td>
+        <td>
+          <strong>${w.worker === 'Saya' ? 'Saya (Naufal)' : 'Partner'}</strong>
+          ${w.task ? `<div style="font-size:11px; color:var(--muted);">${w.task}</div>` : ''}
+        </td>
+        <td>${w.minutes} mnt</td>
+        <td><strong>${money(w.amount)}</strong></td>
+        <td>
+          <button type="button" class="btn btn-danger btn-sm" data-del-wage="${w.id}" title="Hapus catatan upah">🗑</button>
+        </td>
       `;
       tbody.appendChild(tr);
     }
+
+    tbody.querySelectorAll('[data-del-wage]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Hapus catatan jam kerja/upah ini?')) return;
+        try {
+          await apiFetch(`./api/finance/wages/${encodeURIComponent(btn.dataset.delWage)}`, { method: 'DELETE' });
+          showToast('Catatan upah berhasil dihapus.');
+          await loadDashboardData();
+        } catch (err) {
+          showToast(err.message);
+        }
+      });
+    });
   }
 
   // =========================================================

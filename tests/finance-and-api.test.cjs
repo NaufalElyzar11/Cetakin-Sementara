@@ -89,6 +89,43 @@ test('Kalkulator HPP Clicker 5 Tombol & Robotika menghasilkan HPP dan Harga Sara
   assert.ok(sp20.profitBatch < 0);
 });
 
+test('Kode Talangan Gabungan TL-3D membagi cicilan secara proporsional ke Mesin (~86.5%) dan Modal (~13.5%)', () => {
+  const fakeDb = {
+    settings: {
+      ...finance.DEFAULT_SETTINGS,
+      openingAdvances3D: [
+        { code: 'TL-MESIN', owner: 'Teman', amount: 6383500, note: 'Mesin' },
+        { code: 'TL-MODAL', owner: 'Saya', amount: 1000000, note: 'Modal' }
+      ]
+    },
+    orders: [],
+    mutations: [
+      {
+        id: 'TRX-TEST-01',
+        unit: '3d-print',
+        date: '2026-10-20',
+        type: 'Cicilan talangan',
+        amount: 738350,
+        advanceCode: 'TL-3D',
+        fromAccount: 'Bank usaha',
+        toAccount: 'Saya'
+      }
+    ],
+    wages: [],
+    allocations: []
+  };
+
+  const summary = finance.computeUnitSummary(fakeDb, '3d-print');
+  const mesin = summary.advances.find((a) => a.code === 'TL-MESIN');
+  const modal = summary.advances.find((a) => a.code === 'TL-MODAL');
+
+  assert.equal(mesin.repaid, 638350);
+  assert.equal(modal.repaid, 100000);
+  assert.equal(mesin.remaining, 6383500 - 638350);
+  assert.equal(modal.remaining, 1000000 - 100000);
+  assert.ok(mesin.repaid > modal.repaid * 6, 'Porsi cicilan mesin harus ~6x lebih besar dari modal');
+});
+
 test('API Server: Role Guard, CRUD Katalog, Keuangan 2 Divisi, dan Rekonsiliasi 1 QRIS Bersama', async () => {
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const port = server.address().port;
