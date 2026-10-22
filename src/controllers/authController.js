@@ -7,11 +7,30 @@ async function login(req, res, next) {
   try {
     const db = await loadDb();
     const { username, password } = req.body || {};
-    const user = (db.users || []).find(
-      (u) => u.username === String(username || '').trim().toLowerCase()
-    );
+    const inputUser = String(username || '').trim().toLowerCase();
+    const inputPass = String(password || '');
 
-    if (!user || user.passwordHash !== hashPassword(String(password || ''))) {
+    // Dukungan variabel environment Vercel (USN, OWNER_USERNAME, ADMIN_USERNAME, PASS, PASSWORD, OWNER_PASSWORD)
+    const envOwnerUser = (process.env.OWNER_USERNAME || process.env.ADMIN_USERNAME || process.env.USN || '').trim().toLowerCase();
+    const envOwnerPass = process.env.OWNER_PASSWORD || process.env.ADMIN_PASSWORD || process.env.PASSWORD || process.env.PASS || '';
+
+    // Cari user di database
+    let user = (db.users || []).find((u) => u.username === inputUser);
+
+    // Jika username cocok dengan env variable owner di Vercel
+    if (!user && envOwnerUser && inputUser === envOwnerUser) {
+      user = (db.users || []).find((u) => u.role === 'owner');
+    }
+
+    if (!user) {
+      return res.status(401).json({ ok: false, error: 'Username atau password salah.' });
+    }
+
+    // Validasi password: cocok dengan hash di DB atau langsung cocok dengan env variable Vercel (khusus akun owner)
+    const matchesDbHash = user.passwordHash === hashPassword(inputPass);
+    const matchesEnvPass = user.role === 'owner' && Boolean(envOwnerPass && inputPass === envOwnerPass);
+
+    if (!matchesDbHash && !matchesEnvPass) {
       return res.status(401).json({ ok: false, error: 'Username atau password salah.' });
     }
 

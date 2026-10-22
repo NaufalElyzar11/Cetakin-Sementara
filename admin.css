@@ -555,6 +555,12 @@ body.admin-body {
   color: var(--red);
 }
 
+.btn-danger:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
 .btn-sm {
   padding: 7px 12px;
   font-size: 12px;
@@ -666,6 +672,8 @@ body.admin-body {
   flex-direction: column;
   gap: 12px;
   box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
 }
 
 .admin-prod-card.inactive {
@@ -726,11 +734,45 @@ body.admin-body {
 
 .admin-prod-controls {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid #eceeed;
+  margin-top: auto;
+}
+
+.admin-prod-controls-row {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #eceeed;
+}
+
+.admin-prod-controls-row .btn-vis-toggle {
+  font-size: 11.5px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+.admin-prod-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.admin-prod-actions-row .btn-edit-card {
+  flex: 1;
+  justify-content: center;
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.admin-prod-actions-row .btn-del-card {
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 7px 12px;
+  font-size: 12px;
 }
 
 .quick-stock-stepper {

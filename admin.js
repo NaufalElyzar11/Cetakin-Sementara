@@ -62,15 +62,6 @@
   // =========================================================
   // 1. AUTENTIKASI & ROLE GUARD
   // =========================================================
-  $$('.role-pill-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      $$('.role-pill-btn').forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
-      $('#login-username').value = btn.dataset.fillUser || '';
-      $('#login-password').value = btn.dataset.fillPass || '';
-    });
-  });
-
   $('#login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const errEl = $('#login-error');
@@ -97,7 +88,7 @@
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Masuk ke Portal Cetakin →';
+        submitBtn.textContent = 'Masuk ke Dashboard ↗';
       }
     }
   });
@@ -106,6 +97,8 @@
     state.token = '';
     state.user = null;
     localStorage.removeItem('cetakin_token');
+    if ($('#login-username')) $('#login-username').value = '';
+    if ($('#login-password')) $('#login-password').value = '';
     $('#app-view').hidden = true;
     $('#login-view').hidden = false;
   }
@@ -1058,17 +1051,19 @@
         ` : ''}
 
         <div class="admin-prod-controls">
-          <div class="quick-stock-stepper" title="Ubah stok cepat">
-            <button type="button" data-step-id="${p.id}" data-step="-1" aria-label="Kurangi stok">−</button>
-            <span>${p.stock} pcs</span>
-            <button type="button" data-step-id="${p.id}" data-step="1" aria-label="Tambah stok">+</button>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="btn btn-outline btn-sm" data-toggle-active="${p.id}">
+          <div class="admin-prod-controls-row">
+            <div class="quick-stock-stepper" title="Ubah stok cepat">
+              <button type="button" data-step-id="${p.id}" data-step="-1" aria-label="Kurangi stok">−</button>
+              <span>${p.stock} pcs</span>
+              <button type="button" data-step-id="${p.id}" data-step="1" aria-label="Tambah stok">+</button>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm btn-vis-toggle" data-toggle-active="${p.id}" title="${p.active ? 'Sembunyikan dari web' : 'Tampilkan di web'}">
               ${p.active ? 'Sembunyikan' : 'Tampilkan'}
             </button>
-            <button type="button" class="btn btn-dark btn-sm" data-edit-prod="${p.id}">Edit</button>
-            <button type="button" class="btn btn-danger btn-sm" data-del-prod="${p.id}" title="Hapus Produk">🗑</button>
+          </div>
+          <div class="admin-prod-actions-row">
+            <button type="button" class="btn btn-dark btn-sm btn-edit-card" data-edit-prod="${p.id}">✏️ Edit</button>
+            <button type="button" class="btn btn-danger btn-sm btn-del-card" data-del-prod="${p.id}" title="Hapus Produk">🗑️ Hapus</button>
           </div>
         </div>
       `;

@@ -33,32 +33,18 @@
       <h1>Portal Kelola<br /><em>Cetakin.</em></h1>
       <p class="login-sub">Sistem Keuangan Terpadu (3D Print &amp; Komponen Robotika), Kalkulator HPP, dan Manajemen Katalog.</p>
 
-      <div class="role-quick-pills" aria-label="Pilih akun cepat">
-        <button type="button" class="role-pill-btn active" data-fill-user="owner" data-fill-pass="cetakin123">
-          👑 Super Owner
-          <small>Semua Bisnis</small>
-        </button>
-        <button type="button" class="role-pill-btn" data-fill-user="admin3d" data-fill-pass="print123">
-          🖨️ Admin 3D
-          <small>3D Print &amp; Ganci</small>
-        </button>
-        <button type="button" class="role-pill-btn" data-fill-user="adminrobo" data-fill-pass="robo123">
-          🤖 Admin Robo
-          <small>Robotika</small>
-        </button>
-      </div>
 
       <form id="login-form">
         <div class="form-field" style="margin-bottom: 14px;">
           <label for="login-username">Username Akun</label>
-          <input id="login-username" type="text" value="owner" required autocomplete="username" />
+          <input id="login-username" type="text" placeholder="Masukkan username" required autocomplete="username" />
         </div>
         <div class="form-field" style="margin-bottom: 18px;">
           <label for="login-password">Password</label>
-          <input id="login-password" type="password" value="cetakin123" required autocomplete="current-password" />
+          <input id="login-password" type="password" placeholder="Masukkan password" required autocomplete="current-password" />
         </div>
         <p id="login-error" class="field-error" hidden style="color: #dc2626; font-size: 13px; margin-bottom: 12px;"></p>
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 15px;">
+        <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%; padding: 14px; font-size: 15px;">
           Masuk ke Dashboard ↗
         </button>
       </form>
