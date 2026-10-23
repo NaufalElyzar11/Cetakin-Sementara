@@ -194,8 +194,60 @@ h1 em{position:relative}
 .inline-link span{font-size:21px;transition:transform .2s}
 .inline-link:hover span{transform:translate(3px,-3px)}
 
-/* team */
-.team-section{background:#f7f7f4}
+/* team & robotics section */
+.team-section,.robotics-section{background:#f7f7f4}
+.robotics-heading{display:flex;align-items:end;justify-content:space-between;gap:40px;margin-bottom:52px}
+.robotics-heading p{color:var(--muted);line-height:1.7;font-size:17px;max-width:420px;margin:0 0 6px}
+.robotics-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.robotics-card{background:#fff;border:1px solid #dde1de;border-radius:24px;padding:32px 34px 30px;position:relative;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s,border-color .25s}
+.robotics-card:hover{transform:translateY(-4px);box-shadow:0 20px 44px rgba(17,26,35,.07);border-color:#c4cdd2}
+.robotics-card-catalog{background:#111a23;color:#f7f7f4;border-color:#1f2d3a}
+.robotics-card-catalog:hover{border-color:#34495e;box-shadow:0 22px 48px rgba(17,26,35,.22)}
+.robotics-card-guide{background:#eaf6fb;color:#1c3040;border-color:#cde4f0}
+.robotics-card-guide:hover{border-color:#9bc7de}
+.robotics-card-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font:700 12px var(--display);letter-spacing:.13em;margin-bottom:24px;position:relative;z-index:1}
+.robotics-card-catalog .robotics-card-top{color:#94a3b8}
+.robotics-card-guide .robotics-card-top{color:#47697c}
+.robotics-badge{font:700 10px var(--display);letter-spacing:.12em;padding:6px 12px;border-radius:100px;background:rgba(255,122,0,.16);color:#ff9a43;border:1px solid rgba(255,122,0,.35)}
+.robotics-badge-blue{background:#fff;color:#1c5270;border-color:#b5d5e6}
+.robotics-visual{border-radius:18px;padding:20px;margin-bottom:26px;position:relative;z-index:1;overflow:hidden}
+.robotics-card-catalog .robotics-visual{background:linear-gradient(145deg,#192734 0%,#14202b 100%);border:1px solid rgba(255,255,255,.08)}
+.robotics-visual-art{display:flex;justify-content:center;align-items:center;min-height:150px}
+.robotics-svg{width:100%;max-width:390px;height:auto;display:block}
+.robotics-chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.robotics-chip-row span{font:600 11px var(--body);padding:6px 12px;border-radius:100px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#e2e8f0}
+.robotics-visual-guide{background:#fff;border:1px solid #cce1ec;padding:20px 22px}
+.guide-preview-header{display:flex;align-items:center;gap:9px;font:700 10px var(--display);letter-spacing:.13em;color:#47697c;margin-bottom:14px}
+.guide-preview-dot{width:8px;height:8px;border-radius:50%;background:var(--orange)}
+.guide-preview-steps{display:grid;gap:10px;margin-bottom:16px}
+.guide-preview-step{display:flex;align-items:center;gap:12px;padding:10px 13px;border-radius:11px;background:#f4f9fc;border:1px solid #dcebf3}
+.guide-preview-step b{width:28px;height:28px;border-radius:50%;background:#e1f0f7;color:#1e5573;display:grid;place-items:center;font:700 11px var(--display);flex:none}
+.guide-preview-step strong{display:block;font:700 13px var(--display);color:#1c3040;line-height:1.25}
+.guide-preview-step small{display:block;font-size:11px;color:#5c7686;margin-top:2px}
+.guide-preview-pins{display:flex;flex-wrap:wrap;gap:7px}
+.pin-tag{font:600 10px ui-monospace,SFMono-Regular,Consolas,monospace;padding:5px 10px;border-radius:6px;border:1px solid transparent}
+.pin-power{background:#fff0ed;color:#b94e29;border-color:#f3cabd}
+.pin-gnd{background:#eef1f4;color:#475569;border-color:#cbd5e1}
+.pin-sig{background:#e6f4fb;color:#1d6fa3;border-color:#bae0f3}
+.robotics-card-body{position:relative;z-index:1;flex:1;display:flex;flex-direction:column}
+.robotics-card-catalog .pill{border-color:rgba(255,255,255,.28);color:#ff9a43}
+.robotics-card-guide .pill{border-color:rgba(28,48,64,.35);color:#1e4d68}
+.robotics-card h3{font-size:clamp(34px,3.6vw,50px);line-height:1.05;margin:0 0 16px;letter-spacing:-.045em}
+.robotics-card p{font-size:15.5px;line-height:1.7;margin:0 0 22px}
+.robotics-card-catalog p{color:#cbd5e1}
+.robotics-card-guide p{color:#3d5666}
+.robotics-points{list-style:none;padding:0;margin:0 0 26px;display:grid;gap:10px}
+.robotics-points li{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;line-height:1.5;color:#e2e8f0}
+.robotics-points li::before{content:'✓';display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(255,122,0,.2);color:var(--orange);font-size:11px;font-weight:800;flex:none;margin-top:1px}
+.robotics-quick-guides{margin:auto 0 26px;padding:15px 16px;border-radius:14px;background:rgba(255,255,255,.72);border:1px solid #c5deeb}
+.quick-guides-label{display:block;font:700 10px var(--display);letter-spacing:.13em;color:#47697c;margin-bottom:10px}
+.quick-guides-links{display:flex;flex-wrap:wrap;gap:8px}
+.quick-guides-links a{font:600 12px var(--body);padding:6px 11px;border-radius:8px;background:#fff;border:1px solid #bfd8e6;color:#1c3d52;transition:border-color .2s,background .2s,color .2s}
+.quick-guides-links a:hover{border-color:var(--orange);background:#fff8f1;color:var(--orange-deep)}
+.robotics-card-link{margin-top:auto;border-top:1px solid rgba(24,34,43,.22);padding-top:20px;display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px;position:relative;z-index:1}
+.robotics-card-catalog .robotics-card-link{border-top-color:rgba(255,255,255,.16);color:#fff}
+.robotics-card-link span:last-child{font-size:22px;transition:transform .2s}
+.robotics-card-link:hover span:last-child{transform:translate(3px,-3px)}
 .team-heading{display:grid;grid-template-columns:1fr 1fr;align-items:end;margin-bottom:50px}
 .team-heading .section-index{grid-column:1/-1}
 .team-heading p{color:#68747d;line-height:1.7;font-size:17px;max-width:360px;margin:0 0 5px;justify-self:end}
@@ -339,6 +391,9 @@ h1 em{position:relative}
   .about-art-disc{width:285px;height:285px}
   .team-heading{grid-template-columns:1fr}
   .team-heading p{justify-self:start;margin-top:20px}
+  .robotics-heading{flex-direction:column;align-items:flex-start;gap:20px}
+  .robotics-heading p{max-width:580px}
+  .robotics-grid{grid-template-columns:1fr}
   .contact-layout{grid-template-columns:1fr;gap:45px}
   .studio-location-card{margin-top:54px;padding:28px}
   .studio-card-content{grid-template-columns:1fr;gap:36px}
@@ -403,6 +458,13 @@ h1 em{position:relative}
   .team-card{min-height:310px;padding:24px}
   .team-monogram{font-size:180px}
   .team-card h3{font-size:55px}
+  .robotics-heading{margin-bottom:32px}
+  .robotics-heading p{font-size:16px}
+  .robotics-card{padding:24px;border-radius:18px}
+  .robotics-card h3{font-size:36px}
+  .robotics-card p{font-size:15px}
+  .robotics-visual{padding:16px;border-radius:14px}
+  .robotics-visual-art{min-height:120px}
   .contact-section{padding:80px 0}
   .contact-layout{grid-template-columns:1fr;gap:60px}
   .contact-copy h2{font-size:clamp(55px,13vw,79px)}
