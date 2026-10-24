@@ -297,13 +297,6 @@
 
             <form id="order-form">
               <div class="form-grid">
-                <div class="form-field full-width">
-                  <label for="ord-catalog-pick">Pilih Cepat dari Katalog <small>(Opsional — otomatis isi harga, HPP &amp; potong stok)</small></label>
-                  <select id="ord-catalog-pick">
-                    <option value="">-- Input Manual / Jasa Kustom --</option>
-                  </select>
-                </div>
-
                 <div class="form-field">
                   <label for="ord-date">Tanggal Pesan</label>
                   <input id="ord-date" type="date" required />
@@ -314,29 +307,48 @@
                   <input id="ord-customer" type="text" placeholder="Contoh: Budi / Umum" required />
                 </div>
 
+                <!-- Bagian Input Multi-Barang / Multi-Komponen -->
                 <div class="form-field full-width">
-                  <label for="ord-product-name">Nama Produk / Pekerjaan</label>
-                  <input id="ord-product-name" type="text" placeholder="Contoh: Arduino Uno R3 / Cetak Bracket" required />
+                  <div class="order-items-box">
+                    <div class="order-items-header">
+                      <div>
+                        <strong style="font-size:13.5px; color:var(--ink);">📦 Rincian Barang / Komponen yang Dibeli</strong>
+                        <div style="font-size:11.5px; color:var(--muted); font-weight:500;">Pilih dari katalog (stok &amp; harga otomatis) atau ketik manual.</div>
+                      </div>
+                      <button type="button" id="btn-add-order-item" class="btn btn-outline btn-sm">
+                        ➕ Tambah Barang / Komponen
+                      </button>
+                    </div>
+
+                    <div id="ord-items-container" class="order-items-list">
+                      <!-- Dirender dinamis oleh admin.js -->
+                    </div>
+
+                    <div class="order-items-footer-strip">
+                      <span id="ord-items-calc-summary">Total: 0 unit</span>
+                      <span style="font-size:11.5px; color:var(--muted);">(Subtotal otomatis mengisi tagihan neto &amp; modal HPP di bawah)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hidden inputs untuk kompatibilitas kalkulator HPP & script lama -->
+                <input id="ord-catalog-pick" type="hidden" value="" />
+                <input id="ord-product-name" type="hidden" value="" />
+                <input id="ord-qty" type="hidden" value="1" />
+
+                <div class="form-field">
+                  <label for="ord-netbill">Total Tagihan Neto (Rp) <small>(Bisa disesuaikan jika ada diskon total)</small></label>
+                  <input id="ord-netbill" type="number" min="0" step="1" placeholder="Contoh: 80000" required />
                 </div>
 
                 <div class="form-field">
-                  <label for="ord-qty">Jumlah (Unit/Pcs)</label>
-                  <input id="ord-qty" type="number" min="1" value="1" required />
-                </div>
-
-                <div class="form-field">
-                  <label for="ord-netbill">Total Tagihan Neto (Rp)</label>
-                  <input id="ord-netbill" type="number" min="0" placeholder="Contoh: 80000" required />
-                </div>
-
-                <div class="form-field">
-                  <label for="ord-hpp">Total HPP Batch (Rp) <small>(Modal)</small></label>
-                  <input id="ord-hpp" type="number" min="0" value="0" required />
+                  <label for="ord-hpp">Total HPP Batch (Rp) <small>(Modal beli / produksi akumulasi)</small></label>
+                  <input id="ord-hpp" type="number" min="0" step="1" value="0" required />
                 </div>
 
                 <div class="form-field" id="ord-wage-field">
                   <label for="ord-wage">Upah dlm HPP (Rp) <small>(Khusus 3D)</small></label>
-                  <input id="ord-wage" type="number" min="0" value="0" />
+                  <input id="ord-wage" type="number" min="0" step="1" value="0" />
                 </div>
 
                 <div class="form-field">
@@ -361,7 +373,7 @@
                 <div class="form-field full-width" style="background:var(--paper); padding:10px 14px; border-radius:12px;">
                   <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin:0;">
                     <input id="ord-deduct-stock" type="checkbox" checked style="width:18px; height:18px;" />
-                    <span>Kurangi stok produk di katalog secara otomatis (jika memilih produk katalog)</span>
+                    <span>Kurangi stok produk di katalog secara otomatis (untuk semua produk yang dipilih dari katalog)</span>
                   </label>
                 </div>
               </div>
@@ -1099,15 +1111,15 @@
           </div>
           <div class="form-field">
             <label for="pf-price">Harga Jual Publik (Rp)</label>
-            <input id="pf-price" type="number" min="100" step="100" placeholder="Contoh: 25000" required />
+            <input id="pf-price" type="number" min="0" step="1" placeholder="Contoh: 25000" required />
           </div>
           <div class="form-field">
             <label for="pf-cost">HPP / Modal Beli Stok (Rp) <small>(Rahasia Admin)</small></label>
-            <input id="pf-cost" type="number" min="0" step="50" placeholder="Contoh: 15000" />
+            <input id="pf-cost" type="number" min="0" step="1" placeholder="Contoh: 15431" />
           </div>
           <div class="form-field">
             <label for="pf-cost-full">Biaya Penuh / Impas (Rp) <small>(HPP + Usaha + Packing)</small></label>
-            <input id="pf-cost-full" type="number" min="0" step="50" placeholder="Contoh: 17500" />
+            <input id="pf-cost-full" type="number" min="0" step="1" placeholder="Contoh: 17500" />
           </div>
           <div class="form-field">
             <label for="pf-stock">Stok Tersedia (pcs)</label>
@@ -1238,15 +1250,15 @@
           </div>
           <div class="form-field">
             <label for="inv-paid-amount">Nominal Telah Dibayar (Rp)</label>
-            <input id="inv-paid-amount" type="number" min="0" step="500" />
+            <input id="inv-paid-amount" type="number" min="0" step="1" />
           </div>
           <div class="form-field">
             <label for="inv-discount">Diskon Ditampilkan (Rp)</label>
-            <input id="inv-discount" type="number" min="0" step="500" value="0" />
+            <input id="inv-discount" type="number" min="0" step="1" value="0" />
           </div>
           <div class="form-field">
             <label for="inv-shipping">Ongkir / Tambahan (Rp)</label>
-            <input id="inv-shipping" type="number" min="0" step="500" value="0" />
+            <input id="inv-shipping" type="number" min="0" step="1" value="0" />
           </div>
           <div class="form-field">
             <label for="inv-spec">Detail / Spesifikasi Item</label>

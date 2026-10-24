@@ -52,7 +52,6 @@ async function createOrder(req, res, next) {
       return res.status(400).json({ ok: false, error: `ID Pesanan "${id}" sudah ada.` });
     }
 
-    const quantity = Math.max(1, Math.round(Number(body.quantity) || 1));
     const netBill = Math.max(0, Math.round(Number(body.netBill) || 0));
     const initialHpp = Math.max(0, Math.round(Number(body.initialHpp) || 0));
     const wageInHpp = Math.max(0, Math.round(Number(body.wageInHpp) || 0));
@@ -60,28 +59,60 @@ async function createOrder(req, res, next) {
     const date = body.date || new Date().toISOString().slice(0, 10);
     const completedDate = status === 'Selesai' ? (body.completedDate || date) : (body.completedDate || '');
 
+    const rawItems = Array.isArray(body.items) && body.items.length > 0 ? body.items : null;
+    const items = rawItems
+      ? rawItems.map((it) => {
+          const itQty = Math.max(1, Math.round(Number(it.quantity) || 1));
+          const itPrice = Math.max(0, Math.round(Number(it.price) || 0));
+          const itHpp = Math.max(0, Math.round(Number(it.hpp) || 0));
+          return {
+            productId: String(it.productId || '').trim(),
+            productName: String(it.productName || 'Komponen').trim(),
+            quantity: itQty,
+            price: itPrice,
+            hpp: itHpp,
+            subtotal: Math.max(0, Math.round(Number(it.subtotal) || (itQty * itPrice)))
+          };
+        })
+      : [{
+          productId: String(body.productId || '').trim(),
+          productName: String(body.productName || 'Pesanan').trim(),
+          quantity: Math.max(1, Math.round(Number(body.quantity) || 1)),
+          price: Math.max(0, Math.round(Number(body.price || (Number(body.netBill) || 0) / (Number(body.quantity) || 1)))),
+          hpp: Math.max(0, Math.round(Number(body.hpp || (Number(body.initialHpp) || 0) / (Number(body.quantity) || 1)))),
+          subtotal: Math.max(0, Math.round(Number(body.netBill) || 0))
+        }];
+
+    const totalQuantity = items.reduce((sum, it) => sum + it.quantity, 0);
+    const summaryProductName = String(body.productName || '').trim() || items.map((it) => `${it.productName} (${it.quantity}x)`).join(', ');
+
     const newOrder = {
       id,
       unit,
       date,
       completedDate,
       customer: String(body.customer || 'Pelanggan').trim(),
-      productName: String(body.productName || 'Pesanan').trim(),
-      productId: String(body.productId || '').trim(),
-      quantity,
+      productName: summaryProductName,
+      productId: items[0]?.productId || String(body.productId || '').trim(),
+      quantity: totalQuantity,
       netBill,
       status,
       initialHpp,
       wageInHpp,
       proofUrl: String(body.proofUrl || '').trim(),
-      notes: String(body.notes || '').trim()
+      notes: String(body.notes || '').trim(),
+      items
     };
 
-    if (body.deductStock && newOrder.productId) {
-      const prod = (db.catalog || []).find((p) => p.id === newOrder.productId);
-      if (prod) {
-        prod.stock = Math.max(0, (Number(prod.stock) || 0) - quantity);
-        prod.updated_at = date;
+    if (body.deductStock) {
+      for (const it of items) {
+        if (it.productId) {
+          const prod = (db.catalog || []).find((p) => p.id === it.productId);
+          if (prod) {
+            prod.stock = Math.max(0, (Number(prod.stock) || 0) - it.quantity);
+            prod.updated_at = date;
+          }
+        }
       }
     }
 
@@ -157,7 +188,8 @@ async function updateOrder(req, res, next) {
       wageInHpp: body.wageInHpp !== undefined ? Math.max(0, Math.round(Number(body.wageInHpp))) : existing.wageInHpp,
       status: nextStatus,
       completedDate: nextStatus === 'Selesai' && !existing.completedDate ? new Date().toISOString().slice(0, 10) : (body.completedDate ?? existing.completedDate),
-      notes: body.notes !== undefined ? String(body.notes).trim() : existing.notes
+      notes: body.notes !== undefined ? String(body.notes).trim() : existing.notes,
+      items: Array.isArray(body.items) ? body.items : existing.items
     };
 
     db.orders[idx] = updated;

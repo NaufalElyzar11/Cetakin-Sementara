@@ -1365,6 +1365,151 @@ body.admin-body {
   color: #c2410c;
 }
 
+/* =========================================================
+   KOMPONEN MULTI-ITEM PESANAN (KASIR CEPAT & NOTA LENGKAP)
+   ========================================================= */
+.order-items-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-items-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.order-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-item-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease;
+}
+
+.order-item-card:focus-within {
+  border-color: #38bdf8;
+}
+
+.order-item-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.order-item-num {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.order-item-catalog {
+  flex: 1;
+  font-size: 12px !important;
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
+  background: #f1f5f9;
+  border-color: #cbd5e1 !important;
+  font-weight: 600;
+}
+
+.ord-item-remove-btn {
+  padding: 4px 9px !important;
+  font-size: 11px !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+  border-radius: 8px !important;
+  background: #fff5f5;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.ord-item-remove-btn:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.order-item-card-grid {
+  display: grid;
+  grid-template-columns: 2fr 75px 1.1fr 1.1fr 1.1fr;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.order-item-card-grid .form-field {
+  gap: 3px;
+}
+
+.order-item-card-grid .form-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.order-item-card-grid input {
+  padding: 7px 10px !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+}
+
+.ord-item-subtotal-val {
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-weight: 800;
+  font-family: 'Outfit', sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.order-items-footer-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+@media (max-width: 860px) {
+  .order-item-card-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .order-item-card-grid .form-field:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
 /* Aturan Cetak Khusus Nota (@media print) */
 @media print {
   @page {

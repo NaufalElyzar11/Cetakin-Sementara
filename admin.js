@@ -110,6 +110,7 @@
     if ($('#ord-date')) $('#ord-date').value = today;
     if ($('#mut-date')) $('#mut-date').value = today;
     if ($('#qp-date')) $('#qp-date').value = today;
+    renderOrderFormItems();
 
     if (!state.token) return;
     try {
@@ -386,14 +387,18 @@
     for (const o of orders) {
       const badgeClass = o.status === 'Selesai' ? 'badge-success' : o.status === 'Proses' ? 'badge-warn' : 'badge-danger';
       const tr = document.createElement('tr');
+      const itemsCountBadge = (Array.isArray(o.items) && o.items.length > 1)
+        ? `<div style="font-size:11px; color:#0284c7; font-weight:700; margin-top:2px;">📦 ${o.items.length} macam barang (${o.quantity} pcs total)</div>`
+        : '';
       tr.innerHTML = `
         <td>
           <strong>${o.id}</strong>
           <div style="font-size:11px; color:var(--muted);">${o.date}</div>
         </td>
         <td>
-          <strong>${o.productName}</strong>
-          <div style="font-size:11px; color:var(--muted);">👤 ${o.customer}</div>
+          <strong>${escapeHtml(o.productName)}</strong>
+          ${itemsCountBadge}
+          <div style="font-size:11px; color:var(--muted);">👤 ${escapeHtml(o.customer)}</div>
         </td>
         <td>${o.quantity} pcs</td>
         <td><strong>${money(o.netBill)}</strong></td>
@@ -545,47 +550,235 @@
   }
 
   // =========================================================
-  // 4. FORM INPUT PESANAN, MUTASI KAS, UPAH, & PENCAIRAN QRIS
+  // 4. FORM INPUT PESANAN MULTI-ITEM, MUTASI KAS & UPAH
   // =========================================================
-  function populateOrderCatalogPicker() {
-    const select = $('#ord-catalog-pick');
-    if (!select) return;
+  state.orderFormItems = [
+    { productId: '', productName: '', quantity: 1, price: 0, hpp: 0 }
+  ];
+
+  function getCatalogOptionsForUnit() {
     const targetType = state.activeUnit === 'robotika' ? 'robotika' : 'gantungan-kunci';
-    const items = state.catalog.filter((p) => p.type === targetType);
-    select.replaceChildren(new Option('-- Input Manual / Jasa Kustom --', ''));
-    for (const item of items) {
-      select.add(new Option(`[${item.id}] ${item.name} — Jual: ${money(item.price)} | HPP: ${money(item.cost_price || 0)} (Stok: ${item.stock})`, item.id));
+    return (state.catalog || []).filter((p) => p.type === targetType);
+  }
+
+  function renderOrderFormItems() {
+    const container = $('#ord-items-container');
+    if (!container) return;
+    if (!state.orderFormItems || !state.orderFormItems.length) {
+      state.orderFormItems = [{ productId: '', productName: '', quantity: 1, price: 0, hpp: 0 }];
     }
+
+    const catalogItems = getCatalogOptionsForUnit();
+    container.replaceChildren();
+
+    state.orderFormItems.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'order-item-card';
+      card.dataset.index = idx;
+
+      const optionsHtml = [
+        `<option value="">-- Ketik Manual / Jasa Kustom --</option>`,
+        ...catalogItems.map(
+          (c) => `<option value="${c.id}" ${c.id === item.productId ? 'selected' : ''}>[${c.id}] ${c.name} (Stok: ${c.stock}) — Jual: ${money(c.price)} | HPP: ${money(c.cost_price || 0)}</option>`
+        )
+      ].join('');
+
+      const subtotal = Math.max(0, (Number(item.quantity) || 1) * (Number(item.price) || 0));
+
+      card.innerHTML = `
+        <div class="order-item-card-top">
+          <span class="order-item-num">#${idx + 1}</span>
+          <select class="ord-item-catalog" title="Pilih Cepat dari Katalog">
+            ${optionsHtml}
+          </select>
+          <button type="button" class="btn btn-outline btn-sm ord-item-remove-btn" title="Hapus baris ini">✕</button>
+        </div>
+        <div class="order-item-card-grid">
+          <div class="form-field">
+            <label>Nama Barang / Komponen</label>
+            <input type="text" class="ord-item-name" value="${escapeHtml(item.productName || '')}" placeholder="Contoh: Sensor Ultrasonik HC-SR04" required />
+          </div>
+          <div class="form-field">
+            <label>Qty (pcs)</label>
+            <input type="number" min="1" step="1" class="ord-item-qty" value="${item.quantity || 1}" required />
+          </div>
+          <div class="form-field">
+            <label>Harga Satuan (Rp)</label>
+            <input type="number" min="0" step="1" class="ord-item-price" value="${item.price ?? 0}" required />
+          </div>
+          <div class="form-field">
+            <label>HPP Satuan (Rp)</label>
+            <input type="number" min="0" step="1" class="ord-item-cost" value="${item.hpp ?? 0}" />
+          </div>
+          <div class="form-field">
+            <label>Subtotal (Rp)</label>
+            <div class="ord-item-subtotal-val">${money(subtotal)}</div>
+          </div>
+        </div>
+      `;
+
+      const catSelect = card.querySelector('.ord-item-catalog');
+      const nameInput = card.querySelector('.ord-item-name');
+      const qtyInput = card.querySelector('.ord-item-qty');
+      const priceInput = card.querySelector('.ord-item-price');
+      const costInput = card.querySelector('.ord-item-cost');
+      const subtotalVal = card.querySelector('.ord-item-subtotal-val');
+      const removeBtn = card.querySelector('.ord-item-remove-btn');
+
+      catSelect?.addEventListener('change', () => {
+        const prodId = catSelect.value;
+        item.productId = prodId;
+        if (prodId) {
+          const prod = (state.catalog || []).find((p) => p.id === prodId);
+          if (prod) {
+            item.productName = prod.name;
+            item.price = prod.price;
+            item.hpp = prod.cost_price || 0;
+            nameInput.value = prod.name;
+            priceInput.value = prod.price;
+            costInput.value = prod.cost_price || 0;
+          }
+        }
+        recalcRow();
+      });
+
+      const recalcRow = () => {
+        item.productName = nameInput.value.trim();
+        item.quantity = Math.max(1, Math.round(Number(qtyInput.value) || 1));
+        item.price = Math.max(0, Math.round(Number(priceInput.value) || 0));
+        item.hpp = Math.max(0, Math.round(Number(costInput.value) || 0));
+        subtotalVal.textContent = money(item.quantity * item.price);
+        recalcOrderFormTotals();
+      };
+
+      nameInput?.addEventListener('input', () => {
+        item.productName = nameInput.value;
+        updateOrderSummaryFields();
+      });
+      qtyInput?.addEventListener('input', recalcRow);
+      priceInput?.addEventListener('input', recalcRow);
+      costInput?.addEventListener('input', recalcRow);
+
+      removeBtn?.addEventListener('click', () => {
+        if (state.orderFormItems.length > 1) {
+          state.orderFormItems.splice(idx, 1);
+        } else {
+          state.orderFormItems = [{ productId: '', productName: '', quantity: 1, price: 0, hpp: 0 }];
+        }
+        renderOrderFormItems();
+      });
+
+      container.appendChild(card);
+    });
+
+    recalcOrderFormTotals();
   }
 
-  function syncCatalogOrderFields() {
-    const prodId = $('#ord-catalog-pick').value;
-    if (!prodId) return;
-    const prod = state.catalog.find((p) => p.id === prodId);
-    if (!prod) return;
-    const qty = Math.max(1, Number($('#ord-qty').value) || 1);
-    $('#ord-product-name').value = prod.name;
-    $('#ord-netbill').value = prod.price * qty;
-    $('#ord-hpp').value = (prod.cost_price || Math.round(prod.price * 0.6)) * qty;
+  function recalcOrderFormTotals() {
+    let totalQty = 0;
+    let totalBill = 0;
+    let totalHpp = 0;
+
+    for (const it of state.orderFormItems) {
+      const q = Math.max(1, Math.round(Number(it.quantity) || 1));
+      const p = Math.max(0, Math.round(Number(it.price) || 0));
+      const h = Math.max(0, Math.round(Number(it.hpp) || 0));
+      totalQty += q;
+      totalBill += q * p;
+      totalHpp += q * h;
+    }
+
+    const netbillInput = $('#ord-netbill');
+    const hppInput = $('#ord-hpp');
+    const summarySpan = $('#ord-items-calc-summary');
+    const hiddenQty = $('#ord-qty');
+
+    if (netbillInput) netbillInput.value = totalBill;
+    if (hppInput) hppInput.value = totalHpp;
+    if (hiddenQty) hiddenQty.value = totalQty;
+    if (summarySpan) {
+      summarySpan.textContent = `Total: ${totalQty} unit · Tagihan: ${money(totalBill)} · HPP: ${money(totalHpp)}`;
+    }
+    updateOrderSummaryFields();
   }
 
-  $('#ord-catalog-pick')?.addEventListener('change', syncCatalogOrderFields);
-  $('#ord-qty')?.addEventListener('input', syncCatalogOrderFields);
+  function updateOrderSummaryFields() {
+    const hiddenName = $('#ord-product-name');
+    if (!hiddenName) return;
+    const validNames = state.orderFormItems
+      .filter((it) => it.productName)
+      .map((it) => `${it.productName} (${it.quantity || 1}x)`);
+    hiddenName.value = validNames.join(', ') || 'Pesanan Komponen';
+  }
+
+  function addOrderFormItem(initialData = {}) {
+    state.orderFormItems.push({
+      productId: initialData.productId || '',
+      productName: initialData.productName || '',
+      quantity: initialData.quantity || 1,
+      price: initialData.price || 0,
+      hpp: initialData.hpp || 0
+    });
+    renderOrderFormItems();
+  }
+
+  function setOrderFormItems(items) {
+    if (!Array.isArray(items) || !items.length) {
+      state.orderFormItems = [{ productId: '', productName: '', quantity: 1, price: 0, hpp: 0 }];
+    } else {
+      state.orderFormItems = items.map((it) => ({
+        productId: it.productId || '',
+        productName: it.productName || '',
+        quantity: Math.max(1, Number(it.quantity) || 1),
+        price: Math.max(0, Number(it.price) || 0),
+        hpp: Math.max(0, Number(it.hpp) || 0)
+      }));
+    }
+    renderOrderFormItems();
+  }
+
+  function populateOrderCatalogPicker() {
+    renderOrderFormItems();
+  }
+
+  $('#btn-add-order-item')?.addEventListener('click', () => {
+    addOrderFormItem();
+  });
 
   $('#order-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
       const payAcc = $('#ord-pay-account').value;
       const netBill = Number($('#ord-netbill').value) || 0;
+      const initialHpp = Number($('#ord-hpp').value) || 0;
+
+      const items = state.orderFormItems.map((it) => {
+        const q = Math.max(1, Math.round(Number(it.quantity) || 1));
+        const p = Math.max(0, Math.round(Number(it.price) || 0));
+        const h = Math.max(0, Math.round(Number(it.hpp) || 0));
+        return {
+          productId: it.productId || '',
+          productName: it.productName || 'Komponen',
+          quantity: q,
+          price: p,
+          hpp: h,
+          subtotal: q * p
+        };
+      });
+
+      const totalQuantity = items.reduce((sum, it) => sum + it.quantity, 0);
+      const summaryProductName = items.map((it) => `${it.productName} (${it.quantity}x)`).join(', ') || 'Pesanan Komponen';
+
       const payload = {
         unit: state.activeUnit,
         date: $('#ord-date').value,
         customer: $('#ord-customer').value,
-        productId: $('#ord-catalog-pick').value,
-        productName: $('#ord-product-name').value,
-        quantity: Number($('#ord-qty').value) || 1,
+        items,
+        productId: items[0]?.productId || '',
+        productName: summaryProductName,
+        quantity: totalQuantity,
         netBill,
-        initialHpp: Number($('#ord-hpp').value) || 0,
+        initialHpp,
         wageInHpp: state.activeUnit === '3d-print' ? (Number($('#ord-wage').value) || 0) : 0,
         status: $('#ord-status').value,
         deductStock: $('#ord-deduct-stock').checked,
@@ -597,8 +790,7 @@
       await apiFetch('./api/finance/orders', { method: 'POST', body: payload });
       showToast('✅ Pesanan & transaksi berhasil disimpan!');
       $('#ord-customer').value = '';
-      $('#ord-product-name').value = '';
-      $('#ord-catalog-pick').value = '';
+      setOrderFormItems([{ productId: '', productName: '', quantity: 1, price: 0, hpp: 0 }]);
       await Promise.all([loadDashboardData(), loadAdminCatalog()]);
     } catch (err) {
       showToast(err.message);
@@ -944,10 +1136,11 @@
     if (!state.lastJasaCalc) return;
     state.activeUnit = '3d-print';
     updateUnitButtons();
-    $('#ord-product-name').value = `${$('#cj-name').value} (Layer ${state.lastJasaCalc.layer}mm · ${state.lastJasaCalc.billableGrams}g)`;
-    $('#ord-qty').value = state.lastJasaCalc.units;
-    $('#ord-netbill').value = state.lastJasaCalc.netRevenueBatch;
-    $('#ord-hpp').value = state.lastJasaCalc.hppBatch;
+    const name = `${$('#cj-name').value} (Layer ${state.lastJasaCalc.layer}mm · ${state.lastJasaCalc.billableGrams}g)`;
+    const units = state.lastJasaCalc.units || 1;
+    const unitPrice = Math.round(state.lastJasaCalc.netRevenueBatch / units);
+    const unitHpp = Math.round(state.lastJasaCalc.hppBatch / units);
+    setOrderFormItems([{ productId: '', productName: name, quantity: units, price: unitPrice, hpp: unitHpp }]);
     $('#ord-wage').value = state.lastJasaCalc.laborCost;
     switchTab('tab-ledger');
     showToast('Data HPP Jasa Print disalin ke form pesanan!');
@@ -957,10 +1150,11 @@
     if (!state.lastClickerCalc) return;
     state.activeUnit = '3d-print';
     updateUnitButtons();
-    $('#ord-product-name').value = `Clicker Custom ${state.lastClickerCalc.buttons} Tombol`;
-    $('#ord-qty').value = state.lastClickerCalc.units;
-    $('#ord-netbill').value = state.lastClickerCalc.netRevenueBatch;
-    $('#ord-hpp').value = state.lastClickerCalc.hppBatch;
+    const name = `Clicker Custom ${state.lastClickerCalc.buttons} Tombol`;
+    const units = state.lastClickerCalc.units || 1;
+    const unitPrice = Math.round(state.lastClickerCalc.netRevenueBatch / units);
+    const unitHpp = Math.round(state.lastClickerCalc.hppBatch / units);
+    setOrderFormItems([{ productId: '', productName: name, quantity: units, price: unitPrice, hpp: unitHpp }]);
     $('#ord-wage').value = state.lastClickerCalc.laborBatchCost;
     switchTab('tab-ledger');
     showToast('Data HPP Clicker disalin ke form pesanan!');
@@ -970,10 +1164,11 @@
     if (!state.lastRoboCalc) return;
     state.activeUnit = 'robotika';
     updateUnitButtons();
-    $('#ord-product-name').value = $('#cr-name').value;
-    $('#ord-qty').value = state.lastRoboCalc.units;
-    $('#ord-netbill').value = state.lastRoboCalc.netRevenueBatch;
-    $('#ord-hpp').value = state.lastRoboCalc.hppBatch;
+    const name = $('#cr-name').value;
+    const units = state.lastRoboCalc.units || 1;
+    const unitPrice = Math.round(state.lastRoboCalc.netRevenueBatch / units);
+    const unitHpp = Math.round(state.lastRoboCalc.hppBatch / units);
+    setOrderFormItems([{ productId: '', productName: name, quantity: units, price: unitPrice, hpp: unitHpp }]);
     switchTab('tab-ledger');
     showToast('Data HPP Robotika disalin ke form pesanan!');
   });
@@ -1430,7 +1625,7 @@
     $('#inv-paid-amount').value = defaultPaid;
     $('#inv-discount').value = 0;
     $('#inv-shipping').value = 0;
-    $('#inv-spec').value = defaultSpec;
+    $('#inv-spec').value = (order.items && order.items.length > 1) ? '' : defaultSpec;
     $('#inv-note').value = defaultNote;
 
     $('#invoice-edit-panel').hidden = true;
@@ -1448,15 +1643,52 @@
     const discount = Math.max(0, Math.round(Number($('#inv-discount')?.value) || 0));
     const shipping = Math.max(0, Math.round(Number($('#inv-shipping')?.value) || 0));
     const paidAmount = Math.max(0, Math.round(Number($('#inv-paid-amount')?.value) || 0));
-    const spec = ($('#inv-spec')?.value || '').trim();
+    const customSpec = ($('#inv-spec')?.value || '').trim();
     const buyerNote = ($('#inv-note')?.value || '').trim();
 
-    const qty = Math.max(1, Number(order.quantity) || 1);
+    let items = [];
+    if (Array.isArray(order.items) && order.items.length > 0) {
+      items = order.items.map((it) => {
+        const prodMatch = (state.catalog || []).find(
+          (p) => p.id === it.productId || (it.productName && p.name.toLowerCase() === it.productName.toLowerCase())
+        );
+        let itemSpec = it.spec || '';
+        if (!itemSpec && prodMatch) {
+          itemSpec = isRobo
+            ? (prodMatch.category ? `Kategori: ${prodMatch.category} · Kode: ${prodMatch.sku || prodMatch.id}` : '')
+            : (prodMatch.material ? `Material: ${prodMatch.material}` : '');
+        }
+        if (customSpec && order.items.length === 1) {
+          itemSpec = customSpec;
+        }
+        const q = Math.max(1, Number(it.quantity) || 1);
+        const p = Math.max(0, Math.round(Number(it.price) || 0));
+        const sub = Math.max(0, Math.round(Number(it.subtotal) || (q * p)));
+        return {
+          name: it.productName || 'Komponen',
+          spec: itemSpec,
+          qty: q,
+          unitPrice: p,
+          subtotal: sub
+        };
+      });
+    } else {
+      const q = Math.max(1, Number(order.quantity) || 1);
+      const netBillBase = Math.max(0, Number(order.netBill) || 0);
+      const p = Math.round(netBillBase / q);
+      items = [{
+        name: order.productName || 'Pesanan',
+        spec: customSpec,
+        qty: q,
+        unitPrice: p,
+        subtotal: netBillBase
+      }];
+    }
+
+    const itemsSubtotalSum = items.reduce((sum, it) => sum + it.subtotal, 0);
     const netBillBase = Math.max(0, Number(order.netBill) || 0);
-    // Subtotal produk sebelum diskon (agar jika admin isi diskon Rp 5.000, harga barang terlihat Rp X+5.000 lalu dipotong Rp 5.000)
-    const itemSubtotal = netBillBase + discount;
-    const unitPrice = Math.round(itemSubtotal / qty);
-    const grandTotal = Math.max(0, netBillBase + shipping);
+    const itemSubtotal = itemsSubtotalSum > 0 ? itemsSubtotalSum : (netBillBase + discount);
+    const grandTotal = Math.max(0, itemSubtotal - discount + shipping);
     const remaining = Math.max(0, grandTotal - paidAmount);
 
     let payStatus = 'LUNAS';
@@ -1491,9 +1723,10 @@
       completedDateFormatted: order.completedDate ? formatIndoDate(order.completedDate) : (order.status === 'Selesai' ? formatIndoDate(order.date) : 'Sedang Diproses'),
       customer,
       productName: order.productName,
-      spec,
-      qty,
-      unitPrice,
+      items,
+      spec: customSpec,
+      qty: items.reduce((s, it) => s + it.qty, 0),
+      unitPrice: items.length === 1 ? items[0].unitPrice : Math.round(itemSubtotal / (items.reduce((s, it) => s + it.qty, 0) || 1)),
       itemSubtotal,
       discount,
       shipping,
@@ -1598,16 +1831,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td style="text-align:center; font-weight:700; color:#64748b;">1</td>
-              <td>
-                <div class="inv-item-title">${escapeHtml(vm.productName)}</div>
-                ${vm.spec ? `<div class="inv-item-spec">${escapeHtml(vm.spec)}</div>` : ''}
-              </td>
-              <td style="text-align:center; font-weight:700;">${vm.qty} pcs</td>
-              <td style="text-align:right;">${money(vm.unitPrice)}</td>
-              <td style="text-align:right; font-weight:800; color:#0f172a;">${money(vm.itemSubtotal)}</td>
-            </tr>
+            ${vm.items.map((it, idx) => `
+              <tr>
+                <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
+                <td>
+                  <div class="inv-item-title">${escapeHtml(it.name)}</div>
+                  ${it.spec ? `<div class="inv-item-spec">${escapeHtml(it.spec)}</div>` : ''}
+                </td>
+                <td style="text-align:center; font-weight:700;">${it.qty} pcs</td>
+                <td style="text-align:right;">${money(it.unitPrice)}</td>
+                <td style="text-align:right; font-weight:800; color:#0f172a;">${money(it.subtotal)}</td>
+              </tr>
+            `).join('')}
           </tbody>
         </table>
 
@@ -1710,7 +1945,42 @@
   async function renderInvoiceToCanvas(vm) {
     const logoImg = await loadLogoImage();
     const W = 1600;
-    const H = 1920;
+    const padX = 80;
+    const tableW = W - padX * 2;
+    const thH = 66;
+
+    // Canvas sementara untuk mengukur teks & kalkulasi tinggi dinamis
+    const measureCanvas = document.createElement('canvas');
+    const mCtx = measureCanvas.getContext('2d');
+
+    const preparedItems = vm.items.map((it) => {
+      mCtx.font = '800 26px Outfit, sans-serif';
+      const titleLines = wrapCanvasText(mCtx, it.name, 680);
+      mCtx.font = '500 20px "DM Sans", sans-serif';
+      const specLines = it.spec ? wrapCanvasText(mCtx, it.spec, 680) : [];
+      const textBlockH = titleLines.length * 32 + (specLines.length ? specLines.length * 26 + 6 : 0);
+      const rowH = Math.max(76, textBlockH + 34);
+      return { it, titleLines, specLines, rowH };
+    });
+
+    const totalRowsH = preparedItems.reduce((sum, p) => sum + p.rowH, 0);
+
+    mCtx.font = '700 23px "DM Sans", sans-serif';
+    const leftColW = 790;
+    const terbLines = wrapCanvasText(mCtx, vm.terbilang, leftColW - 60);
+    const terbBoxH = 66 + terbLines.length * 32;
+
+    mCtx.font = '500 21px "DM Sans", sans-serif';
+    const noteLines = wrapCanvasText(mCtx, vm.buyerNote, leftColW - 64);
+    const noteBoxH = 74 + noteLines.length * 31;
+
+    const leftColH = terbBoxH + 26 + noteBoxH;
+    const sumBoxH = 340 + (vm.discount > 0 ? 42 : 0) + (vm.shipping > 0 ? 42 : 0);
+    const bottomH = Math.max(leftColH, sumBoxH);
+
+    const neededH = 550 + thH + totalRowsH + 42 + bottomH + 280;
+    const H = Math.max(1920, Math.ceil(neededH));
+
     const canvas = document.createElement('canvas');
     canvas.width = W;
     canvas.height = H;
@@ -1905,15 +2175,9 @@
 
     // 6. Tabel Daftar Item Pesanan
     curY += cardH + 40;
-    const tableW = W - padX * 2;
-    const thH = 66;
-
-    ctx.font = '500 22px "DM Sans", sans-serif';
-    const specLines = vm.spec ? wrapCanvasText(ctx, vm.spec, 680) : [];
-    const rowH = Math.max(125, 84 + specLines.length * 30);
 
     // Table Outer Box
-    drawRoundRect(ctx, padX, curY, tableW, thH + rowH, 22);
+    drawRoundRect(ctx, padX, curY, tableW, thH + totalRowsH, 22);
     ctx.fillStyle = '#ffffff';
     ctx.fill();
     ctx.lineWidth = 2;
@@ -1939,45 +2203,59 @@
     ctx.fillText('SUBTOTAL', W - padX - 36, curY + 41);
     ctx.textAlign = 'left';
 
-    // Table Row Content
-    const itemY = curY + thH + 48;
-    ctx.font = '700 24px "DM Sans", sans-serif';
-    ctx.fillStyle = '#64748b';
-    ctx.fillText('1', padX + 38, itemY);
+    // Table Row Content Multi-Item
+    let rowTopY = curY + thH;
+    preparedItems.forEach((pi, idx) => {
+      if (idx > 0) {
+        ctx.beginPath();
+        ctx.moveTo(padX, rowTopY);
+        ctx.lineTo(padX + tableW, rowTopY);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#f1f5f9';
+        ctx.stroke();
+      }
 
-    ctx.font = '800 28px Outfit, sans-serif';
-    ctx.fillStyle = '#0f172a';
-    const titleLines = wrapCanvasText(ctx, vm.productName, 700);
-    let textY = itemY;
-    for (const tl of titleLines) {
-      ctx.fillText(tl, padX + 110, textY);
-      textY += 34;
-    }
+      const itemTextY = rowTopY + 38;
 
-    ctx.font = '500 21px "DM Sans", sans-serif';
-    ctx.fillStyle = '#64748b';
-    for (const sl of specLines) {
-      ctx.fillText(sl, padX + 110, textY);
-      textY += 29;
-    }
+      ctx.font = '700 24px "DM Sans", sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.fillText(String(idx + 1), padX + 38, itemTextY);
 
-    ctx.textAlign = 'center';
-    ctx.font = '700 25px "DM Sans", sans-serif';
-    ctx.fillStyle = '#0f172a';
-    ctx.fillText(`${vm.qty} pcs`, padX + 910, itemY);
+      ctx.font = '800 26px Outfit, sans-serif';
+      ctx.fillStyle = '#0f172a';
+      let textY = itemTextY;
+      for (const tl of pi.titleLines) {
+        ctx.fillText(tl, padX + 110, textY);
+        textY += 32;
+      }
 
-    ctx.textAlign = 'right';
-    ctx.font = '600 25px "DM Sans", sans-serif';
-    ctx.fillStyle = '#334155';
-    ctx.fillText(money(vm.unitPrice), padX + 1160, itemY);
+      ctx.font = '500 20px "DM Sans", sans-serif';
+      ctx.fillStyle = '#64748b';
+      for (const sl of pi.specLines) {
+        ctx.fillText(sl, padX + 110, textY);
+        textY += 28;
+      }
 
-    ctx.font = '800 27px Outfit, sans-serif';
-    ctx.fillStyle = '#0f172a';
-    ctx.fillText(money(vm.itemSubtotal), W - padX - 36, itemY);
-    ctx.textAlign = 'left';
+      ctx.textAlign = 'center';
+      ctx.font = '700 25px "DM Sans", sans-serif';
+      ctx.fillStyle = '#0f172a';
+      ctx.fillText(`${pi.it.qty} pcs`, padX + 910, itemTextY);
+
+      ctx.textAlign = 'right';
+      ctx.font = '600 25px "DM Sans", sans-serif';
+      ctx.fillStyle = '#334155';
+      ctx.fillText(money(pi.it.unitPrice), padX + 1160, itemTextY);
+
+      ctx.font = '800 27px Outfit, sans-serif';
+      ctx.fillStyle = '#0f172a';
+      ctx.fillText(money(pi.it.subtotal), W - padX - 36, itemTextY);
+      ctx.textAlign = 'left';
+
+      rowTopY += pi.rowH;
+    });
 
     // 7. Bagian Bawah: Kiri (Terbilang & Catatan) | Kanan (Ringkasan Tagihan)
-    curY += thH + rowH + 42;
+    curY += thH + totalRowsH + 42;
     const leftColW = 790;
     const rightColW = tableW - leftColW - 44;
     const rightColX = padX + leftColW + 44;

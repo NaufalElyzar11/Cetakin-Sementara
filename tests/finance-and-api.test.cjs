@@ -196,6 +196,130 @@ test('API Server: Role Guard, CRUD Katalog, Keuangan 2 Divisi, dan Rekonsiliasi 
     });
     assert.equal(forbiddenCreate.status, 403); // Admin 3D ditolak membuat item Robotika
 
+    // 5. Admin Robotika membuat / mengupdate katalog dengan harga / HPP tidak genap (cth: 15431)
+    const testId1 = 'test-robo-exact-' + Date.now();
+    const testId2 = 'test-robo-servo-' + Date.now();
+
+    const nonRoundCatalogRes = await fetch(`${base}/api/admin/catalog`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${adminRoboAuth.token}`
+      },
+      body: JSON.stringify({
+        id: testId1,
+        type: 'robotika',
+        name: 'Sensor Suhu DS18B20 Presisi',
+        category: 'Sensor',
+        price: 24789,
+        cost_price: 15431,
+        stock: 20
+      })
+    });
+    assert.equal(nonRoundCatalogRes.status, 201);
+    const nonRoundCat = await nonRoundCatalogRes.json();
+    assert.equal(nonRoundCat.product.cost_price, 15431);
+    assert.equal(nonRoundCat.product.price, 24789);
+
+    // Buat item kedua untuk tes multi-item order
+    const catItem2Res = await fetch(`${base}/api/admin/catalog`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${adminRoboAuth.token}`
+      },
+      body: JSON.stringify({
+        id: testId2,
+        type: 'robotika',
+        name: 'Micro Servo SG90 Metal',
+        category: 'Motor & Servo',
+        price: 35000,
+        cost_price: 22000,
+        stock: 15
+      })
+    });
+    assert.equal(catItem2Res.status, 201);
+
+    // 6. Admin Robotika menginput pesanan multi-item sekaligus dalam 1 nota
+    const multiOrderRes = await fetch(`${base}/api/finance/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${adminRoboAuth.token}`
+      },
+      body: JSON.stringify({
+        unit: 'robotika',
+        date: '2026-10-25',
+        customer: 'Pak Hendra (Laboratorium IoT)',
+        items: [
+          {
+            productId: testId1,
+            productName: 'Sensor Suhu DS18B20 Presisi',
+            quantity: 3,
+            price: 24789,
+            hpp: 15431
+          },
+          {
+            productId: testId2,
+            productName: 'Micro Servo SG90 Metal',
+            quantity: 2,
+            price: 35000,
+            hpp: 22000
+          }
+        ],
+        netBill: (3 * 24789) + (2 * 35000), // 74367 + 70000 = 144367
+        initialHpp: (3 * 15431) + (2 * 22000), // 46293 + 44000 = 90293
+        status: 'Selesai',
+        deductStock: true,
+        autoRecordPayment: true,
+        paymentAccount: 'Merchant',
+        paidAmount: 144367
+      })
+    });
+
+    assert.equal(multiOrderRes.status, 201);
+    const multiOrderData = await multiOrderRes.json();
+    assert.equal(multiOrderData.ok, true);
+    assert.equal(multiOrderData.order.items.length, 2);
+    assert.equal(multiOrderData.order.quantity, 5); // 3 + 2
+    assert.equal(multiOrderData.order.netBill, 144367);
+    assert.equal(multiOrderData.order.initialHpp, 90293);
+
+    // Verifikasi stok katalog terpotong otomatis untuk SEMUA barang dalam order
+    const catCheck1 = await (await fetch(`${base}/api/admin/catalog`, {
+      headers: { Authorization: `Bearer ${adminRoboAuth.token}` }
+    })).json();
+    const item1 = catCheck1.products.find((p) => p.id === testId1);
+    const item2 = catCheck1.products.find((p) => p.id === testId2);
+    assert.equal(item1.stock, 20 - 3); // 17
+    assert.equal(item2.stock, 15 - 2); // 13
+
+    // Bersihkan data tes agar idempotent
+    if (multiOrderData?.order?.id) {
+      const roboDashCheck = await (await fetch(`${base}/api/finance/dashboard`, {
+        headers: { Authorization: `Bearer ${adminRoboAuth.token}` }
+      })).json();
+      const relatedMuts = (roboDashCheck.units.robotika.mutations || []).filter((m) => m.orderId === multiOrderData.order.id);
+      for (const m of relatedMuts) {
+        await fetch(`${base}/api/finance/mutations/${encodeURIComponent(m.id)}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${adminRoboAuth.token}` }
+        });
+      }
+      await fetch(`${base}/api/finance/orders/${encodeURIComponent(multiOrderData.order.id)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminRoboAuth.token}` }
+      });
+    }
+    await fetch(`${base}/api/admin/catalog/${encodeURIComponent(testId1)}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${adminRoboAuth.token}` }
+    });
+    await fetch(`${base}/api/admin/catalog/${encodeURIComponent(testId2)}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${adminRoboAuth.token}` }
+    });
+
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }
