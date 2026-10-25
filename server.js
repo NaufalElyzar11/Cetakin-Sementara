@@ -63,8 +63,16 @@ app.get(['/panduan', '/panduan/', '/panduan.html'], (req, res) => {
   res.sendFile(path.join(__dirname, 'panduan.html'));
 });
 
+app.get(['/projek', '/projek/'], (req, res) => {
+  res.redirect(302, '/projek.html');
+});
+
+app.get('/projek.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'projek.html'));
+});
+
 app.get(['/gantungan-kunci', '/gantungan-kunci/', '/gantungan-kunci.html'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'gantungan-kunci.html'));
+  res.redirect(302, '/projek.html');
 });
 
 app.get(['/produk', '/produk/', '/produk.html'], (req, res) => {

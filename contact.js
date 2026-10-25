@@ -2,6 +2,7 @@
   'use strict';
   const number = root.CETAKIN_CONFIG?.whatsappNumber || '6285822801431';
   const messages = {
+    project: 'Halo Kak, saya ingin membahas jasa projek di Cetakin.\n\nKebutuhan/fungsi alat: \nPengguna dan lokasi pemakaian: \nReferensi/sketsa (jika ada): \nPerkiraan anggaran: \nTarget waktu selesai: \n\nMohon bantuannya untuk membahas lingkup pengerjaan dan estimasi biayanya. Terima kasih.',
     custom: 'Halo Kak, saya ingin berdiskusi tentang jasa cetak 3D custom di Cetakin.\n\nKebutuhan/produk: \nUkuran perkiraan: \nJumlah: \nFile desain/referensi: \nTarget waktu selesai: \n\nMohon arahan mengenai bahan, proses, dan estimasi biayanya. Terima kasih.',
     idea: 'Halo Kak, saya ingin berkonsultasi tentang ide produk yang ingin saya cetak di Cetakin.\n\nIde/kebutuhan saya: \n\nMohon bantuannya untuk membahas bentuk dan proses yang sesuai. Terima kasih.',
     general: 'Halo Kak, saya ingin mendapatkan informasi tentang produk dan layanan Cetakin. Mohon bantuannya. Terima kasih.',

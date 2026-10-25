@@ -8,6 +8,33 @@
       "includeFiles": "{assets/**,data/**,panduan/**,*.css,*.js,*.html,*.png,*.ico,*.svg,*.json}"
     }
   },
+  "redirects": [
+    {
+      "source": "/projek",
+      "destination": "/projek.html",
+      "statusCode": 302
+    },
+    {
+      "source": "/projek/",
+      "destination": "/projek.html",
+      "statusCode": 302
+    },
+    {
+      "source": "/gantungan-kunci",
+      "destination": "/projek.html",
+      "statusCode": 302
+    },
+    {
+      "source": "/gantungan-kunci/",
+      "destination": "/projek.html",
+      "statusCode": 302
+    },
+    {
+      "source": "/gantungan-kunci.html",
+      "destination": "/projek.html",
+      "statusCode": 302
+    }
+  ],
   "rewrites": [
     {
       "source": "/api",
