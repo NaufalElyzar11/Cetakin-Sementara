@@ -2010,7 +2010,6 @@
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, 18);
 
-    const padX = 80;
     let curY = 74;
 
     // 3. Header Kiri: Logo + Pill Divisi + Alamat
@@ -2256,14 +2255,12 @@
 
     // 7. Bagian Bawah: Kiri (Terbilang & Catatan) | Kanan (Ringkasan Tagihan)
     curY += thH + totalRowsH + 42;
-    const leftColW = 790;
     const rightColW = tableW - leftColW - 44;
     const rightColX = padX + leftColW + 44;
 
     // Terbilang Box
     ctx.font = '700 23px "DM Sans", sans-serif';
-    const terbLines = wrapCanvasText(ctx, vm.terbilang, leftColW - 60);
-    const terbBoxH = 66 + terbLines.length * 32;
+    // Reuse the measurements above so canvas height and drawing stay consistent.
 
     drawRoundRect(ctx, padX, curY, leftColW, terbBoxH, 16);
     ctx.fillStyle = '#f8fafc';
@@ -2286,8 +2283,6 @@
     // Notes Box
     const noteBoxY = curY + terbBoxH + 26;
     ctx.font = '500 21px "DM Sans", sans-serif';
-    const noteLines = wrapCanvasText(ctx, vm.buyerNote, leftColW - 64);
-    const noteBoxH = 74 + noteLines.length * 31;
 
     drawRoundRect(ctx, padX, noteBoxY, leftColW, noteBoxH, 18);
     ctx.fillStyle = '#ffffff';
@@ -2311,7 +2306,6 @@
     }
 
     // Summary Box (Kanan)
-    const sumBoxH = 340 + (vm.discount > 0 ? 42 : 0) + (vm.shipping > 0 ? 42 : 0);
     drawRoundRect(ctx, rightColX, curY, rightColW, sumBoxH, 22);
     ctx.fillStyle = '#f8fafc';
     ctx.fill();
