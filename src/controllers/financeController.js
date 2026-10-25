@@ -4,6 +4,35 @@ const { loadDb, saveDb } = require('../config/db.js');
 const { canAccessUnit } = require('../middleware/auth.js');
 const financeCore = require('../../finance-core.js');
 
+function orderSequenceFromId(id, prefix) {
+  const value = String(id || '');
+  if (!value.startsWith(prefix)) return 0;
+  const suffix = value.slice(prefix.length);
+  if (!/^\d+$/.test(suffix)) return 0;
+  const sequence = Number(suffix);
+  return Number.isSafeInteger(sequence) ? sequence : 0;
+}
+
+function highestOrderSequence(db, unit, prefix) {
+  const savedSequence = Number(db.orderSequences?.[unit]);
+  let highest = Number.isSafeInteger(savedSequence) && savedSequence > 0 ? savedSequence : 0;
+  for (const order of db.orders || []) {
+    highest = Math.max(highest, orderSequenceFromId(order.id, prefix));
+  }
+  // Mutasi dan upah tetap menjadi jejak ID pesanan yang sudah dihapus.
+  for (const entry of [...(db.mutations || []), ...(db.wages || [])]) {
+    highest = Math.max(highest, orderSequenceFromId(entry.orderId, prefix));
+  }
+  return highest;
+}
+
+function rememberOrderSequence(db, unit, sequence) {
+  if (!db.orderSequences || typeof db.orderSequences !== 'object' || Array.isArray(db.orderSequences)) {
+    db.orderSequences = {};
+  }
+  db.orderSequences[unit] = sequence;
+}
+
 async function getDashboard(req, res, next) {
   try {
     const db = await loadDb();
@@ -45,11 +74,14 @@ async function createOrder(req, res, next) {
     }
 
     const prefix = unit === '3d-print' ? 'ORD-3D-' : 'ORD-ROBO-';
-    const existingCount = (db.orders || []).filter((o) => o.unit === unit).length;
-    const id = String(body.id || '').trim() || `${prefix}${String(existingCount + 1).padStart(3, '0')}`;
+    const sequence = highestOrderSequence(db, unit, prefix);
+    const id = String(body.id || '').trim() || `${prefix}${String(sequence + 1).padStart(3, '0')}`;
 
     if ((db.orders || []).some((o) => o.id === id)) {
       return res.status(400).json({ ok: false, error: `ID Pesanan "${id}" sudah ada.` });
+    }
+    if ([...(db.mutations || []), ...(db.wages || [])].some((entry) => entry.orderId === id)) {
+      return res.status(400).json({ ok: false, error: 'ID pesanan pernah digunakan dalam riwayat mutasi atau upah. Gunakan ID baru.' });
     }
 
     const netBill = Math.max(0, Math.round(Number(body.netBill) || 0));
@@ -154,6 +186,7 @@ async function createOrder(req, res, next) {
     }
 
     db.orders.unshift(newOrder);
+    rememberOrderSequence(db, unit, Math.max(sequence, orderSequenceFromId(id, prefix)));
     await saveDb(db);
     return res.status(201).json({ ok: true, order: newOrder });
   } catch (err) {
@@ -208,8 +241,20 @@ async function deleteOrder(req, res, next) {
     const idx = (db.orders || []).findIndex((o) => o.id === orderId);
 
     if (idx === -1) return res.status(404).json({ ok: false, error: 'Pesanan tidak ditemukan.' });
-    if (!canAccessUnit(user, db.orders[idx].unit)) return res.status(403).json({ ok: false, error: 'Akses ditolak.' });
+    const order = db.orders[idx];
+    if (!canAccessUnit(user, order.unit)) return res.status(403).json({ ok: false, error: 'Akses ditolak.' });
 
+    const hasLinkedEntries = [...(db.mutations || []), ...(db.wages || [])]
+      .some((entry) => entry.unit === order.unit && entry.orderId === orderId);
+    if (hasLinkedEntries) {
+      return res.status(409).json({
+        ok: false,
+        error: 'Pesanan belum bisa dihapus karena masih memiliki mutasi atau rekap upah terkait. Gunakan status Batal, atau tinjau dan selesaikan data terkait terlebih dahulu.'
+      });
+    }
+
+    const prefix = order.unit === '3d-print' ? 'ORD-3D-' : 'ORD-ROBO-';
+    rememberOrderSequence(db, order.unit, highestOrderSequence(db, order.unit, prefix));
     db.orders.splice(idx, 1);
     await saveDb(db);
     return res.json({ ok: true });
@@ -229,6 +274,11 @@ async function createMutation(req, res, next) {
       return res.status(403).json({ ok: false, error: 'Anda tidak memiliki akses ke divisi ini.' });
     }
 
+    const orderId = String(body.orderId || '').trim();
+    if (orderId && !(db.orders || []).some((order) => order.id === orderId && order.unit === unit)) {
+      return res.status(400).json({ ok: false, error: 'Pesanan tidak ditemukan di divisi ini.' });
+    }
+
     const amount = Math.round(Number(body.amount) || 0);
     if (amount <= 0) {
       return res.status(400).json({ ok: false, error: 'Nominal mutasi harus lebih besar dari Rp 0.' });
@@ -243,7 +293,7 @@ async function createMutation(req, res, next) {
       unit,
       date: body.date || new Date().toISOString().slice(0, 10),
       type: String(body.type || 'Pembayaran pelanggan').trim(),
-      orderId: String(body.orderId || '').trim(),
+      orderId,
       description: String(body.description || '').trim(),
       fromAccount: String(body.fromAccount || 'Pelanggan').trim(),
       toAccount: String(body.toAccount || 'Merchant').trim(),

@@ -386,6 +386,8 @@
 
     for (const o of orders) {
       const badgeClass = o.status === 'Selesai' ? 'badge-success' : o.status === 'Proses' ? 'badge-warn' : 'badge-danger';
+      const overpaymentAmount = Math.max(0, Number(o.overpaymentAmount ?? (Number(o.netPaid) - Number(o.netBill))) || 0);
+      const paymentColor = overpaymentAmount > 0 || o.netPaid < o.netBill ? '#d97706' : '#16a34a';
       const tr = document.createElement('tr');
       const itemsCountBadge = (Array.isArray(o.items) && o.items.length > 1)
         ? `<div style="font-size:11px; color:#0284c7; font-weight:700; margin-top:2px;">📦 ${o.items.length} macam barang (${o.quantity} pcs total)</div>`
@@ -404,8 +406,9 @@
         <td><strong>${money(o.netBill)}</strong></td>
         <td>${money(o.adjustedHpp)}</td>
         <td>
-          <span style="color:${o.netPaid >= o.netBill ? '#16a34a' : '#d97706'}; font-weight:700;">${money(o.netPaid)}</span>
+          <span style="color:${paymentColor}; font-weight:700;">${money(o.netPaid)}</span>
           ${o.remainingBill > 0 ? `<div style="font-size:10px; color:#dc2626;">Kurang ${money(o.remainingBill)}</div>` : ''}
+          ${overpaymentAmount > 0 ? `<div style="font-size:10px; color:#b45309;">Lebih ${money(overpaymentAmount)} · Periksa mutasi</div>` : ''}
         </td>
         <td><strong style="color:${o.profit >= 0 ? '#16a34a' : '#dc2626'};">${money(o.profit)}</strong></td>
         <td><span class="badge ${badgeClass}">${o.status}</span></td>
@@ -443,7 +446,7 @@
 
     tbody.querySelectorAll('[data-del-order]').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm(`Hapus pesanan ${btn.dataset.delOrder}?`)) return;
+        if (!confirm(`Hapus pesanan ${btn.dataset.delOrder}? Pesanan dengan mutasi/upah terkait harus dibatalkan atau catatan terkait ditangani terlebih dahulu.`)) return;
         try {
           await apiFetch(`./api/finance/orders/${encodeURIComponent(btn.dataset.delOrder)}`, { method: 'DELETE' });
           showToast('Pesanan dihapus.');
@@ -745,8 +748,17 @@
     addOrderFormItem();
   });
 
+  let orderSubmissionPending = false;
   $('#order-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (orderSubmissionPending) return;
+    orderSubmissionPending = true;
+    const submitBtn = e.currentTarget.querySelector('button[type="submit"]');
+    const submitLabel = submitBtn?.textContent;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Menyimpan Pesanan...';
+    }
     try {
       const payAcc = $('#ord-pay-account').value;
       const netBill = Number($('#ord-netbill').value) || 0;
@@ -794,6 +806,12 @@
       await Promise.all([loadDashboardData(), loadAdminCatalog()]);
     } catch (err) {
       showToast(err.message);
+    } finally {
+      orderSubmissionPending = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitLabel;
+      }
     }
   });
 
@@ -837,6 +855,7 @@
       showToast('✅ Mutasi kas berhasil dicatat!');
       $('#mut-amount').value = '';
       $('#mut-desc').value = '';
+      $('#mut-order-id').value = '';
       await loadDashboardData();
     } catch (err) {
       showToast(err.message);

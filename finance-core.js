@@ -2436,6 +2436,7 @@
 
       const effectiveBill = o.status === 'Batal' ? 0 : Math.max(0, netBill - orderReturn);
       const remainingBill = o.status === 'Batal' ? 0 : Math.max(0, effectiveBill - netPaid);
+      const overpaymentAmount = Math.max(0, netPaid - effectiveBill);
       const dpHeld = o.status === 'Selesai'
         ? Math.max(0, netPaid - effectiveBill)
         : Math.max(0, netPaid);
@@ -2456,6 +2457,8 @@
         recordedWage,
         adjustedHpp,
         netPaid,
+        effectiveBill,
+        overpaymentAmount,
         remainingBill,
         dpHeld,
         recognizedRevenue: rev,
