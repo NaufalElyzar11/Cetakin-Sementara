@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updatedAt": "2026-10-24T17:06:11.008Z",
+  "updatedAt": "2026-10-27T19:18:49.021Z",
   "users": [
     {
       "username": "owner",
@@ -1869,5 +1869,8 @@
   "orders": [],
   "mutations": [],
   "wages": [],
-  "allocations": []
+  "allocations": [],
+  "orderSequences": {
+    "robotika": 1
+  }
 }

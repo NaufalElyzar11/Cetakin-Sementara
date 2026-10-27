@@ -88,9 +88,9 @@
     <nav class="admin-nav-bar" aria-label="Menu Kelola">
       <div class="admin-nav-inner">
         <button type="button" class="tab-btn active" data-tab="tab-dashboard">📊 Ringkasan &amp; QRIS</button>
-        <button type="button" class="tab-btn" data-tab="tab-ledger">📝 Kasir, Pesanan &amp; Mutasi</button>
+        <button type="button" class="tab-btn" data-tab="tab-ledger">🛒 + Pesanan &amp; Kasir</button>
         <button type="button" class="tab-btn" data-tab="tab-calculator">🧮 Kalkulator HPP</button>
-        <button type="button" class="tab-btn" data-tab="tab-catalog">📦 CRUD Katalog</button>
+        <button type="button" class="tab-btn" data-tab="tab-catalog">📦 Kelola Katalog</button>
         <button type="button" class="tab-btn" data-tab="tab-settings">⚙️ Pengaturan &amp; Akun</button>
       </div>
     </nav>
@@ -140,14 +140,14 @@
         </div>
 
         <!-- Judul Divisi Aktif -->
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <div class="active-unit-header-row">
           <div>
             <span id="active-unit-pill" class="section-index">DIVISI AKTIF</span>
             <h2 id="active-unit-title" style="font-size:28px; margin:4px 0 0;">Laporan Keuangan Jasa 3D Print &amp; Ganci</h2>
           </div>
-          <div style="display:flex; gap:8px;">
-            <button type="button" class="btn btn-primary btn-sm" data-goto-tab="tab-ledger">+ Input Penjualan / Kas</button>
-            <button type="button" class="btn btn-outline btn-sm" data-goto-tab="tab-calculator">Buka Kalkulator HPP</button>
+          <div class="active-unit-actions">
+            <button type="button" class="btn btn-primary" data-goto-tab="tab-ledger">🛒 + Tambah Pesanan Baru</button>
+            <button type="button" class="btn btn-outline" data-goto-tab="tab-calculator">🧮 Kalkulator HPP</button>
           </div>
         </div>
 
@@ -1046,8 +1046,8 @@
           <span>Ringkasan</span>
         </button>
         <button type="button" class="mob-tab-btn" data-tab="tab-ledger">
-          <span class="mob-icon">📝</span>
-          <span>Kasir/Kas</span>
+          <span class="mob-icon">🛒</span>
+          <span>Pesanan</span>
         </button>
         <button type="button" class="mob-tab-btn" data-tab="tab-calculator">
           <span class="mob-icon">🧮</span>

@@ -24,6 +24,12 @@
   --shadow: 0 10px 30px rgba(17, 26, 35, 0.06);
 }
 
+html,
+body.admin-body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 body.admin-body {
   background: var(--paper);
   color: var(--ink);
@@ -135,18 +141,21 @@ body.admin-body {
   background: rgba(247, 247, 244, 0.95);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-header-inner {
   width: min(100% - 32px, 1320px);
   margin-inline: auto;
-  min-height: 70px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 12px;
   padding: 10px 0;
   flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .admin-brand-group {
@@ -214,20 +223,24 @@ body.admin-body {
   gap: 10px;
 }
 
-/* Desktop Navigation Tabs */
+/* Navigation Tabs (Desktop & Mobile Scrollable) */
 .admin-nav-bar {
   background: var(--white);
   border-bottom: 1px solid var(--line);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-nav-inner {
   width: min(100% - 32px, 1320px);
   margin-inline: auto;
   display: flex;
-  gap: 6px;
+  gap: 8px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding: 8px 0;
+  box-sizing: border-box;
 }
 
 .admin-nav-inner::-webkit-scrollbar {
@@ -308,7 +321,9 @@ body.admin-body {
 /* Main Container */
 .admin-main {
   width: min(100% - 32px, 1320px);
+  max-width: 100%;
   margin: 24px auto;
+  box-sizing: border-box;
 }
 
 .panel-section {
@@ -328,9 +343,12 @@ body.admin-body {
 /* Cards & Grids */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 235px), 1fr));
   gap: 16px;
   margin-bottom: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .kpi-card {
@@ -393,6 +411,10 @@ body.admin-body {
   padding: 24px;
   box-shadow: var(--shadow);
   margin-bottom: 24px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .card-box-header {
@@ -421,8 +443,11 @@ body.admin-body {
 
 .two-col-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Shared QRIS Banner */
@@ -569,11 +594,18 @@ body.admin-body {
 /* Tables & Responsive Cards */
 .table-wrap {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  border: 1px solid #eceeed;
+  background: var(--white);
+  box-sizing: border-box;
 }
 
 .data-table {
   width: 100%;
+  min-width: 600px;
   border-collapse: collapse;
   font-size: 13px;
 }
@@ -859,15 +891,49 @@ body.admin-body {
   margin-top: 18px;
 }
 
-/* Responsive Media Queries */
+/* Responsive Layout & Media Queries */
+.active-unit-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.active-unit-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 860px) {
   .two-col-grid,
   .qris-split-bars {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
   }
 
+  /* Navigasi tab atas tetap aktif dan dapat digeser (horizontal scrollable) di mobile */
   .admin-nav-bar {
-    display: none;
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 88;
+    background: var(--white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .admin-nav-inner {
+    width: 100%;
+    padding: 8px 14px;
+    gap: 6px;
+  }
+
+  .tab-btn {
+    padding: 8px 14px;
+    font-size: 12px;
   }
 
   .mobile-bottom-nav {
@@ -875,11 +941,19 @@ body.admin-body {
   }
 
   .card-box {
-    padding: 18px 16px;
+    padding: 18px 14px;
+    margin-bottom: 16px;
   }
 
   .admin-header-inner {
+    width: min(100% - 24px, 1320px);
     gap: 10px;
+    padding: 8px 0;
+  }
+
+  .admin-main {
+    width: min(100% - 24px, 1320px);
+    margin: 16px auto;
   }
 
   .unit-switcher {
@@ -891,6 +965,63 @@ body.admin-body {
   .unit-btn {
     flex: 1;
     text-align: center;
+    padding: 8px 10px;
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 580px) {
+  .admin-header-inner {
+    gap: 8px;
+  }
+
+  .admin-brand-group img {
+    height: 28px;
+  }
+
+  .role-tag {
+    font-size: 9.5px;
+    padding: 3px 8px;
+  }
+
+  .admin-user-actions {
+    gap: 6px;
+  }
+
+  .admin-user-actions .btn-sm {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  #global-month-filter {
+    max-width: 120px;
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .active-unit-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .active-unit-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .active-unit-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 13.5px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
@@ -1426,8 +1557,11 @@ body.admin-body {
   flex-shrink: 0;
 }
 
+.ord-item-catalog,
 .order-item-catalog {
   flex: 1;
+  min-width: 0;
+  max-width: 100%;
   font-size: 12px !important;
   padding: 6px 10px !important;
   border-radius: 8px !important;
