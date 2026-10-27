@@ -68,7 +68,7 @@
     const errors = validate(state);
     if (errors.length) throw new Error(errors[0]);
     const amount = price(state);
-    const lines = ['Halo Kak Cetakin, saya ingin pre-order gantungan clicker keyboard custom.', '', `Jumlah tombol: ${state.keys.length} (huruf/angka/simbol)`, 'Urutan: dari dekat lubang gantungan ke bawah', `Susunan: ${state.keys.map(describe).join(' / ')}`, `Base: ${MODES[state.mode].label} — ${assets.bases[state.shape].label}`, `Warna base: ${COLORS[state.base].label}`, 'Bahan: PETG', `Font huruf/angka: ${FONTS[state.font]}`, '', 'Detail setiap tombol:'];
+    const lines = ['Halo Kak Cetakin, saya ingin pre-order gantungan clicker keyboard custom.', '', `Jumlah tombol: ${state.keys.length} (huruf/angka/simbol)`, 'Urutan: dari dekat lubang gantungan ke bawah', `Susunan: ${state.keys.map(describe).join(' / ')}`, `Base: ${MODES[state.mode].label} - ${assets.bases[state.shape].label}`, `Warna base: ${COLORS[state.base].label}`, 'Bahan: PETG', `Font huruf/angka: ${FONTS[state.font]}`, '', 'Detail setiap tombol:'];
     state.keys.forEach((key, i) => {
       const detail = `${i + 1}. ${describe(key)} | keycap ${COLORS[key.cap].label} | ${inkName(key)} ${COLORS[key.ink].label}`;
       lines.push(detail);

@@ -59,9 +59,7 @@
     return data;
   }
 
-  // =========================================================
-  // 1. AUTENTIKASI & ROLE GUARD
-  // =========================================================
+  // Autentikasi dan pemeriksaan peran pengguna
   $('#login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const errEl = $('#login-error');
@@ -88,7 +86,7 @@
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Masuk ke Dashboard ↗';
+        submitBtn.textContent = 'Masuk ke Dashboard';
       }
     }
   });
@@ -130,10 +128,10 @@
     const badge = $('#user-role-badge');
     badge.dataset.role = u.role;
     badge.textContent = u.role === 'owner'
-      ? '👑 SUPER OWNER'
+      ? 'OWNER'
       : u.role === 'admin_3d'
-        ? '🖨️ ADMIN 3D PRINT'
-        : '🤖 ADMIN ROBOTIKA';
+        ? 'ADMIN 3D PRINT'
+        : 'ADMIN ROBOTIKA';
 
     // Konfigurasi Unit Switcher berdasarkan Role
     const switcher = $('#unit-switcher');
@@ -193,9 +191,7 @@
     });
   });
 
-  // =========================================================
-  // 2. NAVIGASI TAB (DESKTOP & MOBILE BOTTOM BAR)
-  // =========================================================
+  // Navigasi tab desktop dan ponsel
   function switchTab(tabId) {
     state.activeTab = tabId;
     $$('.panel-section').forEach((sec) => {
@@ -220,9 +216,7 @@
     await loadDashboardData();
   });
 
-  // =========================================================
-  // 3. DASHBOARD KEUANGAN & REKONSILIASI 1 QRIS BERSAMA
-  // =========================================================
+  // Dashboard keuangan dan rekonsiliasi QRIS bersama
   async function loadDashboardData() {
     const query = state.filterMonth ? `?month=${encodeURIComponent(state.filterMonth)}` : '';
     const data = await apiFetch(`./api/finance/dashboard${query}`);
@@ -304,7 +298,7 @@
       const trRem = document.createElement('tr');
       trRem.innerHTML = `
         <td><em>Sisa batas cicilan / pembulatan (Masuk Cadangan)</em></td>
-        <td>—</td>
+        <td>-</td>
         <td><strong>${money(uData.remainderToReserve)}</strong></td>
       `;
       allocTbody.appendChild(trRem);
@@ -372,7 +366,7 @@
       for (const o of orders) {
         const opt = document.createElement('option');
         opt.value = o.id;
-        opt.label = `${o.productName} (${o.customer}) — Tagihan: ${money(o.netBill)}`;
+        opt.label = `${o.productName} (${o.customer}) - Tagihan: ${money(o.netBill)}`;
         datalist.appendChild(opt);
       }
     }
@@ -390,7 +384,7 @@
       const paymentColor = overpaymentAmount > 0 || o.netPaid < o.netBill ? '#d97706' : '#16a34a';
       const tr = document.createElement('tr');
       const itemsCountBadge = (Array.isArray(o.items) && o.items.length > 1)
-        ? `<div style="font-size:11px; color:#0284c7; font-weight:700; margin-top:2px;">📦 ${o.items.length} macam barang (${o.quantity} pcs total)</div>`
+        ? `<div style="font-size:11px; color:#0284c7; font-weight:700; margin-top:2px;">${o.items.length} macam barang (${o.quantity} pcs total)</div>`
         : '';
       tr.innerHTML = `
         <td>
@@ -400,7 +394,7 @@
         <td>
           <strong>${escapeHtml(o.productName)}</strong>
           ${itemsCountBadge}
-          <div style="font-size:11px; color:var(--muted);">👤 ${escapeHtml(o.customer)}</div>
+          <div style="font-size:11px; color:var(--muted);">Pelanggan: ${escapeHtml(o.customer)}</div>
         </td>
         <td>${o.quantity} pcs</td>
         <td><strong>${money(o.netBill)}</strong></td>
@@ -414,9 +408,9 @@
         <td><span class="badge ${badgeClass}">${o.status}</span></td>
         <td>
           <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-dark btn-sm" data-invoice-order="${o.id}" title="Lihat &amp; Unduh Nota Pembeli (PDF/PNG)">🧾 Nota</button>
-            ${o.status !== 'Selesai' ? `<button type="button" class="btn btn-outline btn-sm" data-complete-order="${o.id}" title="Tandai Selesai">✓ Selesai</button>` : ''}
-            <button type="button" class="btn btn-danger btn-sm" data-del-order="${o.id}" title="Hapus">🗑</button>
+            <button type="button" class="btn btn-dark btn-sm" data-invoice-order="${o.id}" title="Lihat &amp; Unduh Nota Pembeli (PDF/PNG)">Nota</button>
+            ${o.status !== 'Selesai' ? `<button type="button" class="btn btn-outline btn-sm" data-complete-order="${o.id}" title="Tandai Selesai">Selesai</button>` : ''}
+            <button type="button" class="btn btn-danger btn-sm" data-del-order="${o.id}" title="Hapus">Hapus</button>
           </div>
         </td>
       `;
@@ -484,7 +478,7 @@
         </td>
         <td><strong>${money(m.amount)}</strong></td>
         <td>
-          <button type="button" class="btn btn-danger btn-sm" data-del-mut="${m.id}">🗑</button>
+          <button type="button" class="btn btn-danger btn-sm" data-del-mut="${m.id}">Hapus</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -532,7 +526,7 @@
         <td>${w.minutes} mnt</td>
         <td><strong>${money(w.amount)}</strong></td>
         <td>
-          <button type="button" class="btn btn-danger btn-sm" data-del-wage="${w.id}" title="Hapus catatan upah">🗑</button>
+          <button type="button" class="btn btn-danger btn-sm" data-del-wage="${w.id}" title="Hapus catatan upah">Hapus</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -552,9 +546,7 @@
     });
   }
 
-  // =========================================================
-  // 4. FORM INPUT PESANAN MULTI-ITEM, MUTASI KAS & UPAH
-  // =========================================================
+  // Form input pesanan multi-item, mutasi kas, dan upah
   state.orderFormItems = [
     { productId: '', productName: '', quantity: 1, price: 0, hpp: 0 }
   ];
@@ -582,7 +574,7 @@
       const optionsHtml = [
         `<option value="">-- Ketik Manual / Jasa Kustom --</option>`,
         ...catalogItems.map(
-          (c) => `<option value="${c.id}" ${c.id === item.productId ? 'selected' : ''}>[${c.id}] ${c.name} (Stok: ${c.stock}) — Jual: ${money(c.price)} | HPP: ${money(c.cost_price || 0)}</option>`
+          (c) => `<option value="${c.id}" ${c.id === item.productId ? 'selected' : ''}>[${c.id}] ${c.name} (Stok: ${c.stock}) - Jual: ${money(c.price)} | HPP: ${money(c.cost_price || 0)}</option>`
         )
       ].join('');
 
@@ -800,7 +792,7 @@
       };
 
       await apiFetch('./api/finance/orders', { method: 'POST', body: payload });
-      showToast('✅ Pesanan & transaksi berhasil disimpan!');
+      showToast('Pesanan & transaksi berhasil disimpan.');
       $('#ord-customer').value = '';
       setOrderFormItems([{ productId: '', productName: '', quantity: 1, price: 0, hpp: 0 }]);
       await Promise.all([loadDashboardData(), loadAdminCatalog()]);
@@ -852,7 +844,7 @@
         description: $('#mut-desc').value.trim()
       };
       await apiFetch('./api/finance/mutations', { method: 'POST', body: payload });
-      showToast('✅ Mutasi kas berhasil dicatat!');
+      showToast('Mutasi kas berhasil dicatat.');
       $('#mut-amount').value = '';
       $('#mut-desc').value = '';
       $('#mut-order-id').value = '';
@@ -876,7 +868,7 @@
           task: $('#wage-task').value.trim()
         }
       });
-      showToast('✅ Catatan jam kerja berhasil ditambahkan!');
+      showToast('Catatan jam kerja berhasil ditambahkan.');
       $('#wage-task').value = '';
       await loadDashboardData();
     } catch (err) {
@@ -906,16 +898,14 @@
         }
       });
       $('#qris-payout-modal').hidden = true;
-      showToast('✅ Pencairan 1 QRIS Bersama berhasil dibagi ke Bank Usaha 3D Print & Robotika!');
+      showToast('Pencairan QRIS bersama berhasil dibagi ke Bank Usaha 3D Print & Robotika.');
       await loadDashboardData();
     } catch (err) {
       showToast(err.message);
     }
   });
 
-  // =========================================================
-  // 5. KALKULATOR HPP (JASA 3D PRINT, CLICKER, & ROBOTIKA)
-  // =========================================================
+  // Kalkulator HPP (Jasa 3D Print, Clicker, dan Robotika)
   function switchCalcMode(mode) {
     $$('.calc-mode-btn').forEach((btn) => {
       const isMatch = btn.dataset.calcMode === mode;
@@ -1011,8 +1001,8 @@
       const opt = document.createElement('option');
       opt.value = i;
       const unitLabel = p.sellUnitQty > 1 ? ` (${p.sellUnitQty} pcs/paket)` : '';
-      const flag = p.statusBiaya === 'BELUM MENUTUP' ? ' ⚠️ [RUGI]' : '';
-      opt.textContent = `[${p.sku}] ${p.name}${unitLabel} — Jual: ${money(p.hargaJualUsulan)} | HPP: ${money(p.hppStok)}${flag}`;
+      const flag = p.statusBiaya === 'BELUM MENUTUP' ? ' [RUGI]' : '';
+      opt.textContent = `[${p.sku}] ${p.name}${unitLabel} - Jual: ${money(p.hargaJualUsulan)} | HPP: ${money(p.hppStok)}${flag}`;
       picker.appendChild(opt);
     }
     picker.dataset.populated = 'true';
@@ -1044,7 +1034,7 @@
     const statusEl = $('#cr-res-status');
     if (statusEl) {
       if (res.costStatus === 'BELUM MENUTUP') {
-        statusEl.textContent = `⚠️ BELUM MENUTUP (Rugi -${money(Math.abs(res.profitBatch))})`;
+        statusEl.textContent = `BELUM MENUTUP (Rugi -${money(Math.abs(res.profitBatch))})`;
         statusEl.style.color = '#ef4444';
       } else {
         statusEl.textContent = `● MENUTUP + SURPLUS (+${money(res.profitBatch)})`;
@@ -1060,7 +1050,7 @@
     const notesEl = $('#cr-res-notes');
     if (notesEl) {
       if (res.costStatus === 'BELUM MENUTUP') {
-        notesEl.textContent = '⚠️ Peringatan Audit: Harga jual usulan masih di bawah biaya penuh pengadaan & kemasan. Diusulkan penyesuaian harga.';
+        notesEl.textContent = 'Peringatan Audit: Harga jual usulan masih di bawah biaya penuh pengadaan & kemasan. Diusulkan penyesuaian harga.';
         notesEl.style.color = '#f87171';
       } else if (state.activeRoboPreset?.catatan) {
         notesEl.textContent = state.activeRoboPreset.catatan;
@@ -1192,9 +1182,7 @@
     showToast('Data HPP Robotika disalin ke form pesanan!');
   });
 
-  // =========================================================
-  // 6. CRUD KATALOG VISUAL (RAMAH MOBILE & ADMIN NON-IT)
-  // =========================================================
+  // Pengelolaan katalog produk
   async function loadAdminCatalog() {
     const res = await apiFetch('./api/admin/catalog');
     state.catalog = res.products || [];
@@ -1260,7 +1248,7 @@
         </div>
         ${p.cost_status === 'BELUM MENUTUP' || (p.cost_full && p.price < p.cost_full) ? `
           <div style="font-size:11px; color:#ef4444; font-weight:700; margin-top:4px;">
-            ⚠️ Di bawah Biaya Penuh (Rugi Modal)
+            Di bawah Biaya Penuh (Rugi Modal)
           </div>
         ` : ''}
 
@@ -1276,8 +1264,8 @@
             </button>
           </div>
           <div class="admin-prod-actions-row">
-            <button type="button" class="btn btn-dark btn-sm btn-edit-card" data-edit-prod="${p.id}">✏️ Edit</button>
-            <button type="button" class="btn btn-danger btn-sm btn-del-card" data-del-prod="${p.id}" title="Hapus Produk">🗑️ Hapus</button>
+            <button type="button" class="btn btn-dark btn-sm btn-edit-card" data-edit-prod="${p.id}">Edit</button>
+            <button type="button" class="btn btn-danger btn-sm btn-del-card" data-del-prod="${p.id}" title="Hapus Produk">Hapus</button>
           </div>
         </div>
       `;
@@ -1359,7 +1347,7 @@
     const modal = $('#product-modal');
     modal.hidden = false;
     if (!editId) {
-      $('#prod-modal-title').textContent = '➕ Tambah Produk Katalog Baru';
+      $('#prod-modal-title').textContent = 'Tambah Produk Katalog Baru';
       $('#pf-edit-mode').value = 'create';
       $('#pf-id').disabled = false;
       const defaultType = state.user?.role === 'admin_3d' ? 'gantungan-kunci' : 'robotika';
@@ -1383,7 +1371,7 @@
     } else {
       const prod = state.catalog.find((p) => p.id === editId);
       if (!prod) return;
-      $('#prod-modal-title').textContent = `✏️ Edit Produk: ${prod.name}`;
+      $('#prod-modal-title').textContent = `Edit Produk: ${prod.name}`;
       $('#pf-edit-mode').value = prod.id;
       $('#pf-id').value = prod.id;
       $('#pf-id').disabled = true;
@@ -1427,7 +1415,7 @@
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL('image/webp', 0.82);
         $('#pf-image-url').value = dataUrl;
-        showToast('📸 Foto berhasil dikompres & siap disimpan!');
+        showToast('Foto berhasil dikompres & siap disimpan.');
       };
       img.src = ev.target.result;
     };
@@ -1459,10 +1447,10 @@
     try {
       if (mode === 'create') {
         await apiFetch('./api/admin/catalog', { method: 'POST', body: payload });
-        showToast('✅ Produk baru berhasil ditambahkan ke katalog!');
+        showToast('Produk baru berhasil ditambahkan ke katalog.');
       } else {
         await apiFetch(`./api/admin/catalog/${encodeURIComponent(mode)}`, { method: 'PUT', body: payload });
-        showToast('✅ Perubahan produk berhasil disimpan!');
+        showToast('Perubahan produk berhasil disimpan.');
       }
       $('#product-modal').hidden = true;
       await loadAdminCatalog();
@@ -1471,9 +1459,7 @@
     }
   });
 
-  // =========================================================
-  // 7. PENGATURAN PARAMETER USAHA & PASSWORD
-  // =========================================================
+  // Pengaturan parameter usaha dan kata sandi
   function populateSettingsForm(s) {
     if (!s || !$('#set-petg')) return;
     $('#set-petg').value = s.petgPerKg ?? 150000;
@@ -1504,7 +1490,7 @@
         minCashReserveRobo: Number($('#set-reserve-robo').value) || 0
       };
       await apiFetch('./api/finance/settings', { method: 'PUT', body });
-      showToast('✅ Parameter usaha berhasil diperbarui!');
+      showToast('Parameter usaha berhasil diperbarui.');
       await loadDashboardData();
       runAllCalculators();
     } catch (err) {
@@ -1531,9 +1517,7 @@
     }
   });
 
-  // =========================================================
-  // 8. GENERATOR NOTA PEMBELI (LIVE PREVIEW, PDF & PNG HD)
-  // =========================================================
+  // Generator nota pembeli (pratinjau, PDF, dan PNG)
   const INDO_MONTHS = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
@@ -1724,11 +1708,11 @@
     } else if (paidAmount > 0 && paidAmount < grandTotal) {
       payStatus = 'DP / SEBAGIAN';
       payBadgeClass = 'partial';
-      payStampText = '⏳ DP / BELUM LUNAS';
+      payStampText = 'DP / BELUM LUNAS';
     } else {
       payStatus = 'BELUM DIBAYAR';
       payBadgeClass = 'unpaid';
-      payStampText = '❗ BELUM DIBAYAR';
+      payStampText = 'BELUM DIBAYAR';
     }
 
     const invoiceNo = `INV/${(order.date || '2026-10').slice(0, 7).replace('-', '/')}/${order.id}`;
@@ -1768,8 +1752,8 @@
 
     paper.dataset.unit = vm.unit;
     const divisionLabel = vm.isRobo
-      ? '🤖 DIVISI KOMPONEN ELEKTRONIKA & ROBOTIKA'
-      : '🖨️ DIVISI CETAK 3D & MERCHANDISE KUSTOM';
+      ? 'DIVISI KOMPONEN ELEKTRONIKA & ROBOTIKA'
+      : 'DIVISI CETAK 3D & MERCHANDISE KUSTOM';
     const serviceCategoryName = vm.isRobo
       ? 'Penjualan Komponen Robotika & Sensor'
       : 'Jasa 3D Printing & Gantungan Kunci Kustom';
@@ -1872,7 +1856,7 @@
               <strong>${escapeHtml(vm.terbilang)}</strong>
             </div>
             <div class="inv-notes-box">
-              <strong>📌 Catatan &amp; Informasi Pembeli</strong>
+              <strong>Catatan &amp; Informasi Pembeli</strong>
               <div>${escapeHtml(vm.buyerNote)}</div>
             </div>
           </div>
@@ -2582,12 +2566,12 @@
     const prevText = btn.textContent;
     try {
       btn.disabled = true;
-      btn.textContent = '⏳ Menyiapkan PDF...';
+      btn.textContent = 'Menyiapkan PDF...';
       const canvas = await renderInvoiceToCanvas(vm);
       const pdfBlob = canvasToPdfBlob(canvas);
       const fileName = makeSafeFileName(vm, 'pdf');
       triggerBlobDownload(pdfBlob, fileName);
-      showToast(`✅ Nota PDF (${fileName}) berhasil diunduh!`);
+      showToast(`Nota PDF (${fileName}) berhasil diunduh.`);
     } catch (err) {
       showToast('Gagal membuat PDF: ' + err.message);
     } finally {
@@ -2603,13 +2587,13 @@
     const prevText = btn.textContent;
     try {
       btn.disabled = true;
-      btn.textContent = '⏳ Menyiapkan PNG...';
+      btn.textContent = 'Menyiapkan PNG...';
       const canvas = await renderInvoiceToCanvas(vm);
       canvas.toBlob((blob) => {
         if (!blob) return;
         const fileName = makeSafeFileName(vm, 'png');
         triggerBlobDownload(blob, fileName);
-        showToast(`🖼️ Gambar Nota (${fileName}) siap dikirim ke WA!`);
+        showToast(`Gambar Nota (${fileName}) siap dikirim ke WA.`);
       }, 'image/png');
     } catch (err) {
       showToast('Gagal membuat gambar PNG: ' + err.message);
@@ -2630,6 +2614,13 @@
       document.body.classList.remove('printing-invoice');
       document.title = prevTitle;
     }, 400);
+  });
+
+  document.addEventListener?.('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if ($('#invoice-modal') && !$('#invoice-modal').hidden) $('#invoice-modal').hidden = true;
+    else if ($('#product-modal') && !$('#product-modal').hidden) $('#product-modal').hidden = true;
+    else if ($('#qris-payout-modal') && !$('#qris-payout-modal').hidden) $('#qris-payout-modal').hidden = true;
   });
 
   initSession();

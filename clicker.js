@@ -42,7 +42,7 @@
     $('key-slots').innerHTML = state.keys.map((item, i) => `<button type="button" class="key-slot" data-slot="${i}" aria-label="Edit tombol ${i + 1}: ${C.escape(C.describe(item))}" aria-pressed="${i === active}"><small>${i + 1}</small><svg viewBox="-18 -19 36 38" fill-rule="evenodd" aria-hidden="true">${C.keyGraphic(item, state.font)}</svg></button>`).join('');
     if (focusedSlot !== undefined) $('key-slots').querySelector(`[data-slot="${focusedSlot}"]`)?.focus({ preventScroll: true });
     $('design-caption').textContent = `${state.keys.length} tombol · ${C.MODES[state.mode].label}`;
-    $('editor-title').textContent = `Tombol ${active + 1} — ${C.describe(key)}`;
+    $('editor-title').textContent = `Tombol ${active + 1}: ${C.describe(key)}`;
     $('letter-editor').hidden = key.type !== 'letter';
     $('emoji-editor').hidden = key.type !== 'emoji';
     const inkLabel = `Warna ${C.inkName(key)}`;

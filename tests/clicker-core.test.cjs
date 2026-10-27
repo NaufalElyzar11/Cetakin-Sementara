@@ -141,7 +141,7 @@ test('new base spacing accepts adjacent characters and survives sharing and What
     const state = C.normalize({ ...letters(2), shape, mode, keys: ['symbol-ghost', 'symbol-robot'].map((value) => symbolKey(value)) });
     assert.deepEqual(C.validate(state), [], `${shape}/${mode}`);
     assert.deepEqual(C.decode(C.encode(state)), state);
-    assert.ok(C.message(state).includes(`${C.MODES[mode].label} — ${C.assets.bases[shape].label}`));
+    assert.ok(C.message(state).includes(`${C.MODES[mode].label} - ${C.assets.bases[shape].label}`));
   }
 });
 

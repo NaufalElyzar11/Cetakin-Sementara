@@ -1,9 +1,8 @@
-/* Jasa Projek — uses Cetakin's shared typography, navigation and brand colors. */
+/* Jasa Projek - uses Cetakin's shared typography, navigation and brand colors. */
 .projects-page{--project-green:#285c46}
 .projects-breadcrumb{display:flex;gap:13px;align-items:center;font-size:12px;color:#aeb9c3;padding-top:28px}
 .projects-breadcrumb a:hover{color:var(--orange)}
 .projects-hero{background:#18232d;color:#fff;overflow:hidden;position:relative}
-.projects-hero::before{content:'';position:absolute;width:520px;height:520px;border:1px solid #ffffff0b;border-radius:50%;right:-270px;top:100px;pointer-events:none}
 .projects-hero-grid{display:grid;grid-template-columns:1.14fr 1fr;gap:54px;align-items:center;padding:42px 0 65px}
 .projects-eyebrow{display:flex;gap:10px;align-items:center;font-size:10px;letter-spacing:.13em;font-weight:700;color:#b6c3cd;margin-bottom:25px}
 .projects-eyebrow>span{width:7px;height:7px;background:var(--orange);border-radius:50%;flex:none}
@@ -85,19 +84,18 @@
 .projects-process{background:#e9ede7;padding:70px 0 74px}
 .projects-process-heading h2{font-size:clamp(36px,4vw,54px);line-height:1.1;letter-spacing:-.04em;margin-top:16px}
 .projects-process .section-index{font-size:10px}
-.projects-steps{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:45px;padding:0;margin:45px 0 0}
+.projects-steps{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px;padding:0;margin:45px 0 0}
 .projects-steps li{border-top:1px solid #bfc8bd;padding-top:17px}
 .projects-steps li>span{font:500 14px var(--display);color:var(--project-green)}
-.projects-steps h3{font-size:22px;letter-spacing:-.025em;margin:23px 0 12px}
-.projects-steps p{font-size:13px;line-height:1.8;color:#5d6a63;margin:0}
+.projects-steps h3{font-size:21px;letter-spacing:-.025em;margin:23px 0 12px}
+.projects-steps p{font-size:13px;line-height:1.8;color:#55635c;margin:0}
 .projects-contact{padding-block:75px}
 .projects-contact-inner{display:grid;grid-template-columns:1.3fr 1fr;gap:60px;border:1px solid var(--line);padding:52px 60px;border-radius:18px;background:#fff}
 .projects-contact-inner .section-index{font-size:10px}
 .projects-contact h2{font-size:clamp(42px,4.8vw,65px);line-height:1.05;margin:18px 0 22px}
 .projects-contact p{font-size:14px;line-height:1.8;color:var(--muted);max-width:410px;margin-bottom:25px}
-.projects-contact .button{font-size:13px;gap:30px}
+.projects-contact .button{font-size:13px;gap:16px}
 .projects-contact-aside{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;border-left:1px solid var(--line);padding-left:60px}
-.projects-contact-symbol{font-size:90px;color:var(--orange);line-height:1;margin-bottom:20px}
 .projects-contact-aside p{font:500 24px/1.45 var(--display);letter-spacing:-.025em;color:var(--ink);margin-bottom:25px}
 .projects-contact-aside>span:last-child{font-size:9px;letter-spacing:.14em;font-weight:700;color:var(--muted)}
 @media(min-width:1041px) and (prefers-reduced-motion:no-preference){
@@ -112,6 +110,7 @@
   .projects-photo-frame{height:400px}
   .project-case{gap:42px}
   .project-image-wrap{height:480px}
+  .projects-steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
   .projects-contact-inner{padding:42px;gap:40px}
   .projects-contact-aside{padding-left:40px}
 }

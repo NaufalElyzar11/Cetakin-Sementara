@@ -40,7 +40,7 @@
     body.append(el('p', 'card-group', product.group), el('h2', 'card-name', product.name));
     const row = el('div', 'card-price-row');
     row.append(el('strong', '', core.money(product.price)), el('span', `stock-dot ${product.stock ? '' : 'sold-out'}`, product.stock ? `${product.stock} tersedia` : 'Habis'));
-    body.append(row, el('span', 'card-details', 'Lihat detail ↗'));
+    body.append(row, el('span', 'card-details', 'Lihat detail'));
     link.append(visual, body); article.append(link);
     return article;
   }
@@ -80,7 +80,7 @@
       if (text.length > 5000000) throw new Error('Katalog melebihi batas ukuran.');
       state.products = core.productsFromCSV(text);
       state.valid = true; state.loadedAt = Date.now();
-      status.textContent = state.demo ? 'Mode contoh · harga dan stok belum mewakili produk yang dijual.' : `Data dimuat pukul ${new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date(state.loadedAt))}${usedApi ? ' · Sinkronisasi Real-time Cloud' : '. Pembaruan dari sumber dapat memiliki jeda.'}`;
+      status.textContent = state.demo ? 'Mode contoh · harga dan stok belum mewakili produk yang dijual.' : `Data dimuat pukul ${new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date(state.loadedAt))}${usedApi ? ' · Sinkronisasi otomatis' : '. Pembaruan dari sumber dapat memiliki jeda.'}`;
       if (page === 'catalog') { populateGroups(); renderCatalog(); }
       else renderDetail();
     } catch (error) {
@@ -177,7 +177,7 @@
     $('#missing-product').hidden = Boolean(product);
     $('#related-section').hidden = !product;
     renderGuideFallback(!product);
-    if (!product) { document.title = 'Produk belum ditemukan — Cetakin'; return; }
+    if (!product) { document.title = 'Produk belum ditemukan - Cetakin'; return; }
     const href = `./${product.type}.html`;
     $('#catalog-back').href = href;
     $('#catalog-back').textContent = product.type === 'robotika' ? 'Komponen Robotika' : 'Gantungan Kunci';
@@ -202,7 +202,7 @@
     $('#detail-image-label').hidden = !state.demo;
     $('#detail-stock').textContent = product.stock ? `${product.stock} tersedia` : 'Stok habis';
     $('#detail-stock').classList.toggle('is-empty', !product.stock);
-    document.title = `${product.name} — Cetakin`;
+    document.title = `${product.name} - Cetakin`;
     document.querySelector('meta[name="description"]').content = product.description.slice(0, 160);
     const specs = $('#detail-specs'); specs.replaceChildren();
     const entries = [[product.type === 'robotika' ? 'Kategori' : 'Asal desain', product.group], ['Material', product.material], ['Ukuran', product.dimensions], ['Berat produk', product.weight_grams ? `${product.weight_grams} g` : ''], ['Kode produk', product.id]];
@@ -229,8 +229,8 @@
     $('#quantity-error').hidden = validQuantity || !product.stock;
     $('#quantity-error').textContent = `Masukkan jumlah 1–${max} pcs sesuai stok yang tersedia.`;
     input.setAttribute('aria-invalid', String(!validQuantity && product.stock > 0));
-    $('#detail-subtotal').textContent = validQuantity ? core.money(product.price * quantity) : '—';
-    link.setAttribute('aria-disabled', String(!canBuy)); link.tabIndex = canBuy ? 0 : -1;
+    $('#detail-subtotal').textContent = validQuantity ? core.money(product.price * quantity) : '-';
+    link.setAttribute('aria-disabled', String(!canBuy)); link.tabIndex = 0;
     if (canBuy) {
       const productURL = new URL(`./produk.html?id=${encodeURIComponent(product.id)}`, location.href).href;
       link.href = window.CetakinContact.url(core.orderMessage(product, quantity, productURL, state.demo));
@@ -254,7 +254,7 @@
         await navigator.clipboard.writeText(location.href);
         $('#share-status').textContent = 'Tautan produk disalin.';
         $('#share-product').textContent = 'Tautan disalin ✓';
-        setTimeout(() => { $('#share-product').textContent = 'Salin tautan produk ↗'; }, 2500);
+        setTimeout(() => { $('#share-product').textContent = 'Salin tautan produk'; }, 2500);
       } catch (_) {
         $('#share-status').classList.remove('sr-only');
         $('#share-status').textContent = `Salin alamat ini: ${location.href}`;

@@ -52,7 +52,7 @@
       previewStatus.textContent = 'Isi 1–5 huruf untuk melihat contoh.';
       orderLink.removeAttribute('href');
       orderLink.setAttribute('aria-disabled', 'true');
-      orderLink.tabIndex = -1;
+      orderLink.tabIndex = 0;
       return;
     }
 

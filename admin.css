@@ -1,4 +1,4 @@
-/* Cetakin Cloud ERP & Catalog Admin Styles — Matches Brand Identity & Mobile-First */
+/* Cetakin Portal Keuangan & Katalog Styles - Matches Brand Identity & Mobile-First */
 :root {
   --paper: #f7f7f4;
   --white: #ffffff;
@@ -1025,9 +1025,7 @@ body.admin-body {
   }
 }
 
-/* =========================================================
-   NOTA PEMBELIAN / INVOICE MODAL & TEMPLATE RESMI CETAKIN
-   ========================================================= */
+/* Nota Pembelian / Invoice Modal & Template Resmi Cetakin */
 .invoice-modal-box {
   width: min(100%, 880px);
   max-height: 92vh;
@@ -1344,14 +1342,14 @@ body.admin-body {
 
 .inv-terbilang-box {
   background: #f8fafc;
-  border-left: 4px solid #ea580c;
-  border-radius: 8px 12px 12px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
   padding: 11px 15px;
   margin-bottom: 14px;
 }
 
 .invoice-paper[data-unit="robotika"] .inv-terbilang-box {
-  border-left-color: #0284c7;
+  border-color: #bae6fd;
 }
 
 .inv-terbilang-box span {
@@ -1496,9 +1494,7 @@ body.admin-body {
   color: #c2410c;
 }
 
-/* =========================================================
-   KOMPONEN MULTI-ITEM PESANAN (KASIR CEPAT & NOTA LENGKAP)
-   ========================================================= */
+/* Komponen Multi-Item Pesanan (Kasir Cepat & Nota Lengkap) */
 .order-items-box {
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;

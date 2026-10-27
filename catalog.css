@@ -30,7 +30,7 @@ button:disabled{cursor:not-allowed}
 .search-wrap{position:relative}
 .search-wrap>span{position:absolute;top:9px;left:12px;font-size:22px;pointer-events:none;color:#627481}
 .filter-panel input:not([type=checkbox]),.filter-panel select{display:block;width:100%;min-width:0;min-height:44px;border:1px solid #cfd4d2;background:#fff;border-radius:8px;padding:11px 10px;font-size:12px;color:var(--ink)}
-.filter-panel input::placeholder{color:#78828a}
+.filter-panel input::placeholder{color:#56616a}
 .filter-panel #search{padding-left:37px}
 .filter-panel select{padding-right:24px}
 .price-filter{padding:0;margin:21px 0 0;border:0;min-width:0}
@@ -64,7 +64,7 @@ button:disabled{cursor:not-allowed}
 .card-price-row strong{font-size:14px;font-weight:700}
 .stock-dot{display:flex;align-items:center;gap:5px;font-size:10px;line-height:1.4;color:#4a655b}
 .stock-dot::before{content:'';width:5px;height:5px;background:#609680;border-radius:50%;flex-shrink:0}
-.stock-dot.sold-out{color:#818078}
+.stock-dot.sold-out{color:#595852}
 .stock-dot.sold-out::before{background:#9a998f}
 .card-details{display:block;font-size:11px;font-weight:700;margin-top:17px;padding-top:13px;border-top:1px solid var(--line);transition:color .2s}
 .catalog-card-link:hover .card-details{color:var(--orange-deep)}
@@ -115,7 +115,7 @@ button:disabled{cursor:not-allowed}
 .subtotal-row{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:24px 0 17px;font-size:12px}
 .subtotal-row strong{font-size:18px}
 .purchase-button{width:100%;font-size:14px;letter-spacing:0;min-height:56px}
-.purchase-button[aria-disabled=true]{background:#dfe3e2;box-shadow:none;color:#66757b;cursor:not-allowed;transform:none}
+.purchase-button[aria-disabled=true]{background:#dfe3e2;box-shadow:none;color:#4d5963;cursor:not-allowed;transform:none}
 .purchase-note{font-size:11px;line-height:1.7;margin:12px 0 6px;color:var(--muted);text-align:center}
 .share-button{display:block;margin:15px auto 0;color:var(--ink);font-weight:500}
 #share-status{font-size:12px;line-height:1.7;overflow-wrap:anywhere}

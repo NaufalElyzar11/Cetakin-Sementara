@@ -98,7 +98,7 @@
     },
     {
       "sku": "HEAT1",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 1 mm x 40 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 1 mm x 40 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 68.51,
@@ -118,7 +118,7 @@
     },
     {
       "sku": "HEAT2",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 2 mm x 40 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 2 mm x 40 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 68.51,
@@ -138,7 +138,7 @@
     },
     {
       "sku": "HEAT3",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 3 mm x 40 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 3 mm x 40 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 84.04,
@@ -158,7 +158,7 @@
     },
     {
       "sku": "HEAT4",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 4 mm x 40 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 4 mm x 40 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 84.04,
@@ -178,7 +178,7 @@
     },
     {
       "sku": "HEAT6",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 6 mm x 40 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 6 mm x 40 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 99.58,
@@ -198,7 +198,7 @@
     },
     {
       "sku": "HEAT8",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 8 mm x 80 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 8 mm x 80 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 99.58,
@@ -218,7 +218,7 @@
     },
     {
       "sku": "HEAT10",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 10 mm x 80 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 10 mm x 80 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 130.65,
@@ -238,7 +238,7 @@
     },
     {
       "sku": "HEAT14",
-      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 14 mm x 80 mm — Satuan 1 potong",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 14 mm x 80 mm - Satuan 1 potong",
       "sellUnitQty": 1,
       "hppStok": 79.51,
       "alokasiBiayaUsaha": 130.65,
@@ -438,7 +438,7 @@
     },
     {
       "sku": "MF30",
-      "name": "Kabel Jumper Dupont Male to Female 30 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 30 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 300.33,
       "alokasiBiayaUsaha": 93.11,
@@ -458,7 +458,7 @@
     },
     {
       "sku": "MF30",
-      "name": "Kabel Jumper Dupont Male to Female 30 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 30 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 3003.3,
       "alokasiBiayaUsaha": 931.08,
@@ -478,7 +478,7 @@
     },
     {
       "sku": "MF30",
-      "name": "Kabel Jumper Dupont Male to Female 30 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 30 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 12013.2,
       "alokasiBiayaUsaha": 3724.31,
@@ -558,7 +558,7 @@
     },
     {
       "sku": "J20MM",
-      "name": "Kabel Jumper Dupont Male to Male 20 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 20 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 279.2,
       "alokasiBiayaUsaha": 68.6,
@@ -578,7 +578,7 @@
     },
     {
       "sku": "J20MM",
-      "name": "Kabel Jumper Dupont Male to Male 20 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 20 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 2792,
       "alokasiBiayaUsaha": 686.03,
@@ -598,7 +598,7 @@
     },
     {
       "sku": "J20MM",
-      "name": "Kabel Jumper Dupont Male to Male 20 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 20 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 11168,
       "alokasiBiayaUsaha": 2744.11,
@@ -618,7 +618,7 @@
     },
     {
       "sku": "J20MF",
-      "name": "Kabel Jumper Dupont Male to Female 20 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 20 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 279.2,
       "alokasiBiayaUsaha": 68.6,
@@ -638,7 +638,7 @@
     },
     {
       "sku": "J20MF",
-      "name": "Kabel Jumper Dupont Male to Female 20 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 20 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 2792,
       "alokasiBiayaUsaha": 686.03,
@@ -658,7 +658,7 @@
     },
     {
       "sku": "J20MF",
-      "name": "Kabel Jumper Dupont Male to Female 20 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 20 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 11168,
       "alokasiBiayaUsaha": 2744.11,
@@ -678,7 +678,7 @@
     },
     {
       "sku": "J20FF",
-      "name": "Kabel Jumper Dupont Female to Female 20 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 20 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 279.2,
       "alokasiBiayaUsaha": 68.6,
@@ -698,7 +698,7 @@
     },
     {
       "sku": "J20FF",
-      "name": "Kabel Jumper Dupont Female to Female 20 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 20 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 2792,
       "alokasiBiayaUsaha": 686.03,
@@ -718,7 +718,7 @@
     },
     {
       "sku": "J20FF",
-      "name": "Kabel Jumper Dupont Female to Female 20 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 20 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 11168,
       "alokasiBiayaUsaha": 2744.11,
@@ -778,7 +778,7 @@
     },
     {
       "sku": "MM30",
-      "name": "Kabel Jumper Dupont Male to Male 30 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 30 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 328.35,
       "alokasiBiayaUsaha": 84.4,
@@ -798,7 +798,7 @@
     },
     {
       "sku": "MM30",
-      "name": "Kabel Jumper Dupont Male to Male 30 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 30 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 3283.5,
       "alokasiBiayaUsaha": 844.02,
@@ -818,7 +818,7 @@
     },
     {
       "sku": "MM30",
-      "name": "Kabel Jumper Dupont Male to Male 30 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 30 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 13134,
       "alokasiBiayaUsaha": 3376.08,
@@ -1258,7 +1258,7 @@
     },
     {
       "sku": "LEDB",
-      "name": "LED 3mm F3 Super Bright Clear Blue Biru — Satuan 1 LED",
+      "name": "LED 3mm F3 Super Bright Clear Blue Biru - Satuan 1 LED",
       "sellUnitQty": 1,
       "hppStok": 164.67,
       "alokasiBiayaUsaha": 26.51,
@@ -1278,7 +1278,7 @@
     },
     {
       "sku": "LEDB",
-      "name": "LED 3mm F3 Super Bright Clear Blue Biru — Paket 10 LED",
+      "name": "LED 3mm F3 Super Bright Clear Blue Biru - Paket 10 LED",
       "sellUnitQty": 10,
       "hppStok": 1646.67,
       "alokasiBiayaUsaha": 265.13,
@@ -1298,7 +1298,7 @@
     },
     {
       "sku": "LEDW",
-      "name": "LED 3mm F3 Super Bright Clear White Putih — Satuan 1 LED",
+      "name": "LED 3mm F3 Super Bright Clear White Putih - Satuan 1 LED",
       "sellUnitQty": 1,
       "hppStok": 164.67,
       "alokasiBiayaUsaha": 26.51,
@@ -1318,7 +1318,7 @@
     },
     {
       "sku": "LEDW",
-      "name": "LED 3mm F3 Super Bright Clear White Putih — Paket 10 LED",
+      "name": "LED 3mm F3 Super Bright Clear White Putih - Paket 10 LED",
       "sellUnitQty": 10,
       "hppStok": 1646.67,
       "alokasiBiayaUsaha": 265.13,
@@ -1378,7 +1378,7 @@
     },
     {
       "sku": "MF10",
-      "name": "Kabel Jumper Dupont Male to Female 10 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 10 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 220.48,
       "alokasiBiayaUsaha": 55.78,
@@ -1398,7 +1398,7 @@
     },
     {
       "sku": "MF10",
-      "name": "Kabel Jumper Dupont Male to Female 10 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 10 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 2204.82,
       "alokasiBiayaUsaha": 557.76,
@@ -1418,7 +1418,7 @@
     },
     {
       "sku": "MF10",
-      "name": "Kabel Jumper Dupont Male to Female 10 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Male to Female 10 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 8819.3,
       "alokasiBiayaUsaha": 2231.05,
@@ -1438,7 +1438,7 @@
     },
     {
       "sku": "FF10",
-      "name": "Kabel Jumper Dupont Female to Female 10 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 10 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 195.48,
       "alokasiBiayaUsaha": 63.54,
@@ -1458,7 +1458,7 @@
     },
     {
       "sku": "FF10",
-      "name": "Kabel Jumper Dupont Female to Female 10 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 10 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 1954.82,
       "alokasiBiayaUsaha": 635.44,
@@ -1478,7 +1478,7 @@
     },
     {
       "sku": "FF10",
-      "name": "Kabel Jumper Dupont Female to Female 10 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 10 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 7819.3,
       "alokasiBiayaUsaha": 2541.75,
@@ -1738,7 +1738,7 @@
     },
     {
       "sku": "FF30",
-      "name": "Kabel Jumper Dupont Female to Female 30 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 30 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 277.5,
       "alokasiBiayaUsaha": 100.2,
@@ -1758,7 +1758,7 @@
     },
     {
       "sku": "FF30",
-      "name": "Kabel Jumper Dupont Female to Female 30 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 30 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 2775,
       "alokasiBiayaUsaha": 1002.01,
@@ -1778,7 +1778,7 @@
     },
     {
       "sku": "FF30",
-      "name": "Kabel Jumper Dupont Female to Female 30 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Female to Female 30 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 11100,
       "alokasiBiayaUsaha": 4008.04,
@@ -1798,7 +1798,7 @@
     },
     {
       "sku": "MM10",
-      "name": "Kabel Jumper Dupont Male to Male 10 cm — Satuan 1 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 10 cm - Satuan 1 kabel",
       "sellUnitQty": 1,
       "hppStok": 265,
       "alokasiBiayaUsaha": 41.94,
@@ -1818,7 +1818,7 @@
     },
     {
       "sku": "MM10",
-      "name": "Kabel Jumper Dupont Male to Male 10 cm — Paket 10 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 10 cm - Paket 10 kabel",
       "sellUnitQty": 10,
       "hppStok": 2650,
       "alokasiBiayaUsaha": 419.45,
@@ -1838,7 +1838,7 @@
     },
     {
       "sku": "MM10",
-      "name": "Kabel Jumper Dupont Male to Male 10 cm — Paket 40 kabel",
+      "name": "Kabel Jumper Dupont Male to Male 10 cm - Paket 40 kabel",
       "sellUnitQty": 40,
       "hppStok": 10600,
       "alokasiBiayaUsaha": 1677.79,
