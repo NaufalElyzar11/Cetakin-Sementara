@@ -83,26 +83,30 @@
         </div>
       </div>
       <section class="order-card" id="pesanan" aria-labelledby="order-title">
-        <div class="order-heading">
-          <h2 id="order-title">Siap jadi milikmu?</h2><span class="preorder-pill">PRE-ORDER</span>
+        <div class="order-overview">
+          <div class="order-heading">
+            <h2 id="order-title">Siap jadi milikmu?</h2><span class="preorder-pill">PRE-ORDER</span>
+          </div>
+          <p id="order-summary" class="order-summary"></p>
+          <div class="order-quantity"><label for="order-quantity">Jumlah produk</label>
+            <div><input id="order-quantity" type="number" min="1" max="99" step="1" value="1" inputmode="numeric"
+                aria-describedby="quantity-help"><span>pcs</span></div>
+          </div>
+          <p id="quantity-help" class="control-help">Semua pcs memakai desain yang sama.</p>
         </div>
-        <p id="order-summary" class="order-summary"></p>
-        <div class="order-quantity"><label for="order-quantity">Jumlah produk</label>
-          <div><input id="order-quantity" type="number" min="1" max="99" step="1" value="1" inputmode="numeric"
-              aria-describedby="quantity-help"><span>pcs</span></div>
+        <div class="order-checkout">
+          <div class="order-price">
+            <div><span>Subtotal</span><strong id="order-total">Rp26.000</strong></div>
+            <p id="unit-price">Rp26.000 / pcs</p>
+          </div>
+          <p class="order-small">Belum termasuk ongkir. Desain dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.
+          </p>
+          <div id="design-errors" class="builder-warning" role="status" hidden></div>
+          <a id="order-now" class="button button-dark" aria-disabled="true" tabindex="0">Pesan sekarang <span
+              aria-hidden="true">↗</span></a>
+          <p class="wa-help">Detail desain otomatis menjadi draf chat. Tekan kirim di WhatsApp untuk menghubungi admin.
+          </p>
         </div>
-        <p id="quantity-help" class="control-help">Semua pcs memakai desain yang sama.</p>
-        <div class="order-price">
-          <div><span>Subtotal</span><strong id="order-total">Rp26.000</strong></div>
-          <p id="unit-price">Rp26.000 / pcs</p>
-        </div>
-        <p class="order-small">Belum termasuk ongkir. Desain dan waktu pengerjaan dikonfirmasi admin melalui WhatsApp.
-        </p>
-        <div id="design-errors" class="builder-warning" role="status" hidden></div>
-        <a id="order-now" class="button button-dark" aria-disabled="true" tabindex="0">Pesan sekarang <span
-            aria-hidden="true">↗</span></a>
-        <p class="wa-help">Detail desain otomatis menjadi draf chat. Tekan kirim di WhatsApp untuk menghubungi admin.
-        </p>
         <details class="message-details">
           <summary>Lihat format chat pesanan</summary><label class="sr-only" for="wa-message">Draf pesan
             WhatsApp</label><textarea id="wa-message" readonly rows="12"></textarea><button type="button"
