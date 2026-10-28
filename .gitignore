@@ -8,3 +8,27 @@ Thumbs.db
 
 # Node (jika ada tool kedepannya)
 node_modules/
+
+# Skill video-demo dan runtime lokal proyek
+/.agents/skills/video-demo/
+/tools/video-demo-runtime/
+
+# Konfigurasi lingkungan lokal (template tetap boleh masuk repo)
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.template
+
+# Cache Python dan virtual environment
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Hasil pengujian dan rekaman lokal
+/test-results/
+/playwright-report/
+/coverage/
+/demo-out*/
+/.demo-frames/
