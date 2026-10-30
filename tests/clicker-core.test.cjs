@@ -145,7 +145,7 @@ test('new base spacing accepts adjacent characters and survives sharing and What
   }
 });
 
-test('every symbol accepts all twenty distinct stock-color pairs in every font', () => {
+test('every symbol accepts all distinct stock-color pairs in every font', () => {
   for (const value of symbolIds) for (const cap of Object.keys(C.COLORS)) for (const ink of Object.keys(C.COLORS)) {
     if (cap === ink) continue;
     for (const font of Object.keys(C.FONTS)) {
@@ -233,8 +233,8 @@ test('WhatsApp states each symbol body and ink color without catalog-color ambig
   }
 });
 
-test('five stock colors include red; red works seamlessly across base, cap, ink, share link, and WhatsApp message', () => {
-  assert.deepEqual(Object.keys(C.COLORS), ['white', 'black', 'blue', 'orange', 'red']);
+test('six stock colors include red and pink; red works across base, cap, ink, share link, and WhatsApp message', () => {
+  assert.deepEqual(Object.keys(C.COLORS), ['white', 'black', 'blue', 'orange', 'red', 'pink']);
   assert.deepEqual(C.COLORS.red, { label: 'Merah', hex: '#DE3636' });
 
   // Base red, Keycap red, and Ink red on separate keys

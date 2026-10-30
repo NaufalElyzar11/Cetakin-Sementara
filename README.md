@@ -19,7 +19,7 @@ Lalu buka di browser:
 ## Halaman dan fitur
 
 - `index.html`: profil, empat layanan, bagian **Produk Pertama**, preview singkat yang diteruskan ke Clicker Lab, proses, cerita brand, kontak.
-- `clicker.html`: konfigurator pre-order 1–7 tombol, base solid/flexi/compact, enam bentuk base (termasuk Love dan Bunga 5 Kelopak), tiga font, dua belas simbol tertanam dari `clicker_keycaps_simbol_2_warna`, empat warna PETG untuk badan dan simbol/huruf per tombol, harga, subtotal, draf WhatsApp, link desain, dan ekspor PNG. Simbol harus berbeda warna dari badan. Lihat [CLICKER.md](./CLICKER.md).
+- `clicker.html`: konfigurator pre-order 1–7 tombol, base solid/flexi/compact, enam bentuk base (termasuk Love dan Bunga 5 Kelopak), tiga font, dua belas simbol tertanam dari `clicker_keycaps_simbol_2_warna`, enam warna PETG termasuk pink untuk badan dan simbol/huruf per tombol, harga, subtotal, draf WhatsApp, link desain, dan ekspor PNG. Simbol harus berbeda warna dari badan. Lihat [CLICKER.md](./CLICKER.md).
 - `robotika.html`: katalog dengan pencarian, kategori, rentang harga, stok tersedia, dan pengurutan.
 - `panduan.html` / `panduan/`: 21 guide komponen dengan wiring, kode yang bisa disalin, daftar isi, checklist alat, dan langkah periksa masalah. Mencakup semua sensor, driver, dan aktuator dari Excel; detail dan pembaruan konten ada di [PANDUAN.md](./PANDUAN.md).
 - `gantungan-kunci.html`: katalog dengan filter asal desain/seri.

@@ -30,7 +30,7 @@
     window.addEventListener('resize', () => { if (window.innerWidth > 1040) closeMenu(); });
   }
 
-  const colorLabels = { orange: 'orange', blue: 'sky blue', white: 'putih', black: 'hitam', red: 'merah' };
+  const colorLabels = { orange: 'orange', blue: 'sky blue', white: 'putih', black: 'hitam', red: 'merah', pink: 'pink' };
   const colorButtons = Array.from(document.querySelectorAll('.color-option'));
 
   function renderPreview() {

@@ -86,7 +86,7 @@ summary{cursor:pointer}
 .emoji-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .emoji-options button{border:1px solid #dde2dd;border-radius:7px;background:#fff;padding:6px 2px;min-height:72px;font-size:9px}
 .emoji-options img{height:42px;margin:0 auto 4px;width:42px}
-.swatch-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:17px}
+.swatch-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:17px}
 .swatch-options button{border:1px solid #dce0dd;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;padding:9px 3px;min-height:44px}
 .swatch{width:15px;height:15px;border:1px solid #17212b33;border-radius:50%;flex:none}
 .apply-colors{border:0;background:transparent;padding:5px 0 0;color:#375e72;font-weight:600;font-size:11px!important;text-align:left;min-height:38px}

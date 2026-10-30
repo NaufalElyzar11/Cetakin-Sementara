@@ -6,7 +6,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, function (assets) {
   'use strict';
   const PRICES = Object.freeze({ 1: 14000, 2: 17000, 3: 21000, 4: 26000, 5: 30000, 6: 34000, 7: 37000 });
-  const COLORS = Object.freeze({ white: { label: 'Putih', hex: '#F4F4EF' }, black: { label: 'Hitam', hex: '#24292E' }, blue: { label: 'Sky blue', hex: '#83CBE7' }, orange: { label: 'Orange', hex: '#EF8E3B' }, red: { label: 'Merah', hex: '#DE3636' } });
+  const COLORS = Object.freeze({ white: { label: 'Putih', hex: '#F4F4EF' }, black: { label: 'Hitam', hex: '#24292E' }, blue: { label: 'Sky blue', hex: '#83CBE7' }, orange: { label: 'Orange', hex: '#EF8E3B' }, red: { label: 'Merah', hex: '#DE3636' }, pink: { label: 'Pink', hex: '#F2A7C3' } });
   const FONTS = Object.freeze({ nunito: 'Nunito ExtraBold', bungee: 'Bungee', dynapuff: 'DynaPuff Bold' });
   const MODES = Object.freeze({ solid: { label: 'Solid', pitch: 24 }, flexi: { label: 'Flexi', pitch: 33 }, compact: { label: 'Flexi compact', pitch: 26.5 } });
   const DEFAULT_SYMBOL = 'symbol-love';
