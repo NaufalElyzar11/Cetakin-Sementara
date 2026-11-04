@@ -1,0 +1,1281 @@
+{
+  "sheet": "Harga Jual",
+  "priceColumn": "J",
+  "priceHeader": "Harga jual usulan",
+  "headerRow": 6,
+  "sourceRows": [
+    {
+      "row": 7,
+      "sku": "MPU",
+      "name": "MPU6050 Sensor Gyroscope Accelerometer 3 AXIS Gyro GY-521",
+      "sellUnitQty": 1,
+      "price": 30000
+    },
+    {
+      "row": 8,
+      "sku": "BB",
+      "name": "Breadboard 400 Lubang Arduino Raspberry Pi SOLDERLESS 400 Titik 400P",
+      "sellUnitQty": 1,
+      "price": 12000
+    },
+    {
+      "row": 9,
+      "sku": "BAT",
+      "name": "Baterai Lithium-ion 18650 3,7 V 1500 mAh Visero",
+      "sellUnitQty": 1,
+      "price": 18000
+    },
+    {
+      "row": 10,
+      "sku": "CLEAN",
+      "name": "Pembersih Timah TIP Solder Desoldering Iron Mesh - G3137",
+      "sellUnitQty": 1,
+      "price": 20000
+    },
+    {
+      "row": 11,
+      "sku": "HEAT1",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 1 mm x 40 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 300
+    },
+    {
+      "row": 12,
+      "sku": "HEAT2",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 2 mm x 40 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 300
+    },
+    {
+      "row": 13,
+      "sku": "HEAT3",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 3 mm x 40 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 350
+    },
+    {
+      "row": 14,
+      "sku": "HEAT4",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 4 mm x 40 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 350
+    },
+    {
+      "row": 15,
+      "sku": "HEAT6",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 6 mm x 40 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 400
+    },
+    {
+      "row": 16,
+      "sku": "HEAT8",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 8 mm x 80 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 400
+    },
+    {
+      "row": 17,
+      "sku": "HEAT10",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 10 mm x 80 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 500
+    },
+    {
+      "row": 18,
+      "sku": "HEAT14",
+      "name": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 14 mm x 80 mm — Satuan 1 potong",
+      "sellUnitQty": 1,
+      "price": 500
+    },
+    {
+      "row": 19,
+      "sku": "TAPE",
+      "name": "Isolasi Solasi Selotip Listrik Lakban Kabel tape Hitam PVC 20 Yard",
+      "sellUnitQty": 1,
+      "price": 8000
+    },
+    {
+      "row": 20,
+      "sku": "SP20",
+      "name": "Spacer Nylon Plastik Penyangga Dudukan PCB Main Board Stand off Standoff M3 20mm",
+      "sellUnitQty": 1,
+      "price": 2000
+    },
+    {
+      "row": 21,
+      "sku": "SP8",
+      "name": "Spacer Nylon Plastik Penyangga Dudukan PCB Main Board Stand off Standoff M3 8mm",
+      "sellUnitQty": 1,
+      "price": 1300
+    },
+    {
+      "row": 22,
+      "sku": "SP15",
+      "name": "Spacer Nylon Plastik Penyangga Dudukan PCB Main Board Stand off Standoff M3 15mm",
+      "sellUnitQty": 1,
+      "price": 1750
+    },
+    {
+      "row": 23,
+      "sku": "SPONGE",
+      "name": "Spon Spons Busa Sponge Cleaner PEMBERSIH MATA SOLDER 5 x 3,5 cm",
+      "sellUnitQty": 1,
+      "price": 1500
+    },
+    {
+      "row": 24,
+      "sku": "FLUX1",
+      "name": "Flux Pasta Solder Anti-Oksidasi Cream Paste untuk PCB SMD",
+      "sellUnitQty": 1,
+      "price": 5500
+    },
+    {
+      "row": 25,
+      "sku": "FLUX2",
+      "name": "Flux Pasta Minyak Solder Amtech 10cc RMA-223 RMA223 Suntik Timah Rosin",
+      "sellUnitQty": 1,
+      "price": 5500
+    },
+    {
+      "row": 26,
+      "sku": "PCB5",
+      "name": "PCB Hole Single Side FR4 Fiber 5x7cm",
+      "sellUnitQty": 1,
+      "price": 4000
+    },
+    {
+      "row": 27,
+      "sku": "PCB4",
+      "name": "PCB Hole Double Side FR4 Fiber 4x6cm",
+      "sellUnitQty": 1,
+      "price": 8500
+    },
+    {
+      "row": 28,
+      "sku": "MF30",
+      "name": "Kabel Jumper Dupont Male to Female 30 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 700
+    },
+    {
+      "row": 29,
+      "sku": "MF30",
+      "name": "Kabel Jumper Dupont Male to Female 30 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 6500
+    },
+    {
+      "row": 30,
+      "sku": "MF30",
+      "name": "Kabel Jumper Dupont Male to Female 30 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 25500
+    },
+    {
+      "row": 31,
+      "sku": "MQ",
+      "name": "MQ-2 MQ2 LPG Butane Methane Gas Smoke Sensor Module for Arduino",
+      "sellUnitQty": 1,
+      "price": 27000
+    },
+    {
+      "row": 32,
+      "sku": "PIR",
+      "name": "HC-SR501 PIR Motion Sensor Module",
+      "sellUnitQty": 1,
+      "price": 17500
+    },
+    {
+      "row": 33,
+      "sku": "SG",
+      "name": "TowerPro Motor Servo SG90 SG-90 9G 180 derajat",
+      "sellUnitQty": 1,
+      "price": 25000
+    },
+    {
+      "row": 34,
+      "sku": "J20MM",
+      "name": "Kabel Jumper Dupont Male to Male 20 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 600
+    },
+    {
+      "row": 35,
+      "sku": "J20MM",
+      "name": "Kabel Jumper Dupont Male to Male 20 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 5500
+    },
+    {
+      "row": 36,
+      "sku": "J20MM",
+      "name": "Kabel Jumper Dupont Male to Male 20 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 21500
+    },
+    {
+      "row": 37,
+      "sku": "J20MF",
+      "name": "Kabel Jumper Dupont Male to Female 20 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 600
+    },
+    {
+      "row": 38,
+      "sku": "J20MF",
+      "name": "Kabel Jumper Dupont Male to Female 20 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 5500
+    },
+    {
+      "row": 39,
+      "sku": "J20MF",
+      "name": "Kabel Jumper Dupont Male to Female 20 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 21500
+    },
+    {
+      "row": 40,
+      "sku": "J20FF",
+      "name": "Kabel Jumper Dupont Female to Female 20 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 600
+    },
+    {
+      "row": 41,
+      "sku": "J20FF",
+      "name": "Kabel Jumper Dupont Female to Female 20 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 5500
+    },
+    {
+      "row": 42,
+      "sku": "J20FF",
+      "name": "Kabel Jumper Dupont Female to Female 20 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 21500
+    },
+    {
+      "row": 43,
+      "sku": "PCB9",
+      "name": "PCB DOT MATRIX THRU HOLE DOUBLE LAYER 9X15CM",
+      "sellUnitQty": 1,
+      "price": 21800
+    },
+    {
+      "row": 44,
+      "sku": "L298B",
+      "name": "Motor Driver L298N 2 Channel Board H-Bridge 5A",
+      "sellUnitQty": 1,
+      "price": 61300
+    },
+    {
+      "row": 45,
+      "sku": "MM30",
+      "name": "Kabel Jumper Dupont Male to Male 30 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 700
+    },
+    {
+      "row": 46,
+      "sku": "MM30",
+      "name": "Kabel Jumper Dupont Male to Male 30 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 6500
+    },
+    {
+      "row": 47,
+      "sku": "MM30",
+      "name": "Kabel Jumper Dupont Male to Male 30 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 25500
+    },
+    {
+      "row": 48,
+      "sku": "L298",
+      "name": "L298N L298 DUAL H BRIDGE STEPPER MOTOR DRIVER MODULE",
+      "sellUnitQty": 1,
+      "price": 28500
+    },
+    {
+      "row": 49,
+      "sku": "WHEEL",
+      "name": "WHEEL RODA RUBBER FOR SMART ROBOT CAR 4WD 2WD",
+      "sellUnitQty": 1,
+      "price": 10500
+    },
+    {
+      "row": 50,
+      "sku": "MOTOR",
+      "name": "MOTOR DC GEARBOX 1/48 DUAL SHAFT FOR SMART CHASSIS 4WD 2WD",
+      "sellUnitQty": 1,
+      "price": 15000
+    },
+    {
+      "row": 51,
+      "sku": "Motor",
+      "name": "Motor DC Gearbox Kuning dan Roda Smart Car Robot Wheel",
+      "sellUnitQty": 1,
+      "price": 18000
+    },
+    {
+      "row": 52,
+      "sku": "PCB8",
+      "name": "PCB Dot Matrix Thru Hole Single Layer 8x12cm",
+      "sellUnitQty": 1,
+      "price": 22500
+    },
+    {
+      "row": 53,
+      "sku": "DHT22",
+      "name": "Module DHT22 Temperature Humidity Sensor DHT-22 2302 Suhu Modul",
+      "sellUnitQty": 1,
+      "price": 32000
+    },
+    {
+      "row": 54,
+      "sku": "FLAME",
+      "name": "Flame Infrared Modul Module Sensor Detector Api Kebakaran Arduino",
+      "sellUnitQty": 1,
+      "price": 7000
+    },
+    {
+      "row": 55,
+      "sku": "HC",
+      "name": "Ultrasonic Sensor HC-SR04 HCSR04 Jarak Arduino",
+      "sellUnitQty": 1,
+      "price": 20000
+    },
+    {
+      "row": 56,
+      "sku": "PUSHS",
+      "name": "Push Button 4p Ukuran Standar 6x6x4.3mm",
+      "sellUnitQty": 1,
+      "price": 600
+    },
+    {
+      "row": 57,
+      "sku": "WATER",
+      "name": "Sensor Water Level Modul Ketinggian Permukaan Air",
+      "sellUnitQty": 1,
+      "price": 6500
+    },
+    {
+      "row": 58,
+      "sku": "RAIN",
+      "name": "[SEN-0007] RAINDROPS RAIN HUMIDITY DETECTION SENSOR AIR HUJAN MODULE",
+      "sellUnitQty": 1,
+      "price": 13500
+    },
+    {
+      "row": 59,
+      "sku": "OBSTACLE",
+      "name": "[SEN-0018] INFRARED BARRIER OBSTACLE SENSOR HALANGAN RINTANGAN MODULE",
+      "sellUnitQty": 1,
+      "price": 10000
+    },
+    {
+      "row": 60,
+      "sku": "TIN",
+      "name": "Timah Paragon Kecil 10m | Timah Paragon, Timah Solder",
+      "sellUnitQty": 1,
+      "price": 38500
+    },
+    {
+      "row": 61,
+      "sku": "XL",
+      "name": "XL4005 Adjustable 5A StepDown Buck Converter Volt DC-DC",
+      "sellUnitQty": 1,
+      "price": 20500
+    },
+    {
+      "row": 62,
+      "sku": "MEGA",
+      "name": "ARDUINO MEGA 2560 R3 CH340 COMPATIBLE BOARD + USB CABLE",
+      "sellUnitQty": 1,
+      "price": 210000
+    },
+    {
+      "row": 63,
+      "sku": "NANO",
+      "name": "NANO V3 MINI USB ATMEGA328P CH340G 5V BOARD ARDUINO COMPATIBLE",
+      "sellUnitQty": 1,
+      "price": 70000
+    },
+    {
+      "row": 64,
+      "sku": "MG",
+      "name": "MG90S Micro Servo Full Metal Gear 180 derajat Tower Pro",
+      "sellUnitQty": 1,
+      "price": 33500
+    },
+    {
+      "row": 65,
+      "sku": "LM",
+      "name": "LM2596 DC-DC ADJUSTABLE STEP DOWN PSU 4.5-35V to 1.25-30V",
+      "sellUnitQty": 1,
+      "price": 15000
+    },
+    {
+      "row": 66,
+      "sku": "BF",
+      "name": "BFD-1000 5 CHANNEL INFRARED TRACING ROBOT LINE FOLLOWER AVOIDER SENSOR",
+      "sellUnitQty": 1,
+      "price": 40000
+    },
+    {
+      "row": 67,
+      "sku": "SOIL",
+      "name": "Capacitive Soil Sensor Tanah Hygrometer Humidity Moisture Module V2.0",
+      "sellUnitQty": 1,
+      "price": 19000
+    },
+    {
+      "row": 68,
+      "sku": "PCB7",
+      "name": "PCB DOT MATRIX THRU HOLE SINGLE LAYER 7X9CM",
+      "sellUnitQty": 1,
+      "price": 13000
+    },
+    {
+      "row": 69,
+      "sku": "LEDB",
+      "name": "LED 3mm F3 Super Bright Clear Blue Biru — Satuan 1 LED",
+      "sellUnitQty": 1,
+      "price": 300
+    },
+    {
+      "row": 70,
+      "sku": "LEDB",
+      "name": "LED 3mm F3 Super Bright Clear Blue Biru — Paket 10 LED",
+      "sellUnitQty": 10,
+      "price": 3000
+    },
+    {
+      "row": 71,
+      "sku": "LEDW",
+      "name": "LED 3mm F3 Super Bright Clear White Putih — Satuan 1 LED",
+      "sellUnitQty": 1,
+      "price": 300
+    },
+    {
+      "row": 72,
+      "sku": "LEDW",
+      "name": "LED 3mm F3 Super Bright Clear White Putih — Paket 10 LED",
+      "sellUnitQty": 10,
+      "price": 3000
+    },
+    {
+      "row": 73,
+      "sku": "UNO",
+      "name": "Modul Uno R3 CH430G ATMEGA328P CH340 SMD USB Kabel Header Pin",
+      "sellUnitQty": 1,
+      "price": 80000
+    },
+    {
+      "row": 74,
+      "sku": "DHT11",
+      "name": "Modul DHT11 Sensor Kelembaban Suhu Humidity Temperature Digital",
+      "sellUnitQty": 1,
+      "price": 15000
+    },
+    {
+      "row": 75,
+      "sku": "MF10",
+      "name": "Kabel Jumper Dupont Male to Female 10 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 500
+    },
+    {
+      "row": 76,
+      "sku": "MF10",
+      "name": "Kabel Jumper Dupont Male to Female 10 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 4500
+    },
+    {
+      "row": 77,
+      "sku": "MF10",
+      "name": "Kabel Jumper Dupont Male to Female 10 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 17500
+    },
+    {
+      "row": 78,
+      "sku": "FF10",
+      "name": "Kabel Jumper Dupont Female to Female 10 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 500
+    },
+    {
+      "row": 79,
+      "sku": "FF10",
+      "name": "Kabel Jumper Dupont Female to Female 10 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 4500
+    },
+    {
+      "row": 80,
+      "sku": "FF10",
+      "name": "Kabel Jumper Dupont Female to Female 10 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 17500
+    },
+    {
+      "row": 81,
+      "sku": "H3",
+      "name": "3x 18650 Battery Holder Tempat Baterai Case Box Kotak Dengan Kabel Seri",
+      "sellUnitQty": 1,
+      "price": 9000
+    },
+    {
+      "row": 82,
+      "sku": "H2",
+      "name": "2x 18650 Battery Holder Baterai Case tempat Kotak Batere Box Dudukan",
+      "sellUnitQty": 1,
+      "price": 6000
+    },
+    {
+      "row": 83,
+      "sku": "LDR",
+      "name": "Modul Sensor Cahaya LDR Photoresistor photosensitive Arduinouno",
+      "sellUnitQty": 1,
+      "price": 9000
+    },
+    {
+      "row": 84,
+      "sku": "SW",
+      "name": "Saklar Rocker Switch KCD11 POWER 10X15MM ON OFF Merah 2 Pin",
+      "sellUnitQty": 1,
+      "price": 1000
+    },
+    {
+      "row": 85,
+      "sku": "SET_HIJAU",
+      "name": "Omron Push Button B3F 4055 saklar + tutup hijau",
+      "sellUnitQty": 1,
+      "price": 1500
+    },
+    {
+      "row": 86,
+      "sku": "SET_BIRU",
+      "name": "Omron Push Button B3F 4055 saklar + tutup biru",
+      "sellUnitQty": 1,
+      "price": 1500
+    },
+    {
+      "row": 87,
+      "sku": "SET_PUTIH",
+      "name": "Omron Push Button B3F 4055 saklar + tutup putih",
+      "sellUnitQty": 1,
+      "price": 1500
+    },
+    {
+      "row": 88,
+      "sku": "SET_HITAM",
+      "name": "Omron Push Button B3F 4055 saklar + tutup hitam",
+      "sellUnitQty": 1,
+      "price": 1500
+    },
+    {
+      "row": 89,
+      "sku": "SET_MERAH",
+      "name": "Omron Push Button B3F 4055 saklar + tutup merah",
+      "sellUnitQty": 1,
+      "price": 1500
+    },
+    {
+      "row": 90,
+      "sku": "ESP",
+      "name": "ESP32 CH340 Type C WROOM WIFI Bluetooth BLE IOT Development Board 30 pin",
+      "sellUnitQty": 1,
+      "price": 94000
+    },
+    {
+      "row": 91,
+      "sku": "OLED",
+      "name": "OLED 0.96 inch Blue I2C 128x64 LCD Display Module",
+      "sellUnitQty": 1,
+      "price": 42000
+    },
+    {
+      "row": 92,
+      "sku": "DFPLAYER",
+      "name": "DFPlayer Mini MP3 JL 24 DF Player - varian JL 24PIN",
+      "sellUnitQty": 1,
+      "price": 25000
+    },
+    {
+      "row": 93,
+      "sku": "FF30",
+      "name": "Kabel Jumper Dupont Female to Female 30 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 700
+    },
+    {
+      "row": 94,
+      "sku": "FF30",
+      "name": "Kabel Jumper Dupont Female to Female 30 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 6500
+    },
+    {
+      "row": 95,
+      "sku": "FF30",
+      "name": "Kabel Jumper Dupont Female to Female 30 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 25500
+    },
+    {
+      "row": 96,
+      "sku": "MM10",
+      "name": "Kabel Jumper Dupont Male to Male 10 cm — Satuan 1 kabel",
+      "sellUnitQty": 1,
+      "price": 500
+    },
+    {
+      "row": 97,
+      "sku": "MM10",
+      "name": "Kabel Jumper Dupont Male to Male 10 cm — Paket 10 kabel",
+      "sellUnitQty": 10,
+      "price": 4500
+    },
+    {
+      "row": 98,
+      "sku": "MM10",
+      "name": "Kabel Jumper Dupont Male to Male 10 cm — Paket 40 kabel",
+      "sellUnitQty": 40,
+      "price": 17500
+    },
+    {
+      "row": 99,
+      "sku": "HEADERF",
+      "name": "Header Female 40 Pin Straight Lurus Singel Row 1x40 Pitch 2.54mm Hitam",
+      "sellUnitQty": 1,
+      "price": 2500
+    },
+    {
+      "row": 100,
+      "sku": "HEADERM",
+      "name": "Header Male 40 Pin Straight Lurus Single Row 1x40 Pitch 2.54mm Putih",
+      "sellUnitQty": 1,
+      "price": 2000
+    }
+  ],
+  "matchedProducts": [
+    {
+      "id": "01-001",
+      "sku": "UNO",
+      "catalogName": "Arduino Uno",
+      "sourceName": "Modul Uno R3 CH430G ATMEGA328P CH340 SMD USB Kabel Header Pin",
+      "sourceRow": 73,
+      "oldPrice": 80000,
+      "newPrice": 80000
+    },
+    {
+      "id": "01-002",
+      "sku": "RAIN",
+      "catalogName": "RAINDROPS RAIN HUMIDITY DETECTION SENSOR AIR HUJAN MODULE",
+      "sourceName": "[SEN-0007] RAINDROPS RAIN HUMIDITY DETECTION SENSOR AIR HUJAN MODULE",
+      "sourceRow": 58,
+      "oldPrice": 13250,
+      "newPrice": 13500
+    },
+    {
+      "id": "01-003",
+      "sku": "OBSTACLE",
+      "catalogName": "INFRARED BARRIER OBSTACLE SENSOR HALANGAN RINTANGAN MODULE",
+      "sourceName": "[SEN-0018] INFRARED BARRIER OBSTACLE SENSOR HALANGAN RINTANGAN MODULE",
+      "sourceRow": 59,
+      "oldPrice": 10000,
+      "newPrice": 10000
+    },
+    {
+      "id": "01-004",
+      "sku": "XL",
+      "catalogName": "XL4005 Adjustable 5A StepDown Buck Converter Volt DC-DC",
+      "sourceName": "XL4005 Adjustable 5A StepDown Buck Converter Volt DC-DC",
+      "sourceRow": 61,
+      "oldPrice": 20450,
+      "newPrice": 20500
+    },
+    {
+      "id": "01-005",
+      "sku": "HEADERM",
+      "catalogName": "Header Male 40 Pin Straight Lurus Single Row 1x40 Pitch 2.54mm Warna Putih",
+      "sourceName": "Header Male 40 Pin Straight Lurus Single Row 1x40 Pitch 2.54mm Putih",
+      "sourceRow": 100,
+      "oldPrice": 1950,
+      "newPrice": 2000
+    },
+    {
+      "id": "01-006",
+      "sku": "HEADERF",
+      "catalogName": "Header Female 40 Pin Straight Lurus Singel Row 1x40 Pitch 2.54mm Warna Hitam Black",
+      "sourceName": "Header Female 40 Pin Straight Lurus Singel Row 1x40 Pitch 2.54mm Hitam",
+      "sourceRow": 99,
+      "oldPrice": 2150,
+      "newPrice": 2500
+    },
+    {
+      "id": "01-007",
+      "sku": "DFPLAYER",
+      "catalogName": "DFPlayer Mini MP3 JL 24 DF Player",
+      "sourceName": "DFPlayer Mini MP3 JL 24 DF Player - varian JL 24PIN",
+      "sourceRow": 92,
+      "oldPrice": 23300,
+      "newPrice": 25000
+    },
+    {
+      "id": "01-008",
+      "sku": "OLED",
+      "catalogName": "Oled 0.96\" Blue Yellow White I2C 128x64 LCD Display Module Biru 0.96 Inch For Arduino ESP STM32",
+      "sourceName": "OLED 0.96 inch Blue I2C 128x64 LCD Display Module",
+      "sourceRow": 91,
+      "oldPrice": 39900,
+      "newPrice": 42000
+    },
+    {
+      "id": "01-009",
+      "sku": "ESP",
+      "catalogName": "ESP32 CH340 Type C Micro USB ESP 32 USB C WROOM WIFI Bluetooth BLE IOT Develompent Board",
+      "sourceName": "ESP32 CH340 Type C WROOM WIFI Bluetooth BLE IOT Development Board 30 pin",
+      "sourceRow": 90,
+      "oldPrice": 93550,
+      "newPrice": 94000
+    },
+    {
+      "id": "01-010",
+      "sku": "LM",
+      "catalogName": "LM2596 DC-DC ADJUSTABLE STEP DOWN PSU 4.5-35V to 1.25-30V",
+      "sourceName": "LM2596 DC-DC ADJUSTABLE STEP DOWN PSU 4.5-35V to 1.25-30V",
+      "sourceRow": 65,
+      "oldPrice": 15000,
+      "newPrice": 15000
+    },
+    {
+      "id": "01-011",
+      "sku": "MG",
+      "catalogName": "MG90S Micro Servo Full Metal Gear 180 derajat Tower Pro MG90 MG-9M0 G-90S MG-90S",
+      "sourceName": "MG90S Micro Servo Full Metal Gear 180 derajat Tower Pro",
+      "sourceRow": 64,
+      "oldPrice": 33100,
+      "newPrice": 33500
+    },
+    {
+      "id": "01-012",
+      "sku": "NANO",
+      "catalogName": "NANO V3 MINI USB ATMEGA328P CH340G 5V BOARD ARDUINO COMPATIBLE",
+      "sourceName": "NANO V3 MINI USB ATMEGA328P CH340G 5V BOARD ARDUINO COMPATIBLE",
+      "sourceRow": 63,
+      "oldPrice": 70000,
+      "newPrice": 70000
+    },
+    {
+      "id": "01-013",
+      "sku": "MEGA",
+      "catalogName": "ARDUINO MEGA 2560 R3 MEGA2560 CH340 COMPATIBLE BOARD + USB CABLE",
+      "sourceName": "ARDUINO MEGA 2560 R3 CH340 COMPATIBLE BOARD + USB CABLE",
+      "sourceRow": 62,
+      "oldPrice": 210000,
+      "newPrice": 210000
+    },
+    {
+      "id": "01-014",
+      "sku": "PCB7",
+      "catalogName": "PCB DOT MATRIX THRU HOLE SINGLE LAYER 7X9CM",
+      "sourceName": "PCB DOT MATRIX THRU HOLE SINGLE LAYER 7X9CM",
+      "sourceRow": 68,
+      "oldPrice": 13000,
+      "newPrice": 13000
+    },
+    {
+      "id": "01-015",
+      "sku": "SOIL",
+      "catalogName": "Capacitive Soil Sensor Tanah Hygrometer Humidity Moisture Module  V2.0 Sensor Kelembaban Tanah untuk Proyek DIY",
+      "sourceName": "Capacitive Soil Sensor Tanah Hygrometer Humidity Moisture Module V2.0",
+      "sourceRow": 67,
+      "oldPrice": 19400,
+      "newPrice": 19000
+    },
+    {
+      "id": "01-016",
+      "sku": "BF",
+      "catalogName": "BFD-1000 5 CHANNEL INFRARED TRACING ROBOT LINE FOLLOWER AVOIDER SENSOR",
+      "sourceName": "BFD-1000 5 CHANNEL INFRARED TRACING ROBOT LINE FOLLOWER AVOIDER SENSOR",
+      "sourceRow": 66,
+      "oldPrice": 40650,
+      "newPrice": 40000
+    },
+    {
+      "id": "01-017",
+      "sku": "SW",
+      "catalogName": "Saklar Rocker Switch KCD11 POWER 10X15MM ON OFF Merah 2 Pin 250V 220v",
+      "sourceName": "Saklar Rocker Switch KCD11 POWER 10X15MM ON OFF Merah 2 Pin",
+      "sourceRow": 84,
+      "oldPrice": 1000,
+      "newPrice": 1000
+    },
+    {
+      "id": "01-018",
+      "sku": "UNO",
+      "catalogName": "Modul Uno R3 CH430G ATMEGA328P CH340 SMD USB Kabel Header Pin",
+      "sourceName": "Modul Uno R3 CH430G ATMEGA328P CH340 SMD USB Kabel Header Pin",
+      "sourceRow": 73,
+      "oldPrice": 80000,
+      "newPrice": 80000
+    },
+    {
+      "id": "01-019",
+      "sku": "H2",
+      "catalogName": "2x 18650 Battery Holder Baterai Case tempat Kotak Batere Box Dudukan",
+      "sourceName": "2x 18650 Battery Holder Baterai Case tempat Kotak Batere Box Dudukan",
+      "sourceRow": 82,
+      "oldPrice": 5900,
+      "newPrice": 6000
+    },
+    {
+      "id": "01-020",
+      "sku": "H3",
+      "catalogName": "3x 18650 Battery Holder Tempat Baterai Case Box Kotak Dengan Kabel Seri",
+      "sourceName": "3x 18650 Battery Holder Tempat Baterai Case Box Kotak Dengan Kabel Seri",
+      "sourceRow": 81,
+      "oldPrice": 8200,
+      "newPrice": 9000
+    },
+    {
+      "id": "01-021",
+      "sku": "DHT11",
+      "catalogName": "Modul DHT11 Sensor Kelembaban Suhu Humidity Temperature Digital",
+      "sourceName": "Modul DHT11 Sensor Kelembaban Suhu Humidity Temperature Digital",
+      "sourceRow": 74,
+      "oldPrice": 15000,
+      "newPrice": 15000
+    },
+    {
+      "id": "01-022",
+      "sku": "LDR",
+      "catalogName": "Modul Sensor Cahaya LDR Photoresistor photosensitive Arduinouno",
+      "sourceName": "Modul Sensor Cahaya LDR Photoresistor photosensitive Arduinouno",
+      "sourceRow": 83,
+      "oldPrice": 9000,
+      "newPrice": 9000
+    },
+    {
+      "id": "01-023",
+      "sku": "TIN",
+      "catalogName": "Timah Paragon Kecil 10m | Timah Paragon, Timah Solder",
+      "sourceName": "Timah Paragon Kecil 10m | Timah Paragon, Timah Solder",
+      "sourceRow": 60,
+      "oldPrice": 44350,
+      "newPrice": 38500
+    },
+    {
+      "id": "01-024",
+      "sku": "CLEAN",
+      "catalogName": "Pembersih Timah TIP Solder Desoldering Iron Mesh",
+      "sourceName": "Pembersih Timah TIP Solder Desoldering Iron Mesh - G3137",
+      "sourceRow": 10,
+      "oldPrice": 21500,
+      "newPrice": 20000
+    },
+    {
+      "id": "01-025",
+      "sku": "TAPE",
+      "catalogName": "Isolasi Solasi Selotip Listrik Lakban Kabel tape Hitam PVC 20 Yard",
+      "sourceName": "Isolasi Solasi Selotip Listrik Lakban Kabel tape Hitam PVC 20 Yard",
+      "sourceRow": 19,
+      "oldPrice": 8000,
+      "newPrice": 8000
+    },
+    {
+      "id": "01-026",
+      "sku": "SP20",
+      "catalogName": "Spacer Nylon Plastik Penyangga Dudukan PCB Main Board Stand off Standoff M3 8mm/15mm/20mm",
+      "sourceName": "Spacer Nylon Plastik Penyangga Dudukan PCB Main Board Stand off Standoff M3 20mm",
+      "sourceRow": 20,
+      "oldPrice": 2050,
+      "newPrice": 2000
+    },
+    {
+      "id": "01-027",
+      "sku": "SPONGE",
+      "catalogName": "Spon Spons Busa Sponge Cleaner PEMBERSIH MATA SOLDER 5 x 3,5 cm",
+      "sourceName": "Spon Spons Busa Sponge Cleaner PEMBERSIH MATA SOLDER 5 x 3,5 cm",
+      "sourceRow": 23,
+      "oldPrice": 1500,
+      "newPrice": 1500
+    },
+    {
+      "id": "01-028",
+      "sku": "FLUX1",
+      "catalogName": "Flux pasta solder anti-oksidasi cream paste optimal untuk PCB SMD",
+      "sourceName": "Flux Pasta Solder Anti-Oksidasi Cream Paste untuk PCB SMD",
+      "sourceRow": 24,
+      "oldPrice": 7000,
+      "newPrice": 5500
+    },
+    {
+      "id": "01-029",
+      "sku": "FLUX2",
+      "catalogName": "Flux pasta minyak solder amtech 10cc RMA-223 Suntik Timah Rosin",
+      "sourceName": "Flux Pasta Minyak Solder Amtech 10cc RMA-223 RMA223 Suntik Timah Rosin",
+      "sourceRow": 25,
+      "oldPrice": 5500,
+      "newPrice": 5500
+    },
+    {
+      "id": "01-030",
+      "sku": "PCB5",
+      "catalogName": "PCB Hole Single Side FR4 Fiber 5x7cm",
+      "sourceName": "PCB Hole Single Side FR4 Fiber 5x7cm",
+      "sourceRow": 26,
+      "oldPrice": 3800,
+      "newPrice": 4000
+    },
+    {
+      "id": "01-031",
+      "sku": "PCB4",
+      "catalogName": "PCB Hole Double Side FR4 Fiber 4x6cm",
+      "sourceName": "PCB Hole Double Side FR4 Fiber 4x6cm",
+      "sourceRow": 27,
+      "oldPrice": 8250,
+      "newPrice": 8500
+    },
+    {
+      "id": "01-032",
+      "sku": "MQ",
+      "catalogName": "MQ-2 LPG Butane Methane Gas Smoke Sensor Module for Arduino",
+      "sourceName": "MQ-2 MQ2 LPG Butane Methane Gas Smoke Sensor Module for Arduino",
+      "sourceRow": 31,
+      "oldPrice": 26600,
+      "newPrice": 27000
+    },
+    {
+      "id": "01-033",
+      "sku": "PIR",
+      "catalogName": "HC-SR501 PIR Motion Sensor Module | Pyroelectric Infra Red Sensor untuk Arduino, ESP32, DIY Elektronika & IoT",
+      "sourceName": "HC-SR501 PIR Motion Sensor Module",
+      "sourceRow": 32,
+      "oldPrice": 17500,
+      "newPrice": 17500
+    },
+    {
+      "id": "01-034",
+      "sku": "SG",
+      "catalogName": "TowerPro Motor Servo SG90 SG-90 9G - Servo Mini 180° untuk Arduino, Robotik & DIY Project",
+      "sourceName": "TowerPro Motor Servo SG90 SG-90 9G 180 derajat",
+      "sourceRow": 33,
+      "oldPrice": 25000,
+      "newPrice": 25000
+    },
+    {
+      "id": "01-035",
+      "sku": "PCB9",
+      "catalogName": "PCB DOT MATRIX THRU HOLE DOUBLE LAYER 9X15CM",
+      "sourceName": "PCB DOT MATRIX THRU HOLE DOUBLE LAYER 9X15CM",
+      "sourceRow": 43,
+      "oldPrice": 21800,
+      "newPrice": 21800
+    },
+    {
+      "id": "01-036",
+      "sku": "L298B",
+      "catalogName": "Motor Driver L298N 2 Channel Board H-Bridge 5A-Driver Motor DC & Stepper Forward Reverse",
+      "sourceName": "Motor Driver L298N 2 Channel Board H-Bridge 5A",
+      "sourceRow": 44,
+      "oldPrice": 61300,
+      "newPrice": 61300
+    },
+    {
+      "id": "01-037",
+      "sku": "L298",
+      "catalogName": "L298N L298 DUAL H BRIDGE STEPPER MOTOR DRIVER MODULE",
+      "sourceName": "L298N L298 DUAL H BRIDGE STEPPER MOTOR DRIVER MODULE",
+      "sourceRow": 48,
+      "oldPrice": 28350,
+      "newPrice": 28500
+    },
+    {
+      "id": "01-038",
+      "sku": "WHEEL",
+      "catalogName": "WHEEL RODA RUBBER FOR SMART ROBOT CAR 4WD 2WD",
+      "sourceName": "WHEEL RODA RUBBER FOR SMART ROBOT CAR 4WD 2WD",
+      "sourceRow": 49,
+      "oldPrice": 10450,
+      "newPrice": 10500
+    },
+    {
+      "id": "01-039",
+      "sku": "MOTOR",
+      "catalogName": "MOTOR DC GEARBOX 1/48 DUAL SHAFT FOR SMART CHASSIS 4WD 2WD",
+      "sourceName": "MOTOR DC GEARBOX 1/48 DUAL SHAFT FOR SMART CHASSIS 4WD 2WD",
+      "sourceRow": 50,
+      "oldPrice": 15000,
+      "newPrice": 15000
+    },
+    {
+      "id": "01-040",
+      "sku": "Motor",
+      "catalogName": "Motor DC Gearbox Kuning dan Roda Smart Car Robot Wheel",
+      "sourceName": "Motor DC Gearbox Kuning dan Roda Smart Car Robot Wheel",
+      "sourceRow": 51,
+      "oldPrice": 18000,
+      "newPrice": 18000
+    },
+    {
+      "id": "01-041",
+      "sku": "PCB8",
+      "catalogName": "PCB Dot Matrix Thru Hole Single Layer 8x12cm",
+      "sourceName": "PCB Dot Matrix Thru Hole Single Layer 8x12cm",
+      "sourceRow": 52,
+      "oldPrice": 22400,
+      "newPrice": 22500
+    },
+    {
+      "id": "01-042",
+      "sku": "DHT22",
+      "catalogName": "Module DHT22 Temperature Humidity Sensor DHT-22 2302 Suhu Modul",
+      "sourceName": "Module DHT22 Temperature Humidity Sensor DHT-22 2302 Suhu Modul",
+      "sourceRow": 53,
+      "oldPrice": 32000,
+      "newPrice": 32000
+    },
+    {
+      "id": "01-043",
+      "sku": "FLAME",
+      "catalogName": "Flame infrared Modul Module Sensor Detector Api Kebakaran Arduino",
+      "sourceName": "Flame Infrared Modul Module Sensor Detector Api Kebakaran Arduino",
+      "sourceRow": 54,
+      "oldPrice": 7000,
+      "newPrice": 7000
+    },
+    {
+      "id": "01-044",
+      "sku": "HC",
+      "catalogName": "Ultrasonic Sensor HC-SR04 HCSR04 Jarak Arduino",
+      "sourceName": "Ultrasonic Sensor HC-SR04 HCSR04 Jarak Arduino",
+      "sourceRow": 55,
+      "oldPrice": 20000,
+      "newPrice": 20000
+    },
+    {
+      "id": "01-045",
+      "sku": "PUSHS",
+      "catalogName": "Push Button 4p Ukuran Standar 6x6x4.3mm",
+      "sourceName": "Push Button 4p Ukuran Standar 6x6x4.3mm",
+      "sourceRow": 56,
+      "oldPrice": 700,
+      "newPrice": 600
+    },
+    {
+      "id": "01-046",
+      "sku": "BAT",
+      "catalogName": "BATERAI BATTERY LITHIUM 18650 FULL KAPASITAS 3,7V 1500MAH VISERO",
+      "sourceName": "Baterai Lithium-ion 18650 3,7 V 1500 mAh Visero",
+      "sourceRow": 9,
+      "oldPrice": 18000,
+      "newPrice": 18000
+    },
+    {
+      "id": "01-047",
+      "sku": "MM10",
+      "catalogName": "Kabel Jumper Dupont Male to Male 10 cm - satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Male to Male 10 cm — Satuan 1 kabel",
+      "sourceRow": 96,
+      "oldPrice": 500,
+      "newPrice": 500
+    },
+    {
+      "id": "01-048",
+      "sku": "FF30",
+      "catalogName": "Kabel Jumper Dupont Female to Female 30 cm — satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Female to Female 30 cm — Satuan 1 kabel",
+      "sourceRow": 93,
+      "oldPrice": 700,
+      "newPrice": 700
+    },
+    {
+      "id": "01-049",
+      "sku": "LEDW",
+      "catalogName": "LED 3mm F3 Super Bright Clear Putih/Biru Lampu LED Terang untuk DIY & Elektronika — Satuan/per 10 pcs",
+      "sourceName": "LED 3mm F3 Super Bright Clear White Putih — Satuan 1 LED",
+      "sourceRow": 71,
+      "oldPrice": 300,
+      "newPrice": 300
+    },
+    {
+      "id": "01-050",
+      "sku": "FF10",
+      "catalogName": "Kabel Jumper Dupont Female to Female 10 cm — Satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Female to Female 10 cm — Satuan 1 kabel",
+      "sourceRow": 78,
+      "oldPrice": 500,
+      "newPrice": 500
+    },
+    {
+      "id": "01-051",
+      "sku": "MF10",
+      "catalogName": "Kabel Jumper Dupont Male to Female 10 cm — Satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Male to Female 10 cm — Satuan 1 kabel",
+      "sourceRow": 75,
+      "oldPrice": 500,
+      "newPrice": 500
+    },
+    {
+      "id": "01-052",
+      "sku": "MF30",
+      "catalogName": "Kabel Jumper Dupont Male to Female 30 cm — Satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Male to Female 30 cm — Satuan 1 kabel",
+      "sourceRow": 28,
+      "oldPrice": 700,
+      "newPrice": 700
+    },
+    {
+      "id": "01-053",
+      "sku": "J20MM",
+      "catalogName": "Kabel Jumper Dupont 20 cm Male to Male — Satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Male to Male 20 cm — Satuan 1 kabel",
+      "sourceRow": 34,
+      "oldPrice": 600,
+      "newPrice": 600
+    },
+    {
+      "id": "01-054",
+      "sku": "J20MF",
+      "catalogName": "Kabel Jumper Dupont 20 cm Male to Female — Satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Male to Female 20 cm — Satuan 1 kabel",
+      "sourceRow": 37,
+      "oldPrice": 600,
+      "newPrice": 600
+    },
+    {
+      "id": "01-055",
+      "sku": "J20FF",
+      "catalogName": "Kabel Jumper Dupont 20 cm Female to Female — Satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Female to Female 20 cm — Satuan 1 kabel",
+      "sourceRow": 40,
+      "oldPrice": 600,
+      "newPrice": 600
+    },
+    {
+      "id": "01-056",
+      "sku": "MM30",
+      "catalogName": "Kabel Jumper Dupont Male to Male 30 cm —Satuan/10 pcs/40 pcs",
+      "sourceName": "Kabel Jumper Dupont Male to Male 30 cm — Satuan 1 kabel",
+      "sourceRow": 45,
+      "oldPrice": 700,
+      "newPrice": 700
+    },
+    {
+      "id": "01-057",
+      "sku": "SET_HITAM",
+      "catalogName": "Omron Push Button B3F 4055 Saklar Tekan Cap Switch Push On Tutup Keycap Tactile 4p hitam/putih/hijau/merah",
+      "sourceName": "Omron Push Button B3F 4055 saklar + tutup hitam",
+      "sourceRow": 88,
+      "oldPrice": 1500,
+      "newPrice": 1500
+    },
+    {
+      "id": "01-058",
+      "sku": "HEAT1",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 1 mm × 40 mm — Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 1 mm x 40 mm — Satuan 1 potong",
+      "sourceRow": 11,
+      "oldPrice": 300,
+      "newPrice": 300
+    },
+    {
+      "id": "01-059",
+      "sku": "HEAT2",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 2mm - Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 2 mm x 40 mm — Satuan 1 potong",
+      "sourceRow": 12,
+      "oldPrice": 300,
+      "newPrice": 300
+    },
+    {
+      "id": "01-060",
+      "sku": "HEAT3",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 3 mm × 40 mm — Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 3 mm x 40 mm — Satuan 1 potong",
+      "sourceRow": 13,
+      "oldPrice": 350,
+      "newPrice": 350
+    },
+    {
+      "id": "01-061",
+      "sku": "HEAT4",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 4 mm × 40 mm — Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 4 mm x 40 mm — Satuan 1 potong",
+      "sourceRow": 14,
+      "oldPrice": 350,
+      "newPrice": 350
+    },
+    {
+      "id": "01-062",
+      "sku": "HEAT6",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 6 mm × 40 mm — Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 6 mm x 40 mm — Satuan 1 potong",
+      "sourceRow": 15,
+      "oldPrice": 400,
+      "newPrice": 400
+    },
+    {
+      "id": "01-063",
+      "sku": "HEAT8",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 8 mm × 80 mm — Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 8 mm x 80 mm — Satuan 1 potong",
+      "sourceRow": 16,
+      "oldPrice": 400,
+      "newPrice": 400
+    },
+    {
+      "id": "01-064",
+      "sku": "HEAT10",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 10 mm × 80 mm — Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 10 mm x 80 mm — Satuan 1 potong",
+      "sourceRow": 17,
+      "oldPrice": 500,
+      "newPrice": 500
+    },
+    {
+      "id": "01-065",
+      "sku": "HEAT14",
+      "catalogName": "Selongsong Pelapis Kabel Insulasi Heat Shrink Tube DHS3 14 mm × 80 mm — Satuan/Pack",
+      "sourceName": "Selongsong Pelapis Kabel Heat Shrink Tube DHS3 14 mm x 80 mm — Satuan 1 potong",
+      "sourceRow": 18,
+      "oldPrice": 500,
+      "newPrice": 500
+    },
+    {
+      "id": "01-066",
+      "sku": "MPU",
+      "catalogName": "MPU6050 Sensor Gyroscope Accelerometer 3 AXIS Gyro GY-521",
+      "sourceName": "MPU6050 Sensor Gyroscope Accelerometer 3 AXIS Gyro GY-521",
+      "sourceRow": 7,
+      "oldPrice": 30000,
+      "newPrice": 30000
+    },
+    {
+      "id": "01-067",
+      "sku": "BB",
+      "catalogName": "Breadboard 400 Lubang Arduino Raspberry Pi SOLDERLESS 400 Titik 400P",
+      "sourceName": "Breadboard 400 Lubang Arduino Raspberry Pi SOLDERLESS 400 Titik 400P",
+      "sourceRow": 8,
+      "oldPrice": 12000,
+      "newPrice": 12000
+    },
+    {
+      "id": "01-068",
+      "sku": "WATER",
+      "catalogName": "Sensor Water Level Modul Ketinggian Permukaan Air",
+      "sourceName": "Sensor Water Level Modul Ketinggian Permukaan Air",
+      "sourceRow": 57,
+      "oldPrice": 6500,
+      "newPrice": 6500
+    }
+  ],
+  "changedCount": 23
+}
