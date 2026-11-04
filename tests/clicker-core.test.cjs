@@ -145,9 +145,9 @@ test('new base spacing accepts adjacent characters and survives sharing and What
   }
 });
 
-test('every symbol accepts all distinct stock-color pairs in every font', () => {
+test('every symbol accepts all distinct stock-color pairs with a shared material in every font', () => {
   for (const value of symbolIds) for (const cap of Object.keys(C.COLORS)) for (const ink of Object.keys(C.COLORS)) {
-    if (cap === ink) continue;
+    if (cap === ink || !C.compatibleColors(cap, ink)) continue;
     for (const font of Object.keys(C.FONTS)) {
       const key = symbolKey(value, cap, ink);
       const state = C.normalize({ ...letters(1), font, keys: [key] });
@@ -266,4 +266,79 @@ test('six stock colors include red and pink; red works across base, cap, ink, sh
 
   const svg = C.preview(state);
   assert.ok(svg.includes('fill="#DE3636"'));
+});
+
+test('stock materials determine compatibility for all keycap and ink pairs', () => {
+  assert.deepEqual(C.colorMaterials('pink'), ['PLA']);
+  assert.deepEqual(C.colorMaterials('white'), ['PLA', 'PETG']);
+  for (const color of ['black', 'blue', 'orange', 'red']) assert.deepEqual(C.colorMaterials(color), ['PETG']);
+  for (const color of ['purple', '__proto__', undefined]) {
+    assert.deepEqual(C.colorMaterials(color), []);
+    assert.equal(C.compatibleColors(color, 'white'), false);
+  }
+
+  let allowedSymbolPairs = 0;
+  for (const cap of Object.keys(C.COLORS)) for (const ink of Object.keys(C.COLORS)) {
+    const hasPink = cap === 'pink' || ink === 'pink';
+    const expectedCompatible = !hasPink || [cap, ink].every((color) => ['pink', 'white'].includes(color));
+    const letter = { type: 'letter', value: 'A', cap, ink };
+    const state = C.normalize({ ...letters(1), keys: [letter] });
+    assert.equal(C.compatibleColors(cap, ink), expectedCompatible, `${cap}/${ink}`);
+    assert.equal(C.keyMaterial(letter), expectedCompatible ? (hasPink ? 'PLA' : 'PETG') : null, `${cap}/${ink}`);
+    assert.equal(C.validate(state).length === 0, expectedCompatible, `${cap}/${ink}`);
+    state.keys[0] = symbolKey('symbol-love', cap, ink);
+    const expectedSymbol = expectedCompatible && cap !== ink;
+    assert.equal(C.validate(state).length === 0, expectedSymbol, `symbol/${cap}/${ink}`);
+    if (expectedSymbol) allowedSymbolPairs++;
+  }
+  assert.equal(allowedSymbolPairs, 22);
+});
+
+test('the separate base can use PLA or PETG independently from any valid keycap pair', () => {
+  for (const base of Object.keys(C.COLORS)) {
+    assert.equal(C.baseMaterial(base), base === 'pink' ? 'PLA' : 'PETG');
+    for (const [cap, ink] of [['black', 'red'], ['pink', 'white'], ['white', 'pink'], ['white', 'white']]) {
+      const state = C.normalize({ ...letters(1), base, keys: [{ type: 'letter', value: 'A', cap, ink }] });
+      assert.deepEqual(C.validate(state), [], `${base}/${cap}/${ink}`);
+      assert.doesNotThrow(() => C.message(state));
+      assert.deepEqual(C.decode(C.encode(state)), state);
+    }
+  }
+});
+
+test('normalizing and sharing a mixed-material key preserves the invalid choices for correction', () => {
+  for (const type of ['letter', 'emoji']) for (const [cap, ink] of [['pink', 'black'], ['red', 'pink']]) {
+    const key = { type, value: type === 'letter' ? 'A' : 'symbol-love', cap, ink };
+    const state = C.normalize({ ...letters(1), base: 'pink', keys: [key] });
+    assert.deepEqual(state.keys[0], key);
+    const restored = C.decode(C.encode(state));
+    assert.deepEqual(restored, state);
+    assert.ok(C.validate(restored).some((error) => error.includes('bahan yang sama')));
+    assert.throws(() => C.message(restored), /bahan yang sama/);
+    assert.doesNotThrow(() => C.preview(restored));
+  }
+});
+
+test('WhatsApp specifies the actual material for the base and each keycap', () => {
+  const state = C.normalize({
+    ...letters(4),
+    base: 'pink',
+    keys: [
+      { type: 'letter', value: 'P', cap: 'pink', ink: 'white' },
+      symbolKey('symbol-love', 'white', 'pink'),
+      { type: 'letter', value: 'T', cap: 'black', ink: 'red' },
+      { type: 'letter', value: 'G', cap: 'white', ink: 'white' }
+    ]
+  });
+  const text = C.message(state);
+  assert.ok(text.includes('Warna base: Pink\nBahan base: PLA'));
+  assert.ok(text.includes('1. P | keycap Pink | huruf Putih | bahan PLA'));
+  assert.ok(text.includes(`2. ${C.assets.emojis['symbol-love'].label} | keycap Putih | simbol Pink | bahan PLA`));
+  assert.ok(text.includes('3. T | keycap Hitam | huruf Merah | bahan PETG'));
+  assert.ok(text.includes('4. G | keycap Putih | huruf Putih | bahan PETG'));
+  assert.ok(!/^Bahan: PETG$/m.test(text));
+  state.base = 'white';
+  assert.ok(C.message(state).includes('Warna base: Putih\nBahan base: PETG'));
+  state.base = 'blue';
+  assert.ok(C.message(state).includes('Warna base: Sky blue\nBahan base: PETG'));
 });

@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f7f7f4">
   <title>Rakit Clicker Custom - Cetakin</title>
   <meta name="description"
-    content="Rakit gantungan clicker keyboard custom 1–7 tombol. Pilih base, font, 12 simbol dua warna, dan enam warna PETG termasuk pink untuk keycap serta simbolnya. Pre-order lewat WhatsApp.">
+    content="Rakit gantungan clicker keyboard custom 1–7 tombol. Pilih base, font, 12 simbol dua warna, dan enam warna PLA/PETG dengan pasangan warna sesuai bahan. Pre-order lewat WhatsApp.">
   <link rel="icon" href="./assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./clicker.css?v=pink-20261030">
+  <link rel="stylesheet" href="./clicker.css?v=materials-20261104">
   <script type="module" src="./analytics-init.js"></script>
   <script src="./site-config.js" defer></script>
   <script src="./contact.js" defer></script>
@@ -56,7 +56,7 @@
       <div class="intro-detail">
         <p>Nama, inisial, atau simbol favoritmu. Susun clicker sendiri, pilih warna setiap bagiannya, lalu kirim
           desainmu ke kami.</p>
-        <div class="intro-tags"><span>1–7 tombol</span><span>6 warna PETG</span><span>Mulai Rp14.000</span></div>
+        <div class="intro-tags"><span>1–7 tombol</span><span>6 warna PLA/PETG</span><span>Mulai Rp14.000</span></div>
       </div>
     </section>
     <noscript>
@@ -74,7 +74,7 @@
             <div class="stage-canvas"><span class="stage-side" aria-hidden="true">CETAKIN / CUSTOM SERIES</span>
               <div id="design-preview"></div>
             </div>
-            <div class="stage-bottom"><span id="design-caption">4 tombol · Flexi compact</span><span>PETG /
+            <div class="stage-bottom"><span id="design-caption">4 tombol · Flexi compact</span><span id="design-material">PETG /
                 PRE-ORDER</span></div>
           </section>
           <p class="preview-explanation">Ilustrasi tampak atas, bukan foto atau ukuran cetak final. Urutan dimulai dari
@@ -143,14 +143,18 @@
                   dalam harga.</p>
               </div>
               <div class="field-label">Warna keycap <span id="cap-color-label">Putih</span></div>
-              <div class="swatch-options" id="cap-colors" role="group" aria-label="Warna keycap tombol terpilih"></div>
+              <div class="swatch-options" id="cap-colors" role="group" aria-label="Warna keycap tombol terpilih" aria-describedby="color-material-help key-material-note"></div>
               <div id="ink-controls">
                 <div class="field-label"><b id="ink-part-label">Warna huruf</b><span id="ink-color-label">Hitam</span>
                 </div>
-                <div class="swatch-options" id="ink-colors" role="group" aria-label="Warna huruf tombol terpilih"></div>
+                <div class="swatch-options" id="ink-colors" role="group" aria-label="Warna huruf tombol terpilih" aria-describedby="color-material-help key-material-note"></div>
                 <p id="color-relief-note" class="control-help" hidden>Warna sama: huruf terlihat dari bentuk timbulnya.
                   Pilih warna berbeda jika ingin tulisan lebih kontras.</p>
               </div>
+              <p id="key-material-note" class="material-note" role="status">Bahan tombol ini: PETG.</p>
+              <p id="color-material-help" class="control-help">Pink hanya bisa dipadukan dengan putih atau pink (PLA).
+                Putih mengikuti bahan pasangannya. Untuk beralih bahan, pilih putih pada warna pasangannya dulu.
+                Pilihan berkunci tidak tersedia; pilihan yang bisa dipakai ditampilkan di depan.</p>
               <button type="button" id="apply-colors" class="apply-colors">Terapkan warna ini ke semua tombol</button>
             </div>
           </div>
@@ -166,12 +170,13 @@
               <button type="button" data-mode="compact" aria-pressed="true"><b>Flexi compact</b><span>Bersendi, jarak
                   lebih rapat.</span><small>2–7 tombol</small></button>
             </div>
-            <p id="base-help" class="control-help">Flexi bergerak pada sendinya; bahan PETG tetap kaku. Untuk satu
+            <p id="base-help" class="control-help">Flexi bergerak pada sendinya; bahan cetaknya tetap kaku. Untuk satu
               tombol, gunakan Solid.</p>
             <div class="field-label">Bentuk base</div>
             <div id="shape-options" class="shape-options" role="group" aria-label="Bentuk base"></div>
             <div class="field-label">Warna base <span id="base-color-label">Sky blue</span></div>
             <div id="base-colors" class="swatch-options" role="group" aria-label="Warna base"></div>
+            <p id="base-material-note" class="control-help">Bahan base ini: PETG. Warna base bebas dipadukan dengan keycap karena bagiannya terpisah.</p>
           </div>
         </fieldset>
         <fieldset class="builder-section">
@@ -215,8 +220,15 @@
         <details>
           <summary>Apa bedanya solid, flexi, dan compact?</summary>
           <p>Solid adalah satu badan utuh. Flexi punya sendi antartombol dengan jarak lebih renggang. Flexi compact
-            memakai sendi yang lebih rapat. Semuanya berbahan PETG; versi flexi lentur karena sendi, bukan karena
+            memakai sendi yang lebih rapat. Bahan mengikuti warna pilihan; versi flexi lentur karena sendi, bukan karena
             filamennya seperti karet.</p>
+        </details>
+        <details>
+          <summary>Kenapa ada pilihan warna yang terkunci?</summary>
+          <p>Keycap dan huruf atau simbolnya harus dicetak dengan bahan yang sama. Pink tersedia dalam PLA,
+            warna lain dalam PETG, sedangkan putih tersedia dalam keduanya. Karena itu, pink hanya bisa dipasangkan
+            dengan putih atau pink. Simbol tetap harus berbeda warna dari keycap. Pilih putih terlebih dahulu
+            untuk beralih ke kelompok bahan lain. Warna base bebas dipilih karena dicetak terpisah.</p>
         </details>
         <details>
           <summary>Apakah preview sama persis dengan hasil cetak?</summary>

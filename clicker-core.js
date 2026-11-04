@@ -7,11 +7,16 @@
   'use strict';
   const PRICES = Object.freeze({ 1: 14000, 2: 17000, 3: 21000, 4: 26000, 5: 30000, 6: 34000, 7: 37000 });
   const COLORS = Object.freeze({ white: { label: 'Putih', hex: '#F4F4EF' }, black: { label: 'Hitam', hex: '#24292E' }, blue: { label: 'Sky blue', hex: '#83CBE7' }, orange: { label: 'Orange', hex: '#EF8E3B' }, red: { label: 'Merah', hex: '#DE3636' }, pink: { label: 'Pink', hex: '#F2A7C3' } });
+  const PETG = Object.freeze(['PETG']), PLA = Object.freeze(['PLA']), BOTH_MATERIALS = Object.freeze(['PLA', 'PETG']), NO_MATERIALS = Object.freeze([]);
   const FONTS = Object.freeze({ nunito: 'Nunito ExtraBold', bungee: 'Bungee', dynapuff: 'DynaPuff Bold' });
   const MODES = Object.freeze({ solid: { label: 'Solid', pitch: 24 }, flexi: { label: 'Flexi', pitch: 33 }, compact: { label: 'Flexi compact', pitch: 26.5 } });
   const DEFAULT_SYMBOL = 'symbol-love';
   const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
   const choose = (object, key, fallback) => own(object, key) ? key : fallback;
+  function colorMaterials(color) { return !own(COLORS, color) ? NO_MATERIALS : color === 'white' ? BOTH_MATERIALS : color === 'pink' ? PLA : PETG; }
+  function compatibleColors(cap, ink) { return colorMaterials(cap).some((material) => colorMaterials(ink).includes(material)); }
+  function keyMaterial(key) { return !compatibleColors(key.cap, key.ink) ? null : key.cap === 'pink' || key.ink === 'pink' ? 'PLA' : 'PETG'; }
+  function baseMaterial(color) { return !own(COLORS, color) ? null : color === 'pink' ? 'PLA' : 'PETG'; }
   const rupiah = (amount) => `Rp${new Intl.NumberFormat('id-ID').format(amount)}`;
   const escape = (text) => String(text).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
   const makeKey = (value = '') => ({ type: 'letter', value, cap: 'white', ink: 'black' });
@@ -39,6 +44,7 @@
       if (key.type === 'letter' && !/^[A-Z1-9]$/.test(key.value)) errors.push(`Isi tombol ${i + 1} dengan huruf A–Z, angka 1–9, atau simbol.`);
       if (key.type === 'emoji' && !own(assets.emojis, key.value)) errors.push(`Pilih simbol yang tersedia untuk tombol ${i + 1}. Emoji versi lama sudah tidak digunakan.`);
       if (key.type === 'emoji' && key.cap === key.ink) errors.push(`Warna keycap dan simbol pada tombol ${i + 1} harus berbeda agar simbol inlay terlihat.`);
+      if (!compatibleColors(key.cap, key.ink)) errors.push(`Warna keycap dan ${inkName(key)} pada tombol ${i + 1} harus tersedia dalam bahan yang sama. Pink hanya dapat dipadukan dengan putih atau pink (PLA).`);
     });
     const pitch = layout(state).pitch;
     for (let i = 0; i < state.keys.length - 1; i++) {
@@ -68,9 +74,9 @@
     const errors = validate(state);
     if (errors.length) throw new Error(errors[0]);
     const amount = price(state);
-    const lines = ['Halo Kak Cetakin, saya ingin pre-order gantungan clicker keyboard custom.', '', `Jumlah tombol: ${state.keys.length} (huruf/angka/simbol)`, 'Urutan: dari dekat lubang gantungan ke bawah', `Susunan: ${state.keys.map(describe).join(' / ')}`, `Base: ${MODES[state.mode].label} - ${assets.bases[state.shape].label}`, `Warna base: ${COLORS[state.base].label}`, 'Bahan: PETG', `Font huruf/angka: ${FONTS[state.font]}`, '', 'Detail setiap tombol:'];
+    const lines = ['Halo Kak Cetakin, saya ingin pre-order gantungan clicker keyboard custom.', '', `Jumlah tombol: ${state.keys.length} (huruf/angka/simbol)`, 'Urutan: dari dekat lubang gantungan ke bawah', `Susunan: ${state.keys.map(describe).join(' / ')}`, `Base: ${MODES[state.mode].label} - ${assets.bases[state.shape].label}`, `Warna base: ${COLORS[state.base].label}`, `Bahan base: ${baseMaterial(state.base)}`, `Font huruf/angka: ${FONTS[state.font]}`, '', 'Detail setiap tombol:'];
     state.keys.forEach((key, i) => {
-      const detail = `${i + 1}. ${describe(key)} | keycap ${COLORS[key.cap].label} | ${inkName(key)} ${COLORS[key.ink].label}`;
+      const detail = `${i + 1}. ${describe(key)} | keycap ${COLORS[key.cap].label} | ${inkName(key)} ${COLORS[key.ink].label} | bahan ${keyMaterial(key)}`;
       lines.push(detail);
     });
     lines.push('', `Jumlah produk: ${state.quantity} pcs (desain yang sama)`, `Harga per pcs: ${rupiah(amount.unit)}`, `Subtotal: ${rupiah(amount.total)} (belum termasuk ongkir)`);
@@ -109,5 +115,5 @@
     const left = Math.min(-34, profile.bounds[0] - 8), right = Math.max(34, profile.bounds[2] + 8);
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${left} ${top} ${right - left} ${bottom - top}" class="clicker-svg" fill-rule="evenodd" aria-label="Ilustrasi susunan ${escape(state.keys.map(describe).join(', '))}"><title>Clicker custom Cetakin, urutan dari gantungan ke bawah</title><g data-part="keyring"><circle cx="0" cy="${ringY}" r="9" fill="none" stroke="#8b969e" stroke-width="1.6"/><circle cx="0" cy="${ringY}" r="7.5" fill="none" stroke="#d0d7db" stroke-width=".7"/></g><g transform="translate(0,1.8)" opacity=".15">${join}${base}${feet}</g>${join}${base}${feet}${keys}</svg>`;
   }
-  return { PRICES, COLORS, FONTS, MODES, DEFAULT_SYMBOL, assets, defaults, makeKey, normalize, layout, validate, price, describe, inkName, encode, decode, designUrl, message, keyGraphic, preview, rupiah, escape };
+  return { PRICES, COLORS, FONTS, MODES, DEFAULT_SYMBOL, assets, defaults, makeKey, normalize, layout, validate, price, describe, inkName, colorMaterials, compatibleColors, keyMaterial, baseMaterial, encode, decode, designUrl, message, keyGraphic, preview, rupiah, escape };
 });

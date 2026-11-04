@@ -19,7 +19,7 @@ Lalu buka di browser:
 ## Halaman dan fitur
 
 - `index.html`: profil, empat layanan, bagian **Produk Pertama**, preview singkat yang diteruskan ke Clicker Lab, proses, cerita brand, kontak.
-- `clicker.html`: konfigurator pre-order 1–7 tombol, base solid/flexi/compact, enam bentuk base (termasuk Love dan Bunga 5 Kelopak), tiga font, dua belas simbol tertanam dari `clicker_keycaps_simbol_2_warna`, enam warna PETG termasuk pink untuk badan dan simbol/huruf per tombol, harga, subtotal, draf WhatsApp, link desain, dan ekspor PNG. Simbol harus berbeda warna dari badan. Lihat [CLICKER.md](./CLICKER.md).
+- `clicker.html`: konfigurator pre-order 1–7 tombol, base solid/flexi/compact, enam bentuk base (termasuk Love dan Bunga 5 Kelopak), tiga font, dua belas simbol tertanam dari `clicker_keycaps_simbol_2_warna`, enam warna menurut bahan, harga, subtotal, draf WhatsApp, link desain, dan ekspor PNG. Pink hanya PLA; putih tersedia PLA/PETG; hitam, sky blue, orange, dan merah memakai PETG. Pasangan keycap dan huruf/simbol wajib satu bahan, sehingga pink hanya dipasangkan dengan putih atau pink. Simbol tetap wajib berbeda warna dari keycap. Bahan base bebas dikombinasikan karena dicetak terpisah. Lihat [CLICKER.md](./CLICKER.md).
 - `robotika.html`: katalog dengan pencarian, kategori, rentang harga, stok tersedia, dan pengurutan.
 - `panduan.html` / `panduan/`: 21 guide komponen dengan wiring, kode yang bisa disalin, daftar isi, checklist alat, dan langkah periksa masalah. Mencakup semua sensor, driver, dan aktuator dari Excel; detail dan pembaruan konten ada di [PANDUAN.md](./PANDUAN.md).
 - `gantungan-kunci.html`: katalog dengan filter asal desain/seri.
@@ -35,7 +35,7 @@ Sumber CSV Google Sheets sudah diisi di `site-config.js`. Jika `csvUrl` dikosong
 
 ## Alur pemesanan
 
-Pemesanan dan konsultasi menuju **0858 2280 1431**, dengan draf pesan sesuai konteks. Clicker menyertakan urutan tombol, base, warna badan serta simbol/huruf setiap tombol, font, jumlah pcs, subtotal, catatan, dan link versi 2 untuk membuka ulang desain. Link versi 1 tetap terbaca; karakter koleksi lama harus dipilih ulang dari simbol baru sebelum memesan. Katalog menyertakan produk, jumlah, harga, subtotal, dan tautan. Pengunjung tetap harus menekan kirim sendiri di WhatsApp. Gambar clicker bisa diunduh sebagai PNG lalu dilampirkan sendiri di chat.
+Pemesanan dan konsultasi menuju **0858 2280 1431**, dengan draf pesan sesuai konteks. Clicker menyertakan urutan tombol, base beserta warna dan bahannya, warna badan serta simbol/huruf dan bahan setiap tombol, font, jumlah pcs, subtotal, catatan, dan link versi 2 untuk membuka ulang desain. Link versi 1 tetap terbaca; karakter koleksi lama harus dipilih ulang dari simbol baru sebelum memesan. Pasangan keycap dan huruf/simbol beda bahan harus disesuaikan sebelum memesan atau mengekspor. Katalog menyertakan produk, jumlah, harga, subtotal, dan tautan. Pengunjung tetap harus menekan kirim sendiri di WhatsApp. Gambar clicker bisa diunduh sebagai PNG lalu dilampirkan sendiri di chat.
 
 Email `bjbcetakin@gmail.com` tetap tersedia sebagai kontak umum. Situs tidak menyimpan pesanan, memproses pembayaran, atau mengurangi stok otomatis. Owner memperbarui stok di spreadsheet setelah konfirmasi. Publikasi Google Sheets dapat tertunda beberapa menit, sehingga ini bukan reservasi stok realtime.
 

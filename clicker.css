@@ -89,6 +89,10 @@ summary{cursor:pointer}
 .swatch-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:17px}
 .swatch-options button{border:1px solid #dce0dd;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;padding:9px 3px;min-height:44px}
 .swatch{width:15px;height:15px;border:1px solid #17212b33;border-radius:50%;flex:none}
+.swatch-options button:disabled{opacity:1;color:#65717b;background:#edf0ec;border-style:dashed;cursor:not-allowed}
+.swatch-options button:disabled .swatch{opacity:.45}
+.swatch-lock{fill:currentColor;flex:none}
+.material-note{font-size:11px;font-weight:700;color:#375e72;line-height:1.6;margin:0 0 6px}
 .apply-colors{border:0;background:transparent;padding:5px 0 0;color:#375e72;font-weight:600;font-size:11px!important;text-align:left;min-height:38px}
 .mode-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .mode-options button{border:1px solid #dce0dd;border-radius:8px;background:#fff;text-align:left;display:flex;flex-direction:column;align-items:start;padding:14px 10px;gap:8px}

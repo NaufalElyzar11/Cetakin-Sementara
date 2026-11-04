@@ -39,6 +39,7 @@
     if (nameInput.value !== cleanName) nameInput.value = cleanName;
     const chosenColor = colorButtons.find((button) => button.getAttribute('aria-pressed') === 'true')?.dataset.color || 'orange';
     const colorName = colorLabels[chosenColor];
+    const baseMaterial = chosenColor === 'pink' ? 'PLA' : 'PETG';
     previewWindow.dataset.color = chosenColor;
     previewKeys.replaceChildren();
 
@@ -69,8 +70,8 @@
       previewKeys.appendChild(key);
     }
 
-    previewObject.setAttribute('aria-label', `Pratinjau clicker bertuliskan ${cleanName}, warna ${colorName}`);
-    previewStatus.textContent = `${cleanName.length} huruf · PETG ${colorName}`;
+    previewObject.setAttribute('aria-label', `Pratinjau clicker bertuliskan ${cleanName}, base ${baseMaterial} ${colorName}, keycap putih dan huruf hitam PETG`);
+    previewStatus.textContent = `${cleanName.length} huruf · Base ${baseMaterial} ${colorName}`;
     // Carry the quick preview into the full customizer's versioned design format.
     const design = [2, 'solid', 'round', chosenColor, 'nunito', 1,
       [...cleanName].map((letter) => ['l', letter, 'white', 'black']), ''];

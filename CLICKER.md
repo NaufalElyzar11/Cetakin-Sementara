@@ -10,7 +10,9 @@ Halaman `clicker.html` berjalan sebagai HTML/CSS/JavaScript statis, sama seperti
 - Dua belas simbol dari koleksi `clicker_keycaps_simbol_2_warna`: Love, Bintang, Bunga, Awan, Bulan, Petir, Telapak, Kucing, Beruang, Labu, Hantu, dan Robot.
 - Base Solid (1–7), Flexi (2–7), dan Flexi compact (2–7).
 - Bentuk Silinder Beralur, Heksagon, Gear, Kaki Lucu, Love, dan Bunga 5 Kelopak.
-- Warna base dan setiap keycap: putih, hitam, sky blue, orange, merah, pink. Warna huruf maupun simbol dapat dipilih sendiri per tombol dari enam warna tersebut; tidak memakai emoji bawaan perangkat.
+- Enam warna tersedia menurut bahan: pink hanya PLA; putih tersedia PLA dan PETG; hitam, sky blue, orange, dan merah memakai PETG. Warna huruf maupun simbol dipilih per tombol; tidak memakai emoji bawaan perangkat.
+- Keycap dan huruf/simbol pada satu tombol harus memakai bahan yang sama. Pink hanya dapat dipasangkan dengan putih atau pink. Pasangan warna PETG memakai putih, hitam, sky blue, orange, dan merah. Editor membatasi pilihan agar pasangan beda bahan tidak dapat dipilih.
+- Base dicetak terpisah, sehingga warna dan bahan base bebas dikombinasikan dengan keycap. Base pink PLA dapat dipakai bersama keycap PETG, dan sebaliknya.
 - Huruf sewarna keycap tetap bisa dipesan sebagai huruf timbul satu warna, dengan catatan kontras pada editor.
 - Simbol tertanam rata pada muka keycap, sehingga warna simbol dan badan wajib berbeda. Pemesanan dan ekspor diblokir sampai kedua warna berbeda. Lubang mata Hantu dan Robot memperlihatkan warna badan; kelima bantalan Telapak memakai warna simbol yang sama.
 - Jumlah produk 1–99 pcs dengan desain yang sama, dan catatan maksimal 300 karakter.
@@ -31,13 +33,15 @@ Subtotal = harga per pcs × jumlah produk. Ongkir belum termasuk. Halaman tidak 
 
 ## Alur WhatsApp
 
-`Pesan sekarang` membuka nomor dari `site-config.js` (saat ini `6285822801431`) dengan draf terisi: susunan dari gantungan ke bawah, tipe dan bentuk base, warna base, material, font, isi serta warna setiap tombol, jumlah pcs, harga satuan, subtotal, catatan, dan link desain. Contoh detail simbol: `4. Love | keycap Putih | simbol Orange`. Customer menekan kirim sendiri; membuka WhatsApp tidak berarti pesanan sudah diterima.
+`Pesan sekarang` membuka nomor dari `site-config.js` (saat ini `6285822801431`) dengan draf terisi: susunan dari gantungan ke bawah, tipe dan bentuk base, warna serta bahan base, font, isi serta warna dan bahan setiap tombol, jumlah pcs, harga satuan, subtotal, catatan, dan link desain. Contoh pasangan simbol: keycap Putih dan simbol Orange memakai PETG; keycap Putih dan simbol Pink memakai PLA. Customer menekan kirim sendiri; membuka WhatsApp tidak berarti pesanan sudah diterima.
 
 Tautan `wa.me` mengisi teks, tanpa melampirkan file. `Unduh gambar` membuat PNG 1800 × 1400 di perangkat customer; customer melampirkannya secara manual. PNG berisi preview, spesifikasi per tombol, jumlah pcs, dan subtotal. Catatan bebas tetap ada di chat. Lihat [dokumentasi click to chat WhatsApp](https://faq.whatsapp.com/5913398998672934).
 
 `Salin link desain` menyimpan konfigurasi dalam fragmen URL versi 2 (`#desain=...`), tanpa server atau penyimpanan pesanan. Admin yang membuka link pada website yang sama akan melihat susunan, warna badan dan simbol/huruf, font, jumlah pcs, dan catatan tersebut. Link dari `localhost`/`127.0.0.1` hanya untuk pengujian lokal; link customer yang dapat dibuka admin memerlukan website dipasang pada hosting publik.
 
 Link versi 1 tetap bisa dibaca. Huruf dan warna lama dipertahankan; karakter dari koleksi lama menjadi slot `Pilih simbol`, sambil mempertahankan warna, jumlah pcs, catatan, dan pilihan lainnya. Customer harus memilih salah satu simbol baru sebelum memesan atau mengekspor. Tidak ada penggantian karakter otomatis, termasuk untuk nama yang mirip seperti Kucing atau Robot. ID katalog baru memakai awalan `symbol-` agar tidak tertukar dengan ID lama.
+
+Tautan desain dengan pasangan warna keycap dan huruf/simbol beda bahan perlu disesuaikan sebelum memesan atau mengekspor. Warna base tidak membatasi bahan pasangan tersebut. Preview singkat beranda hanya mengganti warna base: pink memakai PLA, warna lainnya memakai PETG, sedangkan keycap putih dan huruf hitam pada contoh tetap PETG.
 
 ## Preview dan batas model
 
@@ -75,4 +79,4 @@ Lisensi font SIL OFL ikut disalin. Atribusi mekanisme CHB 3D PRINTING / CC BY 4.
 node --test --test-isolation=none tests/catalog-core.test.cjs tests/clicker-core.test.cjs
 ```
 
-Pengujian inti mencakup tujuh harga, subtotal, dua belas simbol × tiga puluh pasangan warna berbeda × tiga font, validasi simbol sewarna badan, kontur lubang mata dan bantalan terpisah, isi WhatsApp per tombol, migrasi link versi 1, link rusak, batas jumlah, envelope, pitch enam bentuk base, dan batas preview/gantungan untuk setiap jumlah serta jenis base. Verifikasi browser mencakup desktop dan ponsel, reload link, pilihan simbol dan warna, validasi, serta unduh PNG.
+Pengujian inti mencakup tujuh harga, subtotal, dua belas simbol dengan pasangan warna kompatibel dan tiga font, validasi simbol sewarna badan serta pasangan beda bahan, kontur lubang mata dan bantalan terpisah, isi WhatsApp per tombol, migrasi link versi 1, link rusak, batas jumlah, envelope, pitch enam bentuk base, dan batas preview/gantungan untuk setiap jumlah serta jenis base. Verifikasi browser mencakup desktop dan ponsel, reload link, pilihan simbol dan warna, validasi, serta unduh PNG.
