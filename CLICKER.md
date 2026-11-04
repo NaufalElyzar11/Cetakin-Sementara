@@ -16,6 +16,7 @@ Halaman `clicker.html` berjalan sebagai HTML/CSS/JavaScript statis, sama seperti
 - Huruf sewarna keycap tetap bisa dipesan sebagai huruf timbul satu warna, dengan catatan kontras pada editor.
 - Simbol tertanam rata pada muka keycap, sehingga warna simbol dan badan wajib berbeda. Pemesanan dan ekspor diblokir sampai kedua warna berbeda. Lubang mata Hantu dan Robot memperlihatkan warna badan; kelima bantalan Telapak memakai warna simbol yang sama.
 - Jumlah produk 1–99 pcs dengan desain yang sama, dan catatan maksimal 300 karakter.
+- Sudah termasuk tali gantungan. Warna tali dipilih Cetakin sesuai stok dan tidak dapat dikustom.
 
 Harga per pcs tidak berubah menurut base/font/warna pada pilihan ini:
 
@@ -35,6 +36,8 @@ Subtotal = harga per pcs × jumlah produk. Ongkir belum termasuk. Halaman tidak 
 
 `Pesan sekarang` membuka nomor dari `site-config.js` (saat ini `6285822801431`) dengan draf terisi: susunan dari gantungan ke bawah, tipe dan bentuk base, warna serta bahan base, font, isi serta warna dan bahan setiap tombol, jumlah pcs, harga satuan, subtotal, catatan, dan link desain. Contoh pasangan simbol: keycap Putih dan simbol Orange memakai PETG; keycap Putih dan simbol Pink memakai PLA. Customer menekan kirim sendiri; membuka WhatsApp tidak berarti pesanan sudah diterima.
 
+Ringkasan produk pada draf WhatsApp menyertakan informasi tali dari `STRAP_NOTICE` pada `clicker-core.js`: tali sudah termasuk, dengan warna dipilih Cetakin sesuai stok dan tidak dapat dikustom.
+
 Tautan `wa.me` mengisi teks, tanpa melampirkan file. `Unduh gambar` membuat PNG 1800 × 1400 di perangkat customer; customer melampirkannya secara manual. PNG berisi preview, spesifikasi per tombol, jumlah pcs, dan subtotal. Catatan bebas tetap ada di chat. Lihat [dokumentasi click to chat WhatsApp](https://faq.whatsapp.com/5913398998672934).
 
 `Salin link desain` menyimpan konfigurasi dalam fragmen URL versi 2 (`#desain=...`), tanpa server atau penyimpanan pesanan. Admin yang membuka link pada website yang sama akan melihat susunan, warna badan dan simbol/huruf, font, jumlah pcs, dan catatan tersebut. Link dari `localhost`/`127.0.0.1` hanya untuk pengujian lokal; link customer yang dapat dibuka admin memerlukan website dipasang pada hosting publik.
@@ -44,6 +47,8 @@ Link versi 1 tetap bisa dibaca. Huruf dan warna lama dipertahankan; karakter dar
 Tautan desain dengan pasangan warna keycap dan huruf/simbol beda bahan perlu disesuaikan sebelum memesan atau mengekspor. Warna base tidak membatasi bahan pasangan tersebut. Preview singkat beranda hanya mengganti warna base: pink memakai PLA, warna lainnya memakai PETG, sedangkan keycap putih dan huruf hitam pada contoh tetap PETG.
 
 ## Preview dan batas model
+
+FAQ menampilkan dua foto asli clicker beserta tali sebagai thumbnail. Customer dapat menekan setiap foto untuk memperbesarnya dalam dialog.
 
 Preview memakai kontur 2D base dari generator lokal, proyeksi badan keycap referensi `Glorious Fulffy-Bojo.stl`, simbol dari `models/keycaps/clicker_keycaps_simbol_2_warna/glyphs.py`, serta huruf yang dipaskan ke bidang atas dengan helper CAD yang sama. Kontur simbol sudah dalam ukuran akhir milimeter dan tidak diperbesar ulang menurut font. Tampak dari atas; mekanisme, alur samping, dan sendi digambarkan secara ilustratif. PNG tidak mengandung STL atau 3MF. Warna layar bukan sampel warna filament.
 

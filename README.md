@@ -20,6 +20,7 @@ Lalu buka di browser:
 
 - `index.html`: profil, empat layanan, bagian **Produk Pertama**, preview singkat yang diteruskan ke Clicker Lab, proses, cerita brand, kontak.
 - `clicker.html`: konfigurator pre-order 1–7 tombol, base solid/flexi/compact, enam bentuk base (termasuk Love dan Bunga 5 Kelopak), tiga font, dua belas simbol tertanam dari `clicker_keycaps_simbol_2_warna`, enam warna menurut bahan, harga, subtotal, draf WhatsApp, link desain, dan ekspor PNG. Pink hanya PLA; putih tersedia PLA/PETG; hitam, sky blue, orange, dan merah memakai PETG. Pasangan keycap dan huruf/simbol wajib satu bahan, sehingga pink hanya dipasangkan dengan putih atau pink. Simbol tetap wajib berbeda warna dari keycap. Bahan base bebas dikombinasikan karena dicetak terpisah. Lihat [CLICKER.md](./CLICKER.md).
+- Clicker sudah termasuk tali gantungan; warna tali dipilih Cetakin sesuai stok dan tidak dapat dikustom. Informasi ini tampil pada draf WhatsApp. FAQ menyertakan dua thumbnail foto asli clicker beserta tali yang dapat diperbesar melalui dialog.
 - `robotika.html`: katalog dengan pencarian, kategori, rentang harga, stok tersedia, dan pengurutan.
 - `panduan.html` / `panduan/`: 21 guide komponen dengan wiring, kode yang bisa disalin, daftar isi, checklist alat, dan langkah periksa masalah. Mencakup semua sensor, driver, dan aktuator dari Excel; detail dan pembaruan konten ada di [PANDUAN.md](./PANDUAN.md).
 - `gantungan-kunci.html`: katalog dengan filter asal desain/seri.
@@ -65,7 +66,7 @@ Tinjau kedua katalog, stok habis, detail produk, filter kosong, menu ponsel, ser
 ## Konten sebelum publikasi
 
 - Masukkan produk, harga, stok, spesifikasi, serta gambar nyata dan isi URL CSV.
-- Clicker masih memakai visualisasi konsep; jangan menyebutnya foto produk.
+- Preview konfigurator clicker memakai ilustrasi; FAQ menyediakan dua foto asli produk beserta tali.
 - Owner: **Naufal Elyzar** dan **M. Fadlianur**, nama saja.
 - Instagram dan TikTok memakai handle usaha `@cetakin.bjb`.
 - Setelah domain final tersedia, tambahkan canonical, sitemap dan gambar Open Graph dengan URL absolut. Metadata detail diubah oleh JavaScript; preview sosial per produk belum digenerasi di server.

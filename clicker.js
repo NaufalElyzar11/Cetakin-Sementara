@@ -207,6 +207,30 @@
   $('copy-design-link').addEventListener('click', () => copy(C.designUrl(state, location.href), 'Link ada di kolom chat pesanan. Pilih teks lalu salin secara manual.'));
   $('copy-order-text').addEventListener('click', () => copy($('wa-message').value, 'Pilih teks pesanan lalu salin secara manual.'));
 
+  const photoDialog = $('product-photo-dialog');
+  let photoTrigger;
+  document.querySelectorAll('[data-product-photo]').forEach((link) => link.addEventListener('click', (event) => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !photoDialog.showModal) return;
+    event.preventDefault();
+    const thumbnail = link.querySelector('img');
+    $('product-photo-large').src = link.href;
+    $('product-photo-large').alt = thumbnail.alt;
+    photoTrigger = link;
+    photoDialog.showModal();
+    document.body.classList.add('photo-modal-open');
+  }));
+  $('close-product-photo').addEventListener('click', () => photoDialog.close());
+  photoDialog.addEventListener('close', () => {
+    document.body.classList.remove('photo-modal-open');
+    $('product-photo-large').removeAttribute('src');
+    photoTrigger?.focus({ preventScroll: true });
+  });
+  photoDialog.addEventListener('click', (event) => {
+    if (event.target !== photoDialog) return;
+    const bounds = photoDialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) photoDialog.close();
+  });
+
   function exportSvg(snapshot) {
     const s = snapshot, amount = C.price(s), e = C.escape;
     const product = C.preview(s).replace('<svg ', '<svg x="70" y="210" width="610" height="1000" ');
@@ -215,7 +239,7 @@
       const detail = `Keycap ${C.COLORS[key.cap].label} / ${C.inkName(key)} ${C.COLORS[key.ink].label} / ${C.keyMaterial(key)}`;
       return `<text x="825" y="${y}" font-size="25" font-weight="700">${i + 1}. ${e(C.describe(key))}</text><text x="825" y="${y + 28}" font-size="19" fill="#5d6c77">${e(detail)}</text>`;
     }).join('');
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1400" viewBox="0 0 1800 1400"><rect width="1800" height="1400" fill="#f7f7f4"/><g font-family="Arial,sans-serif" fill="#17212b"><text x="75" y="85" font-size="26" font-weight="700" letter-spacing="3">CETAKIN / CLICKER CUSTOM</text><text x="75" y="157" font-size="51" font-weight="700">Desain pilihanmu.</text><rect x="65" y="205" width="635" height="1050" rx="26" fill="#dff2fa"/>${product}<text x="825" y="255" font-size="22" fill="#a34b0d">PRE-ORDER / ${s.keys.length} TOMBOL</text><text x="825" y="308" font-size="36" font-weight="700">${e(C.MODES[s.mode].label)} · ${e(C.assets.bases[s.shape].label)}</text><text x="825" y="356" font-size="24">Base ${e(C.COLORS[s.base].label)} / ${C.baseMaterial(s.base)}</text><text x="825" y="395" font-size="22">Font: ${e(C.FONTS[s.font])}</text>${rows}<text x="825" y="1065" font-size="22">${s.quantity} pcs · ${C.rupiah(amount.unit)} / pcs</text><text x="825" y="1125" font-size="49" font-weight="700">Subtotal ${C.rupiah(amount.total)}</text><text x="825" y="1168" font-size="20" fill="#5d6c77">Belum termasuk ongkir. Desain dikonfirmasi admin.</text><text x="75" y="1315" font-size="19" fill="#5d6c77">Ilustrasi tampak atas, bukan foto / ukuran final. Urutan: dari gantungan ke bawah.</text><text x="75" y="1350" font-size="19" fill="#5d6c77">Lampirkan gambar ini bersama teks pesanan di WhatsApp.</text></g></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1400" viewBox="0 0 1800 1400"><rect width="1800" height="1400" fill="#f7f7f4"/><g font-family="Arial,sans-serif" fill="#17212b"><text x="75" y="85" font-size="26" font-weight="700" letter-spacing="3">CETAKIN / CLICKER CUSTOM</text><text x="75" y="157" font-size="51" font-weight="700">Desain pilihanmu.</text><rect x="65" y="205" width="635" height="1050" rx="26" fill="#dff2fa"/>${product}<text x="825" y="255" font-size="22" fill="#a34b0d">PRE-ORDER / ${s.keys.length} TOMBOL</text><text x="825" y="308" font-size="36" font-weight="700">${e(C.MODES[s.mode].label)} · ${e(C.assets.bases[s.shape].label)}</text><text x="825" y="356" font-size="24">Base ${e(C.COLORS[s.base].label)} / ${C.baseMaterial(s.base)}</text><text x="825" y="395" font-size="22">Font: ${e(C.FONTS[s.font])}</text>${rows}<text x="825" y="1065" font-size="22">${s.quantity} pcs · ${C.rupiah(amount.unit)} / pcs</text><text x="825" y="1125" font-size="49" font-weight="700">Subtotal ${C.rupiah(amount.total)}</text><text x="825" y="1168" font-size="20" fill="#5d6c77">Belum termasuk ongkir. Desain dikonfirmasi admin.</text><text x="825" y="1205" font-size="17" fill="#5d6c77">${e(C.STRAP_NOTICE)}</text><text x="75" y="1315" font-size="19" fill="#5d6c77">Ilustrasi tampak atas, bukan foto / ukuran final. Urutan: dari gantungan ke bawah.</text><text x="75" y="1350" font-size="19" fill="#5d6c77">Lampirkan gambar ini bersama teks pesanan di WhatsApp.</text></g></svg>`;
   }
   function download(blob, filename) {
     const url = URL.createObjectURL(blob), link = document.createElement('a');
