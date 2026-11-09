@@ -949,11 +949,11 @@
     $('#cj-res-profit').textContent = money(res.actualProfitBatch);
     $('#cj-res-margin').textContent = pct(res.actualMargin);
 
-    $('#cj-res-fil').textContent = money(res.filamentCost);
-    $('#cj-res-elec').textContent = money(res.electricityCost);
-    $('#cj-res-mach').textContent = money(res.machineAndMaintenanceCost);
-    $('#cj-res-labor').textContent = money(res.laborCost);
-    $('#cj-res-fail').textContent = money(res.failureReserve);
+    $('#cj-res-fil').textContent = money(res.materialCostBatch);
+    $('#cj-res-elec').textContent = money(res.electricityCostBatch);
+    $('#cj-res-mach').textContent = money(res.depreciationBatch + res.maintenanceBatch);
+    $('#cj-res-labor').textContent = money(res.laborBatch);
+    $('#cj-res-fail').textContent = money(res.failureReserveBatch);
 
     const statusBadge = $('#cj-res-status');
     statusBadge.textContent = res.tariffStatus;
@@ -1150,7 +1150,7 @@
     const unitPrice = Math.round(state.lastJasaCalc.netRevenueBatch / units);
     const unitHpp = Math.round(state.lastJasaCalc.hppBatch / units);
     setOrderFormItems([{ productId: '', productName: name, quantity: units, price: unitPrice, hpp: unitHpp }]);
-    $('#ord-wage').value = state.lastJasaCalc.laborCost;
+    $('#ord-wage').value = state.lastJasaCalc.laborBatch;
     switchTab('tab-ledger');
     showToast('Data HPP Jasa Print disalin ke form pesanan!');
   });
