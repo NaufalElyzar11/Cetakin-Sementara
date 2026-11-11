@@ -253,5 +253,42 @@ void loop() {
   Serial.println(++nomor);
   delay(1000);
 }`, codeNotes: ['Tidak bergantung pada LED bawaan, karena pin LED bisa berbeda antar-development board.', 'Serial Monitor: 115200 baud.', 'Kode uji ini tidak menggunakan Wi-Fi atau kredensial jaringan.'], expected: 'Teks uji muncul dan nomor bertambah setiap detik. Pesan boot sesaat setelah reset bisa muncul sebelum teks program.', tips: [['Connecting tidak selesai', 'Periksa board, port, kabel data, dan tombol BOOT sesuai dokumentasi unit. Coba kecepatan upload lebih rendah bila perlu.'], ['Sensor Uno membuat ESP32 restart', 'Matikan daya dan periksa level tegangan. Output 5 V harus diturunkan sebelum menuju GPIO ESP32.'], ['Program jalan, tetapi LED tidak berkedip', 'Uji ini memang lewat serial. LED bawaan tidak seragam pada board WROOM generik.']], next: 'Pilih satu sensor yang level keluarannya cocok dengan 3,3 V. Untuk sensor 5 V seperti HC-SR04, tambahkan pengubah level pada keluaran sebelum menghubungkan ke ESP32.', sources: [source('Instalasi Arduino-ESP32 - Espressif', 'https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html'), source('Datasheet ESP32 - Espressif', 'https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf')] });
+  // The store API and the workbook CSV can assign different SKUs to the same model.
+  // Use the current preferred SKU for the link and identify the component by its name.
+  const shopProducts = {
+    'hc-sr04': [{ name: /\bhc[ -]?sr04\b/ }],
+    'sensor-hujan': [{ name: /(?=.*\b(?:rain|raindrops?|hujan)\b)(?=.*\bsensor\b)/ }],
+    'sensor-halangan-ir': [{ name: /(?=.*\b(?:infrared|inframerah|ir)\b)(?=.*\b(?:obstacle|halangan|rintangan)\b)/ }],
+    'kelembapan-tanah': [{ name: /(?=.*\b(?:capacitive|kapasitif)\b)(?=.*\b(?:soil|tanah)\b)/ }],
+    'bfd-1000': [{ name: /\bbfd[ -]?1000\b/ }],
+    'dht11': [{ name: /\bdht[ -]?11\b/ }],
+    'dht22': [{ name: /\bdht[ -]?22\b/ }],
+    'sensor-cahaya-ldr': [{ name: /(?=.*\bldr\b)(?=.*\bmodul(?:e)?\b)/ }],
+    'mq-2': [{ id: '01-032', name: /\bmq[ -]?2\b/ }],
+    'hc-sr501': [{ id: '01-033', name: /\bhc[ -]?sr501\b/ }],
+    'sensor-api': [{ name: /(?=.*\b(?:flame|api)\b)(?=.*\b(?:infrared|inframerah|ir)\b)/ }],
+    'sg90': [{ id: '01-034', name: /\bsg[ -]?90\b/ }],
+    'mg90s': [{ name: /\bmg[ -]?90s\b/ }],
+    'l298n': [
+      { id: '01-036', label: 'L298N 2 Channel', name: /(?=.*\bl298n\b)(?=.*\b2[ -]?channel\b)/ },
+      { id: '01-037', label: 'L298N Dual H-Bridge', name: /(?=.*\bl298n\b)(?=.*\bdual[ -]h[ -]bridge\b)/ },
+    ],
+    'motor-dc-gearbox': [{ id: '01-039', name: /\bgearbox\b.*\b1[/:]48\b/ }],
+    'lm2596': [{ name: /\blm2596\b/ }],
+    'xl4005': [{ name: /\bxl4005\b/ }],
+    'oled-i2c': [{ name: /(?=.*\boled\b)(?=.*\b0[,.]96\b)(?=.*\bi[2²]c\b)/ }],
+    'dfplayer-mini': [{ name: /\bdf[ -]?player[ -]+mini\b/ }],
+    'arduino-awal': [
+      { id: '01-018', label: 'Arduino Uno / Uno R3', name: /(?:^arduino uno$|(?=.*\buno[ -]?r3\b)(?=.*\bch340\w*\b))/ },
+      { id: '01-012', label: 'Arduino Nano V3', name: /\bnano[ -]?v3\b/ },
+      { id: '01-013', label: 'Arduino Mega 2560', name: /\bmega[ -]?2560\b/ },
+    ],
+    'esp32-awal': [{ label: 'ESP32-WROOM', name: /\besp[ -]?32\b.*\bwroom\b/ }],
+  };
+  for (const guide of guides) {
+    guide.shopProducts = shopProducts[guide.id].map(({ id = guide.products[0], label = guide.title, name }) => ({
+      id, label, namePattern: name.source,
+    }));
+  }
   return Object.freeze({ guides, updated: '2026-10-13' });
 });

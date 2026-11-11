@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const cors = require('cors');
 const apiRouter = require('./src/routes/api.js');
+const { isPublicFile } = require('./src/config/public-files.js');
 
 const PORT = Number(process.env.PORT) || 8080;
 
@@ -27,16 +28,6 @@ app.use(compression());
 app.use(cors());
 app.use(express.json({ limit: '6mb' }));
 app.use(express.urlencoded({ extended: true, limit: '6mb' }));
-
-// Blokir akses publik langsung ke file sensitif backend & database
-app.use((req, res, next) => {
-  const lower = req.path.toLowerCase();
-  const forbidden = ['/server.js', '/db.js', '/package.json', '/package-lock.json', '/dockerfile', '/data/cetakin-db.json', '/src/'];
-  if (forbidden.some((f) => lower === f || lower.startsWith('/src/'))) {
-    return res.status(403).send('403 Forbidden');
-  }
-  next();
-});
 
 app.use('/api', apiRouter);
 
@@ -76,15 +67,18 @@ app.get(['/produk', '/produk/', '/produk.html'], (req, res) => {
   res.sendFile(path.join(__dirname, 'produk.html'));
 });
 
-app.use(
-  express.static(__dirname, {
-    extensions: ['html'],
-    maxAge: process.env.NODE_ENV === 'production' ? '1h' : 0
-  })
-);
-
 app.use('/api/*', (req, res) => {
   res.status(404).json({ ok: false, error: 'Endpoint API tidak ditemukan.' });
+});
+
+app.get(/^\//, (req, res, next) => {
+  const file = req.path.slice(1);
+  if (!isPublicFile(file)) return next();
+  const maxAge = process.env.NODE_ENV === 'production' ? '1h' : 0;
+  res.sendFile(file, { root: __dirname, maxAge }, (err) => {
+    if (err?.status === 404) next();
+    else if (err) next(err);
+  });
 });
 
 app.use((req, res) => {

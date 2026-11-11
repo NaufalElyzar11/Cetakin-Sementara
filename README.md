@@ -42,7 +42,9 @@ Email `bjbcetakin@gmail.com` tetap tersedia sebagai kontak umum. Situs tidak men
 
 ## Hosting
 
-**Vercel:** mendukung HTML/CSS/JS statis. Impor repositori website, gunakan framework **Other**, kosongkan Build Command, dan gunakan direktori akar sebagai Output Directory (`.` bila diminta). Jika repository berisi seluruh proyek induk, pilih Root Directory `website`. [Dokumentasi konfigurasi](https://vercel.com/docs/builds/configure-a-build).
+**Vercel:** `vercel.json` mengatur preset **Other** dan menjalankan `node tools/build-public.cjs` untuk menyalin aset yang diizinkan ke `dist-public`. Vercel melayani file statis dari folder tersebut dan tetap menjalankan fungsi `api/index.js`. Jika repositori berisi seluruh proyek induk, pilih direktori website sebagai Root Directory. [Dokumentasi konfigurasi](https://vercel.com/docs/builds/configure-a-build).
+
+Sebelum deploy, siapkan database cloud Supabase atau KV dan tetapkan `JWT_SECRET` acak minimal 32 byte di environment hosting. Jika database cloud belum tersedia, API mengembalikan 503 dan katalog publik mencoba sumber CSV cadangan. Portal admin produksi menolak password bawaan pengembangan. Saat membuat database baru, gunakan `OWNER_PASSWORD` yang unik untuk menyiapkan akun owner.
 
 Untuk penggunaan komersial Cetakin, pilih paket yang mengizinkannya; **Vercel Hobby ditujukan untuk penggunaan pribadi nonkomersial**. [Ketentuan Hobby](https://vercel.com/docs/plans/hobby).
 

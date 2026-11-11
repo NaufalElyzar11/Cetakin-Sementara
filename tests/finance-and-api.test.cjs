@@ -138,6 +138,14 @@ test('API Server: Role Guard, CRUD Katalog, Keuangan 2 Divisi, dan Rekonsiliasi 
     const csvText = await pubCsvRes.text();
     assert.ok(csvText.includes('id,type,name,category'));
     assert.ok(!csvText.includes('cost_price')); // HPP tidak boleh bocor ke publik
+    const publicCatalog = await (await fetch(`${base}/api/catalog`)).json();
+    assert.ok(publicCatalog.products.length > 0);
+    const publicFields = new Set('id type name category origin price stock image_url description material dimensions weight_grams active featured updated_at group'.split(' '));
+    for (const product of publicCatalog.products) {
+      assert.ok(Object.keys(product).every((key) => publicFields.has(key)));
+      assert.equal(product.active, true);
+    }
+    assert.equal((await fetch(`${base}/api/finance/dashboard?calculator=1`)).status, 401);
 
     // 2. Login sebagai Super Owner, Admin 3D, dan Admin Robotika
     const login = async (username, password) => {
@@ -158,17 +166,19 @@ test('API Server: Role Guard, CRUD Katalog, Keuangan 2 Divisi, dan Rekonsiliasi 
     assert.equal(adminRoboAuth.ok, true);
 
     // 3. Cek pembatasan Role pada Dashboard Keuangan
-    const dash3D = await (await fetch(`${base}/api/finance/dashboard`, {
+    const dash3D = await (await fetch(`${base}/api/finance/dashboard?calculator=1`, {
       headers: { Authorization: `Bearer ${admin3dAuth.token}` }
     })).json();
     assert.ok(dash3D.units['3d-print']);
     assert.equal(dash3D.units['robotika'], undefined); // Admin 3D tidak boleh melihat keuangan Robotika
+    assert.deepEqual(dash3D.calculatorConfig.ROBOTIKA_PRESETS, []);
 
-    const dashRobo = await (await fetch(`${base}/api/finance/dashboard`, {
+    const dashRobo = await (await fetch(`${base}/api/finance/dashboard?calculator=1`, {
       headers: { Authorization: `Bearer ${adminRoboAuth.token}` }
     })).json();
     assert.ok(dashRobo.units['robotika']);
     assert.equal(dashRobo.units['3d-print'], undefined); // Admin Robotika tidak boleh melihat keuangan 3D Print
+    assert.equal(dashRobo.calculatorConfig.ROBOTIKA_PRESETS.length, finance.ROBOTIKA_PRESETS.length);
 
     const dashOwner = await (await fetch(`${base}/api/finance/dashboard`, {
       headers: { Authorization: `Bearer ${ownerAuth.token}` }
@@ -220,6 +230,15 @@ test('API Server: Role Guard, CRUD Katalog, Keuangan 2 Divisi, dan Rekonsiliasi 
     const nonRoundCat = await nonRoundCatalogRes.json();
     assert.equal(nonRoundCat.product.cost_price, 15431);
     assert.equal(nonRoundCat.product.price, 24789);
+
+    const invalidUpdate = await fetch(`${base}/api/admin/catalog/${testId1}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminRoboAuth.token}` },
+      body: JSON.stringify({ category: '  ' })
+    });
+    assert.equal(invalidUpdate.status, 400);
+    const currentCatalog = await (await fetch(`${base}/api/catalog`)).json();
+    assert.equal(currentCatalog.products.find((product) => product.id === testId1).category, 'Sensor');
 
     // Buat item kedua untuk tes multi-item order
     const catItem2Res = await fetch(`${base}/api/admin/catalog`, {

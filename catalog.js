@@ -2,10 +2,11 @@
   'use strict';
   const core = window.CetakinCatalog;
   const config = window.CETAKIN_CONFIG.catalog;
+  const csvUrl = config.csvUrl.trim();
   const page = document.body.dataset.page;
   const type = document.body.dataset.catalogType;
   const $ = (selector) => document.querySelector(selector);
-  const state = { products: [], demo: !config.csvUrl.trim(), valid: false, loading: false, loadedAt: 0, attemptedAt: 0 };
+  const state = { products: [], demo: !csvUrl, valid: false, loading: false, loadedAt: 0, attemptedAt: 0 };
   const PAGE_SIZE = 12;
   let limit = PAGE_SIZE;
   let currentProduct = null;
@@ -45,42 +46,47 @@
     return article;
   }
 
+  async function fetchProducts(source) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), config.timeoutMs || 12000);
+    try {
+      const response = await fetch(source, { cache: 'no-store', signal: controller.signal });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      if (text.length > 5000000) throw new Error('Katalog melebihi batas ukuran.');
+      return core.productsFromCSV(text);
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  async function readCatalog() {
+    if (config.apiUrl) {
+      try {
+        return { products: await fetchProducts(config.apiUrl), mode: 'api' };
+      } catch (error) {
+        // Keep previously loaded real data if there is no real fallback source.
+        if (!csvUrl && !state.demo) throw error;
+      }
+    }
+    if (!csvUrl) return { products: await fetchProducts(config.demoUrl), mode: 'demo' };
+    if (new URL(csvUrl).protocol !== 'https:') throw new Error('URL CSV harus HTTPS.');
+    return { products: await fetchProducts(csvUrl), mode: 'csv' };
+  }
+
   async function loadCatalog() {
     if (state.loading) return;
     state.loading = true; state.attemptedAt = Date.now();
     retry.hidden = true;
     status.textContent = state.loadedAt ? 'Memperbarui katalog…' : 'Memuat katalog…';
     if (page === 'product') updatePurchase();
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), config.timeoutMs || 12000);
     try {
-      let text = '';
-      let usedApi = false;
-      if (config.apiUrl) {
-        try {
-          const apiRes = await fetch(config.apiUrl, { cache: 'no-store', signal: controller.signal });
-          if (apiRes.ok) {
-            const candidate = await apiRes.text();
-            if (candidate && !/^\s*</.test(candidate)) {
-              text = candidate;
-              usedApi = true;
-              state.demo = false;
-              $('#demo-notice').hidden = true;
-            }
-          }
-        } catch (_) { /* fallback to csvUrl */ }
-      }
-      if (!usedApi) {
-        const source = state.demo ? config.demoUrl : config.csvUrl.trim();
-        if (!state.demo && new URL(source).protocol !== 'https:') throw new Error('URL CSV harus HTTPS.');
-        const response = await fetch(source, { cache: 'no-store', signal: controller.signal });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        text = await response.text();
-      }
-      if (text.length > 5000000) throw new Error('Katalog melebihi batas ukuran.');
-      state.products = core.productsFromCSV(text);
+      const { products, mode } = await readCatalog();
+      state.products = products;
+      state.demo = mode === 'demo';
+      $('#demo-notice').hidden = !state.demo;
       state.valid = true; state.loadedAt = Date.now();
-      status.textContent = state.demo ? 'Mode contoh · harga dan stok belum mewakili produk yang dijual.' : `Data dimuat pukul ${new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date(state.loadedAt))}${usedApi ? ' · Sinkronisasi otomatis' : '. Pembaruan dari sumber dapat memiliki jeda.'}`;
+      status.textContent = state.demo ? 'Mode contoh · harga dan stok belum mewakili produk yang dijual.' : `Data dimuat pukul ${new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date(state.loadedAt))}${mode === 'api' ? ' · Sinkronisasi otomatis' : '. Pembaruan dari sumber dapat memiliki jeda.'}`;
       if (page === 'catalog') { populateGroups(); renderCatalog(); }
       else renderDetail();
     } catch (error) {
@@ -91,7 +97,7 @@
       retry.hidden = false;
       console.warn('Cetakin catalog:', error.message);
     } finally {
-      clearTimeout(timeout); state.loading = false;
+      state.loading = false;
       $('#product-grid')?.setAttribute('aria-busy', 'false');
       if (page === 'product') updatePurchase();
     }
@@ -99,6 +105,8 @@
 
   // Catalog state is kept in the URL so links and browser Back retain filters.
   const params = new URLSearchParams(location.search);
+  const productId = params.get('id');
+  const guideId = params.get('panduan');
   if (page === 'catalog') {
     $('#search').value = (params.get('q') || '').slice(0, 200);
     $('#ready-stock').checked = params.get('stock') === 'ready';
@@ -162,7 +170,8 @@
   function renderGuideFallback(show) {
     const link = $('#product-guide-fallback');
     if (!link) return;
-    const guide = window.CetakinGuideCore?.forProduct({ id: params.get('id'), type: 'robotika' });
+    const guideCore = window.CetakinGuideCore;
+    const guide = guideId === null ? guideCore?.forProduct({ id: productId, type: 'robotika' }) : guideCore?.byId(guideId);
     link.hidden = !show || !guide;
     if (guide) {
       link.href = window.CetakinGuideCore.href(guide);
@@ -171,7 +180,7 @@
   }
 
   function renderDetail() {
-    const product = state.products.find((item) => item.id === params.get('id'));
+    const product = guideId === null ? state.products.find((item) => item.id === productId) : window.CetakinGuideCore?.resolveProduct?.(state.products, guideId, productId);
     currentProduct = product || null;
     $('#product-detail').hidden = !product;
     $('#missing-product').hidden = Boolean(product);
@@ -232,7 +241,7 @@
     $('#detail-subtotal').textContent = validQuantity ? core.money(product.price * quantity) : '-';
     link.setAttribute('aria-disabled', String(!canBuy)); link.tabIndex = 0;
     if (canBuy) {
-      const productURL = new URL(`./produk.html?id=${encodeURIComponent(product.id)}`, location.href).href;
+      const productURL = guideId === null ? new URL(`./produk.html?id=${encodeURIComponent(product.id)}`, location.href).href : location.href;
       link.href = window.CetakinContact.url(core.orderMessage(product, quantity, productURL, state.demo));
       link.target = '_blank'; link.rel = 'noopener noreferrer';
     } else link.removeAttribute('href');

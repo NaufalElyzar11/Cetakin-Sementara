@@ -1,11 +1,12 @@
 {
   "version": 2,
+  "framework": null,
+  "buildCommand": "node tools/build-public.cjs",
+  "outputDirectory": "dist-public",
   "functions": {
-    "server.js": {
-      "includeFiles": "{assets/**,data/**,panduan/**,*.css,*.js,*.html,*.png,*.ico,*.svg,*.json}"
-    },
     "api/index.js": {
-      "includeFiles": "{assets/**,data/**,panduan/**,*.css,*.js,*.html,*.png,*.ico,*.svg,*.json}"
+      "includeFiles": "data/catalog-seed.json",
+      "excludeFiles": "{data/cetakin-db.json,outputs/**}"
     }
   },
   "redirects": [

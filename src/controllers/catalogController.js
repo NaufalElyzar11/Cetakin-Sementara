@@ -3,33 +3,35 @@
 const { loadDb, saveDb } = require('../config/db.js');
 const { canManageCatalogType } = require('../middleware/auth.js');
 
+const PUBLIC_FIELDS = ['id', 'type', 'name', 'category', 'origin', 'price', 'stock', 'image_url', 'description', 'material', 'dimensions', 'weight_grams', 'active', 'featured', 'updated_at'];
+
+function productGroup(item) {
+  return String((item.type === 'robotika' ? item.category : item.origin) ?? '').trim();
+}
+
+function missingGroup(res, type) {
+  return res.status(400).json({
+    ok: false,
+    error: type === 'robotika' ? 'Kategori robotika wajib diisi.' : 'Asal desain/seri ganci wajib diisi.'
+  });
+}
+
 function toPublicCsv(catalog) {
-  const headers = ['id', 'type', 'name', 'category', 'origin', 'price', 'stock', 'image_url', 'description', 'material', 'dimensions', 'weight_grams', 'active', 'featured', 'updated_at'];
   const esc = (val) => {
     const s = val === null || val === undefined ? '' : String(val);
     if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
     return s;
   };
-  const lines = [headers.join(',')];
+  const lines = [PUBLIC_FIELDS.join(',')];
   for (const item of catalog) {
-    const row = [
-      item.id,
-      item.type,
-      item.name,
-      item.category || '',
-      item.origin || '',
-      Math.max(1, Math.round(Number(item.price) || 1000)),
-      Math.max(0, Math.round(Number(item.stock) || 0)),
-      item.image_url || '',
-      item.description || '',
-      item.material || '',
-      item.dimensions || '',
-      item.weight_grams || '',
-      item.active ? 'TRUE' : 'FALSE',
-      item.featured ? 'TRUE' : 'FALSE',
-      item.updated_at || ''
-    ];
-    lines.push(row.map(esc).join(','));
+    const row = {
+      ...item,
+      price: Math.max(1, Math.round(Number(item.price) || 1000)),
+      stock: Math.max(0, Math.round(Number(item.stock) || 0)),
+      active: 'TRUE',
+      featured: item.featured ? 'TRUE' : 'FALSE'
+    };
+    lines.push(PUBLIC_FIELDS.map((key) => esc(row[key])).join(','));
   }
   return lines.join('\n');
 }
@@ -37,19 +39,19 @@ function toPublicCsv(catalog) {
 async function getPublicCatalog(req, res, next) {
   try {
     const db = await loadDb();
-    if (req.query.format === 'csv') {
-      const csv = toPublicCsv(db.catalog || []);
-      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-      res.setHeader('Cache-Control', 'no-store');
-      return res.send(csv);
-    }
-
+    // Skip old incomplete rows without taking the rest of the storefront offline.
     const publicItems = (db.catalog || [])
-      .filter((item) => item.active)
-      .map(({ cost_price, ...rest }) => ({
-        ...rest,
-        group: rest.type === 'robotika' ? rest.category : rest.origin
+      .filter((item) => item.active && productGroup(item))
+      .map((item) => ({
+        ...Object.fromEntries(PUBLIC_FIELDS.map((key) => [key, item[key]])),
+        group: productGroup(item)
       }));
+
+    res.setHeader('Cache-Control', 'no-store');
+    if (req.query.format === 'csv') {
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      return res.send(toPublicCsv(publicItems));
+    }
 
     return res.json({ ok: true, products: publicItems, updatedAt: db.updatedAt });
   } catch (err) {
@@ -97,13 +99,8 @@ async function createProduct(req, res, next) {
       return res.status(400).json({ ok: false, error: 'Nama produk wajib diisi.' });
     }
 
-    const groupVal = type === 'robotika' ? String(body.category || '').trim() : String(body.origin || '').trim();
-    if (!groupVal) {
-      return res.status(400).json({
-        ok: false,
-        error: type === 'robotika' ? 'Kategori robotika wajib diisi.' : 'Asal desain/seri ganci wajib diisi.'
-      });
-    }
+    const groupVal = productGroup({ ...body, type });
+    if (!groupVal) return missingGroup(res, type);
 
     const newProduct = {
       id,
@@ -115,7 +112,7 @@ async function createProduct(req, res, next) {
       cost_price: Math.max(0, Math.round(Number(body.cost_price) || 0)),
       stock: Math.max(0, Math.round(Number(body.stock) || 0)),
       image_url: String(body.image_url || '').trim(),
-      description: String(body.description || name).trim(),
+      description: String(body.description ?? '').trim() || name,
       material: String(body.material || '').trim(),
       dimensions: String(body.dimensions || '').trim(),
       weight_grams: body.weight_grams !== '' && body.weight_grams !== undefined ? String(body.weight_grams).trim() : '',
@@ -154,17 +151,27 @@ async function updateProduct(req, res, next) {
       return res.status(403).json({ ok: false, error: 'Anda tidak memiliki akses ke kategori tujuan.' });
     }
 
+    const name = String(body.name ?? existing.name ?? '').trim();
+    if (!name) return res.status(400).json({ ok: false, error: 'Nama produk wajib diisi.' });
+
+    const groupVal = productGroup({
+      type: nextType,
+      category: body.category ?? existing.category,
+      origin: body.origin ?? existing.origin
+    });
+    if (!groupVal) return missingGroup(res, nextType);
+
     const updated = {
       ...existing,
       type: nextType,
-      name: body.name !== undefined ? String(body.name).trim() : existing.name,
-      category: nextType === 'robotika' ? String(body.category ?? existing.category ?? '').trim() : '',
-      origin: nextType === 'gantungan-kunci' ? String(body.origin ?? existing.origin ?? '').trim() : '',
+      name,
+      category: nextType === 'robotika' ? groupVal : '',
+      origin: nextType === 'gantungan-kunci' ? groupVal : '',
       price: body.price !== undefined ? Math.max(100, Math.round(Number(body.price) || 0)) : existing.price,
       cost_price: body.cost_price !== undefined ? Math.max(0, Math.round(Number(body.cost_price) || 0)) : (existing.cost_price || 0),
       stock: body.stock !== undefined ? Math.max(0, Math.round(Number(body.stock) || 0)) : existing.stock,
       image_url: body.image_url !== undefined ? String(body.image_url).trim() : existing.image_url,
-      description: body.description !== undefined ? String(body.description).trim() : existing.description,
+      description: String(body.description ?? existing.description ?? '').trim() || name,
       material: body.material !== undefined ? String(body.material).trim() : existing.material,
       dimensions: body.dimensions !== undefined ? String(body.dimensions).trim() : existing.dimensions,
       weight_grams: body.weight_grams !== undefined ? String(body.weight_grams).trim() : existing.weight_grams,

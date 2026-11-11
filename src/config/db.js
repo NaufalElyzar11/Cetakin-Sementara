@@ -8,6 +8,9 @@ const financeCore = require('../../finance-core.js');
 const DATA_DIR = path.resolve(__dirname, '../../data');
 const DB_FILE = path.join(DATA_DIR, 'cetakin-db.json');
 const SEED_FILE = path.join(DATA_DIR, 'catalog-seed.json');
+const runningOnVercel = process.env.VERCEL === '1';
+const hosted = runningOnVercel || process.env.NODE_ENV === 'production';
+const localPasswords = { owner: 'cetakin123', admin3d: 'print123', adminrobo: 'robo123' };
 
 // Konfigurasi Cloud Database Gratis (Supabase PostgreSQL atau Upstash/Vercel KV)
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
@@ -20,6 +23,15 @@ const KV_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(`cetakin_salt_${password}`).digest('hex');
+}
+
+function isDisallowedPassword(password) {
+  return hosted && Object.values(localPasswords).includes(password);
+}
+
+function initialPassword(username, configured) {
+  if (configured && !isDisallowedPassword(configured)) return configured;
+  return hosted ? crypto.randomBytes(32).toString('hex') : localPasswords[username];
 }
 
 function createInitialState() {
@@ -41,21 +53,21 @@ function createInitialState() {
         name: 'Naufal Elyzar (Super Owner)',
         role: 'owner',
         allowedUnits: ['3d-print', 'robotika'],
-        passwordHash: hashPassword(process.env.OWNER_PASSWORD || 'cetakin123')
+        passwordHash: hashPassword(initialPassword('owner', process.env.OWNER_PASSWORD))
       },
       {
         username: 'admin3d',
         name: 'M. Fadlianur (Admin 3D Print)',
         role: 'admin_3d',
         allowedUnits: ['3d-print'],
-        passwordHash: hashPassword(process.env.ADMIN3D_PASSWORD || 'print123')
+        passwordHash: hashPassword(initialPassword('admin3d', process.env.ADMIN3D_PASSWORD))
       },
       {
         username: 'adminrobo',
         name: 'Partner Robotika (Admin Robotika)',
         role: 'admin_robotika',
         allowedUnits: ['robotika'],
-        passwordHash: hashPassword(process.env.ADMINROBO_PASSWORD || 'robo123')
+        passwordHash: hashPassword(initialPassword('adminrobo', process.env.ADMINROBO_PASSWORD))
       }
     ],
     settings: { ...financeCore.DEFAULT_SETTINGS },
@@ -266,6 +278,8 @@ async function loadDb() {
     }
   }
 
+  if (runningOnVercel) throw Object.assign(new Error('Database cloud belum tersedia.'), { status: 503 });
+
   // Prioritas 3: File JSON Lokal (untuk development di komputer lokal)
   if (!fs.existsSync(DATA_DIR)) {
     try {
@@ -323,6 +337,8 @@ async function saveDb(newState) {
     }
   }
 
+  if (runningOnVercel) throw Object.assign(new Error('Database cloud belum dapat menyimpan perubahan.'), { status: 503 });
+
   try {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
     fs.writeFileSync(DB_FILE, JSON.stringify(newState, null, 2));
@@ -337,5 +353,6 @@ module.exports = {
   loadDb,
   saveDb,
   hashPassword,
+  isDisallowedPassword,
   createInitialState
 };

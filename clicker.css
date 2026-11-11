@@ -63,7 +63,10 @@
 }
 
 .intro-detail {
-  max-width: 460px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 18px;
   padding-bottom: 4px
 }
 
@@ -950,6 +953,15 @@ summary {
   color: #375e72
 }
 
+.intro-product-photo {
+  width: 112px;
+  max-width: 100%
+}
+
+.intro-product-photo img {
+  height: 120px
+}
+
 .product-photo-dialog {
   width: min(680px, calc(100% - 24px));
   max-height: 90dvh;
@@ -1149,7 +1161,7 @@ summary {
   }
 
   .intro-detail {
-    max-width: 520px
+    max-width: 620px
   }
 
   .stage-canvas {
@@ -1240,6 +1252,22 @@ summary {
 
   .intro-detail p {
     font-size: 14px
+  }
+
+  .intro-detail {
+    grid-template-columns: 1fr;
+    gap: 12px
+  }
+
+  .intro-product-photo {
+    display: flex;
+    align-items: center;
+    width: fit-content
+  }
+
+  .intro-product-photo img {
+    width: 46px;
+    height: 60px
   }
 
   .intro-tags span {

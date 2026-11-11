@@ -13,6 +13,20 @@ test('Entire admin browser script compiles before any login handler can run', ()
   assert.doesNotThrow(() => new Script(adminSource, { filename: adminPath }));
 });
 
+test('Browser finance formulas only gain cost settings and presets after loading admin config', () => {
+  const browser = {};
+  const financePath = path.join(__dirname, '../finance-core.js');
+  new Script(fs.readFileSync(financePath, 'utf8'), { filename: financePath }).runInNewContext(browser);
+  assert.equal(browser.CetakinFinance.DEFAULT_SETTINGS, null);
+  assert.equal(browser.CetakinFinance.ROBOTIKA_PRESETS.length, 0);
+  assert.equal(Object.keys(browser.CetakinFinance.CLICKER_PRESETS).length, 0);
+
+  const serverFinance = require('../finance-core.js');
+  const hydrated = browser.CetakinFinance.create(serverFinance);
+  assert.equal(hydrated.calculateClicker({ buttons: 5, units: 1 }).hppUnit, serverFinance.calculateClicker({ buttons: 5, units: 1 }).hppUnit);
+  assert.equal(hydrated.ROBOTIKA_PRESETS.length, serverFinance.ROBOTIKA_PRESETS.length);
+});
+
 test('Admin startup installs the login submit handler without a saved session', () => {
   const listeners = new Map();
   const loginForm = {

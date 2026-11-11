@@ -13,10 +13,11 @@
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="./styles.css" />
-  <link rel="stylesheet" href="./admin.css" />
+  <link rel="stylesheet" href="./admin.css?v=tables" />
   <script type="module" src="./analytics-init.js"></script>
-  <script src="./finance-core.js" defer></script>
-  <script src="./admin.js" defer></script>
+  <script src="./finance-core.js?v=private-config" defer></script>
+  <script src="./admin-table-core.js?v=tables" defer></script>
+  <script src="./admin.js?v=tables" defer></script>
 </head>
 
 <body class="admin-body">
@@ -280,6 +281,9 @@
 
       <!-- TAB 2: KASIR CEPAT, PESANAN, MUTASI KAS, & UPAH KERJA -->
       <section id="tab-ledger" class="panel-section">
+        <nav class="ledger-shortcuts" aria-label="Bagian pesanan dan riwayat">
+          <span>Langsung ke</span><a href="#orders-list">Daftar pesanan <span aria-hidden="true">↓</span></a><a href="#mutations-list">Mutasi kas <span aria-hidden="true">↓</span></a><a href="#wages-list">Catatan upah <span aria-hidden="true">↓</span></a>
+        </nav>
         <div class="two-col-grid">
 
           <!-- Form Input Pesanan / Penjualan Baru -->
@@ -473,21 +477,60 @@
         </div>
 
         <!-- Daftar Pesanan Divisi Ini -->
-        <div class="card-box">
+        <div class="card-box table-card" id="orders-list" data-admin-table="orders">
           <div class="card-box-header">
             <div>
-              <h3>Daftar Pesanan &amp; Status Pembayaran</h3>
-              <p>Klik tombol status untuk mengubah Proses → Selesai. HPP dan Laba otomatis dihitung.</p>
+              <h3 id="orders-list-title">Daftar Pesanan</h3>
+              <p>Pantau pesanan, pembayaran, dan nota dalam satu daftar.</p>
             </div>
           </div>
-          <div class="table-wrap">
+          <form class="table-controls" data-table-controls role="search" aria-label="Cari dan filter pesanan">
+            <div class="table-toolbar">
+              <div class="table-search">
+                <label class="sr-only" for="orders-search">Cari pesanan</label>
+                <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg>
+                <input id="orders-search" data-table-filter="q" type="search" placeholder="Cari ID, pelanggan, atau produk…" autocomplete="off" />
+              </div>
+              <label class="table-page-size" for="orders-pageSize">Baris
+                <select id="orders-pageSize" data-table-filter="pageSize"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select>
+              </label>
+            </div>
+            <details class="table-filters">
+              <summary><span class="table-filter-icon" aria-hidden="true">☷</span> Filter &amp; urutkan <span class="table-filter-count" data-table-filter-count hidden></span><span class="table-filter-chevron" aria-hidden="true"></span></summary>
+              <div class="table-filter-grid">
+              <div class="table-filter-field">
+                <label for="orders-status">Status pesanan</label>
+                <select id="orders-status" data-table-filter="status"><option value="">Semua status</option><option value="Proses">Proses</option><option value="Selesai">Selesai</option><option value="Batal">Batal</option></select>
+              </div>
+              <div class="table-filter-field">
+                <label for="orders-payment">Pembayaran</label>
+                <select id="orders-payment" data-table-filter="payment"><option value="">Semua pembayaran</option><option value="unpaid">Belum dibayar</option><option value="partial">Dibayar sebagian</option><option value="paid">Lunas</option><option value="overpaid">Kelebihan bayar</option><option value="cancelled">Pesanan batal</option></select>
+              </div>
+              <div class="table-filter-field">
+                <label for="orders-from">Dari tanggal</label>
+                <input id="orders-from" data-table-filter="from" type="date" />
+              </div>
+              <div class="table-filter-field">
+                <label for="orders-to">Sampai tanggal</label>
+                <input id="orders-to" data-table-filter="to" type="date" />
+              </div>
+              <div class="table-filter-field">
+                <label for="orders-sort">Urutkan</label>
+                <select id="orders-sort" data-table-filter="sort"><option value="date-desc">Tanggal terbaru</option><option value="date-asc">Tanggal terlama</option><option value="amount-desc">Nominal terbesar</option><option value="amount-asc">Nominal terkecil</option></select>
+              </div>
+                <div class="table-filter-actions"><button type="button" class="table-reset" data-table-reset>Reset filter</button></div>
+              </div>
+            </details>
+          </form>
+          <p class="table-scroll-hint">Geser tabel untuk melihat seluruh kolom.</p>
+          <div class="table-wrap table-scroll-region" role="region" tabindex="0" aria-labelledby="orders-list-title">
             <table class="data-table">
               <thead>
                 <tr>
                   <th>ID &amp; Tanggal</th>
                   <th>Pelanggan &amp; Produk</th>
                   <th>Qty</th>
-                  <th>Tagihan Neto</th>
+                  <th>Tagihan</th>
                   <th>HPP Batch</th>
                   <th>Dibayar</th>
                   <th>Laba</th>
@@ -498,18 +541,66 @@
               <tbody id="orders-tbody"></tbody>
             </table>
           </div>
+          <div class="table-footer">
+            <div class="table-result-info"><p data-table-summary role="status" aria-live="polite">Menyiapkan daftar…</p><p class="table-total" data-table-total></p></div>
+            <nav class="table-pagination" aria-label="Halaman pesanan">
+              <span class="table-page-label" data-table-page-label>Halaman 1</span>
+              <button type="button" class="table-page-button" data-page-action="prev" aria-label="Halaman pesanan sebelumnya" disabled>‹</button>
+              <div class="table-page-numbers" data-table-pages></div>
+              <button type="button" class="table-page-button" data-page-action="next" aria-label="Halaman pesanan berikutnya" disabled>›</button>
+            </nav>
+          </div>
         </div>
 
         <!-- Daftar Mutasi Uang & Catatan Upah Kerja -->
-        <div class="two-col-grid">
-          <div class="card-box">
+        <div class="two-col-grid ledger-history-grid">
+          <div class="card-box table-card" id="mutations-list" data-admin-table="mutations">
             <div class="card-box-header">
               <div>
-                <h3>Riwayat Mutasi Kas</h3>
+                <h3 id="mutations-list-title">Riwayat Mutasi Kas</h3>
                 <p>Catatan aliran uang masuk, keluar, dan transfer antar akun.</p>
               </div>
             </div>
-            <div class="table-wrap">
+            <form class="table-controls" data-table-controls role="search" aria-label="Cari dan filter mutasi kas">
+              <div class="table-toolbar">
+                <div class="table-search">
+                  <label class="sr-only" for="mutations-search">Cari mutasi kas</label>
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg>
+                  <input id="mutations-search" data-table-filter="q" type="search" placeholder="Cari ID, keterangan, atau pesanan…" autocomplete="off" />
+                </div>
+                <label class="table-page-size" for="mutations-pageSize">Baris
+                  <select id="mutations-pageSize" data-table-filter="pageSize"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select>
+                </label>
+              </div>
+              <details class="table-filters">
+                <summary><span class="table-filter-icon" aria-hidden="true">☷</span> Filter &amp; urutkan <span class="table-filter-count" data-table-filter-count hidden></span><span class="table-filter-chevron" aria-hidden="true"></span></summary>
+                <div class="table-filter-grid">
+                <div class="table-filter-field">
+                  <label for="mutations-type">Jenis mutasi</label>
+                  <select id="mutations-type" data-table-filter="type"><option value="">Semua jenis</option></select>
+                </div>
+                <div class="table-filter-field">
+                  <label for="mutations-account">Akun</label>
+                  <select id="mutations-account" data-table-filter="account"><option value="">Semua akun</option></select>
+                </div>
+                <div class="table-filter-field">
+                  <label for="mutations-from">Dari tanggal</label>
+                  <input id="mutations-from" data-table-filter="from" type="date" />
+                </div>
+                <div class="table-filter-field">
+                  <label for="mutations-to">Sampai tanggal</label>
+                  <input id="mutations-to" data-table-filter="to" type="date" />
+                </div>
+                <div class="table-filter-field">
+                  <label for="mutations-sort">Urutkan</label>
+                  <select id="mutations-sort" data-table-filter="sort"><option value="date-desc">Tanggal terbaru</option><option value="date-asc">Tanggal terlama</option><option value="amount-desc">Nominal terbesar</option><option value="amount-asc">Nominal terkecil</option></select>
+                </div>
+                  <div class="table-filter-actions"><button type="button" class="table-reset" data-table-reset>Reset filter</button></div>
+                </div>
+              </details>
+            </form>
+            <p class="table-scroll-hint">Geser tabel untuk melihat seluruh kolom.</p>
+            <div class="table-wrap table-scroll-region" role="region" tabindex="0" aria-labelledby="mutations-list-title">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -523,9 +614,18 @@
                 <tbody id="mutations-tbody"></tbody>
               </table>
             </div>
+            <div class="table-footer">
+              <div class="table-result-info"><p data-table-summary role="status" aria-live="polite">Menyiapkan daftar…</p><p class="table-total" data-table-total></p></div>
+              <nav class="table-pagination" aria-label="Halaman mutasi kas">
+                <span class="table-page-label" data-table-page-label>Halaman 1</span>
+                <button type="button" class="table-page-button" data-page-action="prev" aria-label="Halaman mutasi kas sebelumnya" disabled>‹</button>
+                <div class="table-page-numbers" data-table-pages></div>
+                <button type="button" class="table-page-button" data-page-action="next" aria-label="Halaman mutasi kas berikutnya" disabled>›</button>
+              </nav>
+            </div>
           </div>
 
-          <div class="card-box">
+          <div class="card-box table-card" id="wages-list" data-admin-table="wages">
             <div class="card-box-header">
               <div>
                 <h3>Catat Jam Kerja / Upah Produksi</h3>
@@ -557,7 +657,43 @@
               <button type="submit" class="btn btn-outline btn-sm" style="margin-top:12px;">+ Tambah Catatan Kerja</button>
             </form>
 
-            <div class="table-wrap">
+            <h4 class="table-section-title" id="wages-list-title">Riwayat Upah Produksi</h4>
+            <form class="table-controls" data-table-controls role="search" aria-label="Cari dan filter catatan upah">
+              <div class="table-toolbar">
+                <div class="table-search">
+                  <label class="sr-only" for="wages-search">Cari catatan upah</label>
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg>
+                  <input id="wages-search" data-table-filter="q" type="search" placeholder="Cari ID pesanan atau pekerjaan…" autocomplete="off" />
+                </div>
+                <label class="table-page-size" for="wages-pageSize">Baris
+                  <select id="wages-pageSize" data-table-filter="pageSize"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select>
+                </label>
+              </div>
+              <details class="table-filters">
+                <summary><span class="table-filter-icon" aria-hidden="true">☷</span> Filter &amp; urutkan <span class="table-filter-count" data-table-filter-count hidden></span><span class="table-filter-chevron" aria-hidden="true"></span></summary>
+                <div class="table-filter-grid">
+                <div class="table-filter-field">
+                  <label for="wages-worker">Pekerja</label>
+                  <select id="wages-worker" data-table-filter="worker"><option value="">Semua pekerja</option></select>
+                </div>
+                <div class="table-filter-field">
+                  <label for="wages-from">Dari tanggal</label>
+                  <input id="wages-from" data-table-filter="from" type="date" />
+                </div>
+                <div class="table-filter-field">
+                  <label for="wages-to">Sampai tanggal</label>
+                  <input id="wages-to" data-table-filter="to" type="date" />
+                </div>
+                <div class="table-filter-field">
+                  <label for="wages-sort">Urutkan</label>
+                  <select id="wages-sort" data-table-filter="sort"><option value="date-desc">Tanggal terbaru</option><option value="date-asc">Tanggal terlama</option><option value="amount-desc">Nominal terbesar</option><option value="amount-asc">Nominal terkecil</option><option value="duration-desc">Durasi terlama</option></select>
+                </div>
+                  <div class="table-filter-actions"><button type="button" class="table-reset" data-table-reset>Reset filter</button></div>
+                </div>
+              </details>
+            </form>
+            <p class="table-scroll-hint">Geser tabel untuk melihat seluruh kolom.</p>
+            <div class="table-wrap table-scroll-region" role="region" tabindex="0" aria-labelledby="wages-list-title">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -570,6 +706,15 @@
                 </thead>
                 <tbody id="wages-tbody"></tbody>
               </table>
+            </div>
+            <div class="table-footer">
+              <div class="table-result-info"><p data-table-summary role="status" aria-live="polite">Menyiapkan daftar…</p><p class="table-total" data-table-total></p></div>
+              <nav class="table-pagination" aria-label="Halaman catatan upah">
+                <span class="table-page-label" data-table-page-label>Halaman 1</span>
+                <button type="button" class="table-page-button" data-page-action="prev" aria-label="Halaman catatan upah sebelumnya" disabled>‹</button>
+                <div class="table-page-numbers" data-table-pages></div>
+                <button type="button" class="table-page-button" data-page-action="next" aria-label="Halaman catatan upah berikutnya" disabled>›</button>
+              </nav>
             </div>
           </div>
         </div>
@@ -801,14 +946,14 @@
           <div class="card-box-header">
             <div>
               <h2>Kalkulator HPP &amp; Harga Jual Komponen Robotika</h2>
-              <p>Terintegrasi dengan 94 data ter-audit: alokasi biaya usaha tetap (Rp 646.853), kemasan antistatik, dan margin target 20%.</p>
+              <p>Hitung HPP stok, alokasi biaya usaha, kemasan, dan margin penjualan komponen.</p>
             </div>
           </div>
 
           <div class="two-col-grid">
             <form id="calc-robo-form" class="form-grid">
               <div class="form-field full-width" style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; border: 1px solid #334155;">
-                <label for="cr-preset-picker" style="color:#38bdf8; font-weight:700;">Pilih dari Data Ter-Audit (94 Komponen &amp; Varian)</label>
+                <label for="cr-preset-picker" style="color:#38bdf8; font-weight:700;">Preset Komponen Robotika</label>
                 <select id="cr-preset-picker" class="form-select" style="width:100%; font-size:13px; padding:8px; border-radius:6px; background:#0f172a; color:#f8fafc; border:1px solid #475569;">
                   <option value="">-- Mode Kustom / Pilih Komponen Ter-Audit --</option>
                 </select>
@@ -819,7 +964,7 @@
 
               <div class="form-field full-width">
                 <label for="cr-name">Nama Komponen / SKU</label>
-                <input id="cr-name" type="text" value="ESP32 CH340 Type C WROOM WIFI Bluetooth BLE" />
+                <input id="cr-name" type="text" />
               </div>
               <div class="form-field">
                 <label for="cr-units">Jumlah Barang (pcs / paket)</label>
@@ -827,15 +972,15 @@
               </div>
               <div class="form-field">
                 <label for="cr-buy-unit">HPP Stok Supplier / Unit (Rp)</label>
-                <input id="cr-buy-unit" type="number" min="0" value="65000" />
+                <input id="cr-buy-unit" type="number" min="0" />
               </div>
               <div class="form-field">
                 <label for="cr-ship-unit">Alokasi Biaya Usaha / Unit (Rp)</label>
-                <input id="cr-ship-unit" type="number" min="0" value="8808" />
+                <input id="cr-ship-unit" type="number" min="0" />
               </div>
               <div class="form-field">
                 <label for="cr-pack-unit">Biaya Kemasan Packing / Unit (Rp)</label>
-                <input id="cr-pack-unit" type="number" min="0" value="200" />
+                <input id="cr-pack-unit" type="number" min="0" />
               </div>
               <div class="form-field">
                 <label for="cr-target-margin">Target Margin Bersih (0.05 – 0.80)</label>
@@ -852,27 +997,27 @@
               <div class="calc-result-grid">
                 <div class="calc-stat">
                   <span>HPP Modal Stok</span>
-                  <strong id="cr-res-hpp-unit">Rp 65.000</strong>
+                  <strong id="cr-res-hpp-unit">–</strong>
                 </div>
                 <div class="calc-stat accent">
                   <span>Biaya Penuh (Impas)</span>
-                  <strong id="cr-res-full-cost">Rp 74.008</strong>
+                  <strong id="cr-res-full-cost">–</strong>
                 </div>
                 <div class="calc-stat accent">
                   <span>Harga Jual Usulan</span>
-                  <strong id="cr-res-suggested">Rp 93.550</strong>
+                  <strong id="cr-res-suggested">–</strong>
                 </div>
                 <div class="calc-stat">
                   <span>Status Penutupan</span>
-                  <strong id="cr-res-status" style="font-size:12px; color:#4ade80;">MENUTUP + SURPLUS</strong>
+                  <strong id="cr-res-status" style="font-size:12px; color:#4ade80;">–</strong>
                 </div>
                 <div class="calc-stat">
                   <span>Laba Kotor Stok</span>
-                  <strong id="cr-res-gross-profit" style="color:#38bdf8;">Rp 28.550</strong>
+                  <strong id="cr-res-gross-profit" style="color:#38bdf8;">–</strong>
                 </div>
                 <div class="calc-stat">
                   <span>Laba Bersih Sisa</span>
-                  <strong id="cr-res-profit" style="color:#4ade80;">Rp 19.542</strong>
+                  <strong id="cr-res-profit" style="color:#4ade80;">–</strong>
                 </div>
               </div>
 

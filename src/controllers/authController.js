@@ -1,14 +1,16 @@
 'use strict';
 
-const { loadDb, saveDb, hashPassword } = require('../config/db.js');
-const { createToken } = require('../middleware/auth.js');
+const { loadDb, saveDb, hashPassword, isDisallowedPassword } = require('../config/db.js');
+const { createToken, authConfigured } = require('../middleware/auth.js');
 
 async function login(req, res, next) {
   try {
-    const db = await loadDb();
+    if (!authConfigured) return res.status(503).json({ ok: false, error: 'Konfigurasi sesi admin belum tersedia.' });
     const { username, password } = req.body || {};
     const inputUser = String(username || '').trim().toLowerCase();
     const inputPass = String(password || '');
+    if (isDisallowedPassword(inputPass)) return res.status(401).json({ ok: false, error: 'Username atau password salah.' });
+    const db = await loadDb();
 
     // Dukungan variabel environment Vercel (USN, OWNER_USERNAME, ADMIN_USERNAME, PASS, PASSWORD, OWNER_PASSWORD)
     const envOwnerUser = (process.env.OWNER_USERNAME || process.env.ADMIN_USERNAME || process.env.USN || '').trim().toLowerCase();
@@ -70,6 +72,9 @@ async function updatePassword(req, res, next) {
     }
     if (!newPassword || String(newPassword).length < 4) {
       return res.status(400).json({ ok: false, error: 'Password baru minimal 4 karakter.' });
+    }
+    if (isDisallowedPassword(String(newPassword))) {
+      return res.status(400).json({ ok: false, error: 'Pilih password yang berbeda dari password pengembangan.' });
     }
 
     uRecord.passwordHash = hashPassword(String(newPassword));

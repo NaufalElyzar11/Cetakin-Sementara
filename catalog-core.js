@@ -64,16 +64,30 @@
     return products;
   }
 
+  function searchText(text) {
+    return String(text).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('id')
+      .replace(/\besp[\s-]+32\b/g, 'esp32')
+      .replace(/\b(?:usb[\s-]+(?:type[\s-]*)?c|type[\s-]*c)\b/g, 'usb typec')
+      .replace(/\bultrasonic\b/g, 'ultrasonik')
+      .replace(/\b(?:rain|raindrops?)\b/g, 'hujan')
+      .replace(/\b[a-z0-9]+(?:[-‐‑][a-z0-9]+)+\b/g, (word) => word.replace(/[-‐‑]/g, /\d/.test(word) ? '' : ' '));
+  }
+
+  function matchesSearch(product, terms) {
+    if (!terms.length) return true;
+    const searchable = searchText(`${product.name} ${product.id} ${product.group} ${product.description}`);
+    return terms.every((term) => searchable.includes(term));
+  }
+
   function filterProducts(products, filters) {
-    const normalize = (text) => String(text).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('id');
-    const q = normalize(filters.q || '').trim();
+    const terms = searchText(filters.q || '').match(/[\p{L}\p{N}]+/gu) || [];
     const result = products.filter((product) =>
       (!filters.type || product.type === filters.type) &&
       (!filters.group || product.group === filters.group) &&
       (!filters.ready || product.stock > 0) &&
       (filters.min === null || filters.min === undefined || product.price >= filters.min) &&
       (filters.max === null || filters.max === undefined || product.price <= filters.max) &&
-      (!q || normalize(`${product.name} ${product.id} ${product.group} ${product.description}`).includes(q))
+      matchesSearch(product, terms)
     );
     const sort = SORTS.includes(filters.sort) ? filters.sort : 'featured';
     result.sort((a, b) => {

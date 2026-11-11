@@ -2,7 +2,12 @@
 
 const crypto = require('node:crypto');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'cetakin-cloud-secret-key-2026-bjb';
+const hosted = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+const configuredSecret = process.env.JWT_SECRET || '';
+// Reject the old published fallback even if copied into hosting configuration.
+const legacySecretHash = '17627a4c3c10f787c1d16a703c71a1d930b54660b4b1548deab81764afb7a894';
+const validSecret = Buffer.byteLength(configuredSecret) >= 32 && crypto.createHash('sha256').update(configuredSecret).digest('hex') !== legacySecretHash;
+const JWT_SECRET = validSecret ? configuredSecret : hosted ? null : crypto.randomBytes(32);
 
 function createToken(user) {
   const payload = {
@@ -18,13 +23,15 @@ function createToken(user) {
 }
 
 function verifyToken(token) {
-  if (!token || typeof token !== 'string' || !token.includes('.')) return null;
-  const [data, sig] = token.split('.');
-  const expectedSig = crypto.createHmac('sha256', JWT_SECRET).update(data).digest('base64url');
-  if (sig !== expectedSig) return null;
+  if (!JWT_SECRET || typeof token !== 'string') return null;
+  const [data, sig, extra] = token.split('.');
+  if (!data || !sig || extra !== undefined) return null;
+  const expectedSig = Buffer.from(crypto.createHmac('sha256', JWT_SECRET).update(data).digest('base64url'));
+  const receivedSig = Buffer.from(sig);
+  if (receivedSig.length !== expectedSig.length || !crypto.timingSafeEqual(receivedSig, expectedSig)) return null;
   try {
     const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf8'));
-    if (payload.exp < Date.now()) return null;
+    if (!Number.isFinite(payload.exp) || payload.exp < Date.now()) return null;
     return payload;
   } catch (_) {
     return null;
@@ -59,6 +66,7 @@ function canManageCatalogType(user, type) {
 }
 
 module.exports = {
+  authConfigured: Boolean(JWT_SECRET),
   createToken,
   verifyToken,
   requireAuth,

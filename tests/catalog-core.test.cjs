@@ -49,6 +49,24 @@ test('Filters compose type, keyword, group, price and availability; prices sort 
   assert.equal(core.filterProducts(demo, { type: 'robotika', sort: 'price-high' })[0].price, 65000);
 });
 
+test('Search matches separated Indonesian terms, connector aliases and model codes', () => {
+  const inventory = core.productsFromCSV(csv([
+    ['01-002', 'robotika', 'Raindrops Detection Module', 'Sensor', '', '15000', '1', '', 'Mendeteksi tetesan air.', 'TRUE'],
+    ['01-044', 'robotika', 'Ultrasonic Module HC-SR04', 'Sensor', '', '20000', '1', '', 'Mengukur jarak benda.', 'TRUE'],
+    ['01-009', 'robotika', 'ESP 32 CH340 USB-C', 'Microcontroller', '', '65000', '0', '', 'Papan pengembangan Wi-Fi.', 'TRUE'],
+  ]));
+  const ids = (q, filters) => core.filterProducts(inventory, { q, ...filters }).map((product) => product.id);
+  assert.deepEqual(ids('sensor hujan'), ['01-002']);
+  assert.deepEqual(ids('sensor-hujan'), ['01-002']);
+  assert.deepEqual(ids('jarak sensor'), ['01-044']);
+  assert.deepEqual(ids('sensor ultrasonik'), ['01-044']);
+  assert.deepEqual(ids('HCSR04'), ['01-044']);
+  assert.deepEqual(ids('01-044'), ['01-044']);
+  assert.deepEqual(ids('esp32 type c'), ['01-009']);
+  assert.deepEqual(ids('ESP32 Type-C', { ready: true }), []);
+  assert.deepEqual(ids('sensor hujan', { group: 'Microcontroller' }), []);
+});
+
 test('Image URLs cannot execute scripts or traverse local paths', () => {
   for (const value of ['javascript:alert(1)', 'data:image/svg+xml,test', 'http://example.com/a.png', './assets/../secret', 'https://user:password@example.com/a.jpg', '']) {
     assert.equal(core.safeImage(value), './assets/catalog/placeholder.svg');

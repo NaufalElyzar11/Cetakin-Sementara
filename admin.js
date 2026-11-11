@@ -18,6 +18,7 @@
     lastClickerCalc: null,
     lastRoboCalc: null
   };
+  const tableStates = new Map();
 
   function showToast(msg) {
     const el = $('#toast');
@@ -94,6 +95,17 @@
   function logout() {
     state.token = '';
     state.user = null;
+    state.dashboard = null;
+    tableStates.clear();
+    $$('[data-admin-table] [data-table-controls]').forEach((form) => form.reset());
+    state.activeRoboPreset = null;
+    if (window.CetakinFinance) window.CetakinFinance = window.CetakinFinance.create();
+    const picker = $('#cr-preset-picker');
+    if (picker) {
+      picker.replaceChildren();
+      delete picker.dataset.populated;
+      $('#calc-robo-form')?.reset();
+    }
     localStorage.removeItem('cetakin_token');
     if ($('#login-username')) $('#login-username').value = '';
     if ($('#login-password')) $('#login-password').value = '';
@@ -159,7 +171,6 @@
     }
 
     updateUnitButtons();
-    runAllCalculators();
     try {
       await Promise.all([loadDashboardData(), loadAdminCatalog()]);
     } catch (err) {
@@ -213,17 +224,184 @@
 
   $('#global-month-filter')?.addEventListener('change', async (e) => {
     state.filterMonth = e.target.value || '';
+    for (const filters of tableStates.values()) filters.page = 1;
     await loadDashboardData();
   });
 
   // Dashboard keuangan dan rekonsiliasi QRIS bersama
   async function loadDashboardData() {
-    const query = state.filterMonth ? `?month=${encodeURIComponent(state.filterMonth)}` : '';
-    const data = await apiFetch(`./api/finance/dashboard${query}`);
+    const token = state.token;
+    const query = new URLSearchParams();
+    if (state.filterMonth) query.set('month', state.filterMonth);
+    const needsCalculator = !window.CetakinFinance?.DEFAULT_SETTINGS;
+    if (needsCalculator) query.set('calculator', '1');
+    const data = await apiFetch(`./api/finance/dashboard${query.size ? `?${query}` : ''}`);
+    if (state.token !== token) return;
+    if (data.calculatorConfig && window.CetakinFinance) {
+      window.CetakinFinance = window.CetakinFinance.create(data.calculatorConfig);
+      delete data.calculatorConfig;
+    }
     state.dashboard = data;
     populateSettingsForm(data.settings);
     renderDashboard();
+    if (needsCalculator) runAllCalculators();
   }
+
+  function getTableState(name) {
+    const key = `${state.activeUnit}:${name}`;
+    if (!tableStates.has(key)) tableStates.set(key, window.CetakinAdminTables.createState());
+    return tableStates.get(key);
+  }
+
+  function renderActiveTable(name) {
+    const unit = state.dashboard?.units[state.activeUnit];
+    if (!unit) return;
+    if (name === 'orders') renderOrdersTable(unit.orders || []);
+    if (name === 'mutations') renderMutationsTable(unit.mutations || []);
+    if (name === 'wages') renderWagesTable();
+  }
+
+  function populateTableOptions(root, name, rows, filters) {
+    const options = name === 'mutations'
+      ? { type: rows.map((row) => row.type), account: rows.flatMap((row) => [row.fromAccount, row.toAccount]) }
+      : name === 'wages' ? { worker: rows.map((row) => row.worker) } : {};
+    const allLabels = { type: 'Semua jenis', account: 'Semua akun', worker: 'Semua pekerja' };
+    for (const [field, values] of Object.entries(options)) {
+      const select = root.querySelector(`[data-table-filter="${field}"]`);
+      if (!select) continue;
+      const choices = [...new Set([...values, filters[field]].filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b, 'id'));
+      const signature = JSON.stringify(choices);
+      if (select.dataset.options === signature) continue;
+      select.replaceChildren();
+      for (const value of ['', ...choices]) {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value ? field === 'worker' ? window.CetakinAdminTables.workerLabel(value) : value : allLabels[field];
+        select.appendChild(option);
+      }
+      select.dataset.options = signature;
+    }
+  }
+
+  function prepareTable(name, rows) {
+    const filters = getTableState(name);
+    const view = window.CetakinAdminTables.selectRows(rows, name, filters, state.filterMonth);
+    filters.page = view.page;
+    const root = $(`[data-admin-table="${name}"]`);
+    if (!root) return view;
+    root.dataset.empty = String(view.rows.length === 0);
+    populateTableOptions(root, name, rows, filters);
+    root.querySelectorAll('[data-table-filter]').forEach((control) => {
+      const field = control.dataset.tableFilter;
+      if (control.value !== String(filters[field] ?? '')) control.value = String(filters[field] ?? '');
+      if (field === 'from' || field === 'to') {
+        control.setAttribute('aria-invalid', String(view.invalidRange));
+        control.setCustomValidity(view.invalidRange ? 'Tanggal awal harus sama dengan atau sebelum tanggal akhir.' : '');
+      }
+    });
+    const activeFilters = ['status', 'payment', 'type', 'account', 'worker', 'from', 'to'].filter((field) => filters[field]).length;
+    const badge = root.querySelector('[data-table-filter-count]');
+    if (badge) {
+      badge.textContent = String(activeFilters);
+      badge.hidden = activeFilters === 0;
+    }
+    const noun = { orders: 'pesanan', mutations: 'mutasi', wages: 'catatan kerja' }[name];
+    const summary = root.querySelector('[data-table-summary]');
+    const period = /^\d{4}-\d{2}$/.test(state.filterMonth)
+      ? `Bulan laporan ${new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(new Date(`${state.filterMonth}-01T12:00:00`))}`
+      : 'Semua waktu';
+    if (summary) summary.textContent = view.invalidRange
+      ? 'Rentang tanggal tidak valid. Tanggal awal harus sebelum atau sama dengan tanggal akhir.'
+      : `${view.start}–${view.end} dari ${view.count} ${noun}${view.count < view.periodCount ? ` · ${view.periodCount} sebelum filter` : ''} · ${period}`;
+    const total = root.querySelector('[data-table-total]');
+    if (total) {
+      const amountLabel = { orders: 'Tagihan hasil filter', mutations: 'Total nominal hasil filter', wages: 'Total upah hasil filter' }[name];
+      const detail = name === 'orders' ? ` · Sisa ${money(view.remaining)}` : name === 'wages' ? ` · ${view.minutes.toLocaleString('id-ID')} menit` : '';
+      total.textContent = `${amountLabel} ${money(view.amount)}${detail}`;
+    }
+    const pageLabel = root.querySelector('[data-table-page-label]');
+    if (pageLabel) pageLabel.textContent = `Halaman ${view.page} dari ${view.pageCount}`;
+    root.querySelectorAll('[data-page-action]').forEach((button) => {
+      const backwards = ['prev', 'first'].includes(button.dataset.pageAction);
+      button.disabled = !view.count || (backwards ? view.page === 1 : view.page === view.pageCount);
+    });
+    const pages = root.querySelector('[data-table-pages]');
+    if (pages) {
+      pages.replaceChildren();
+      for (const number of window.CetakinAdminTables.pageNumbers(view.page, view.pageCount)) {
+        if (number === null) {
+          const gap = document.createElement('span');
+          gap.className = 'table-page-gap';
+          gap.textContent = '…';
+          gap.setAttribute('aria-hidden', 'true');
+          pages.appendChild(gap);
+          continue;
+        }
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'table-page-button';
+        button.dataset.pageNumber = String(number);
+        button.textContent = String(number);
+        button.setAttribute('aria-label', `Halaman ${number}`);
+        if (number === view.page) button.setAttribute('aria-current', 'page');
+        button.disabled = !view.count;
+        pages.appendChild(button);
+      }
+    }
+    return view;
+  }
+
+  function emptyTable(tbody, columns, name, view) {
+    const hasRows = view.total > 0;
+    const title = view.invalidRange ? 'Periksa rentang tanggal' : hasRows ? 'Tidak ada hasil yang cocok' : 'Belum ada catatan';
+    const descriptions = {
+      orders: 'Pesanan yang disimpan akan muncul di sini.',
+      mutations: 'Mutasi kas yang dicatat akan muncul di sini.',
+      wages: 'Catatan jam kerja yang disimpan akan muncul di sini.'
+    };
+    const description = view.invalidRange ? 'Tanggal awal harus sebelum atau sama dengan tanggal akhir.' : hasRows ? 'Coba kata kunci atau filter lain. Jika bulan laporan dipilih, hanya tanggal catatan di bulan tersebut yang ditampilkan.' : descriptions[name];
+    tbody.innerHTML = `<tr><td colspan="${columns}" class="table-empty"><span class="table-empty-title">${title}</span><span>${description}</span>${hasRows ? '<button type="button" class="btn btn-outline btn-sm" data-table-reset>Reset filter tabel</button>' : ''}</td></tr>`;
+  }
+
+  $$('[data-admin-table]').forEach((root) => {
+    const name = root.dataset.adminTable;
+    root.querySelector('[data-table-controls]')?.addEventListener('submit', (event) => event.preventDefault());
+    root.querySelectorAll('[data-table-filter]').forEach((control) => {
+      const eventName = control.tagName === 'SELECT' ? 'change' : 'input';
+      control.addEventListener(eventName, () => {
+        const filters = getTableState(name);
+        filters[control.dataset.tableFilter] = control.value;
+        filters.page = 1;
+        renderActiveTable(name);
+        const scroll = root.querySelector('.table-scroll-region');
+        if (scroll) scroll.scrollTop = 0;
+      });
+    });
+    root.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-table-reset], [data-page-action], [data-page-number]');
+      if (!button || !root.contains(button) || button.disabled) return;
+      event.preventDefault();
+      const filters = getTableState(name);
+      if (button.hasAttribute('data-table-reset')) {
+        const pageSize = filters.pageSize;
+        Object.assign(filters, window.CetakinAdminTables.createState(), { pageSize });
+      } else {
+        const action = button.dataset.pageAction;
+        if (action === 'prev') filters.page -= 1;
+        if (action === 'next') filters.page += 1;
+        if (action === 'first') filters.page = 1;
+        if (action === 'last') filters.page = Number.MAX_SAFE_INTEGER;
+        if (button.dataset.pageNumber) filters.page = Number(button.dataset.pageNumber);
+      }
+      renderActiveTable(name);
+      const scroll = root.querySelector('.table-scroll-region');
+      if (scroll) scroll.scrollTop = 0;
+      if (button.hasAttribute('data-table-reset')) root.querySelector('[data-table-filter="q"]')?.focus({ preventScroll: true });
+      if (button.dataset.pageNumber || (button.dataset.pageAction && button.disabled)) {
+        root.querySelector(`[data-page-number="${filters.page}"]`)?.focus({ preventScroll: true });
+      }
+    });
+  });
 
   function renderDashboard() {
     if (!state.dashboard) return;
@@ -356,7 +534,7 @@
     // Render Tabel Pesanan di Tab Ledger
     renderOrdersTable(uData.orders);
     renderMutationsTable(uData.mutations);
-    renderWagesTable(state.dashboard);
+    renderWagesTable();
   }
 
   function renderOrdersTable(orders) {
@@ -373,44 +551,52 @@
     const tbody = $('#orders-tbody');
     if (!tbody) return;
     tbody.replaceChildren();
-    if (!orders.length) {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:var(--muted);">Belum ada pesanan tercatat pada divisi ini.</td></tr>`;
+    const view = prepareTable('orders', orders);
+    if (!view.rows.length) {
+      emptyTable(tbody, 9, 'orders', view);
       return;
     }
 
-    for (const o of orders) {
+    const paymentLabels = { unpaid: 'Belum dibayar', partial: 'Sebagian', paid: 'Lunas', overpaid: 'Lebih bayar', cancelled: 'Dibatalkan' };
+    for (const o of view.rows) {
       const badgeClass = o.status === 'Selesai' ? 'badge-success' : o.status === 'Proses' ? 'badge-warn' : 'badge-danger';
-      const overpaymentAmount = Math.max(0, Number(o.overpaymentAmount ?? (Number(o.netPaid) - Number(o.netBill))) || 0);
-      const paymentColor = overpaymentAmount > 0 || o.netPaid < o.netBill ? '#d97706' : '#16a34a';
+      const effectiveBill = o.status === 'Batal' ? 0 : Number(o.effectiveBill ?? o.netBill) || 0;
+      const overpaymentAmount = Math.max(0, Number(o.overpaymentAmount ?? (Number(o.netPaid) - effectiveBill)) || 0);
+      const payment = window.CetakinAdminTables.paymentStatus(o);
+      const paymentClass = payment === 'paid' ? 'badge-success' : payment === 'cancelled' ? 'badge-danger' : 'badge-warn';
       const tr = document.createElement('tr');
       const itemsCountBadge = (Array.isArray(o.items) && o.items.length > 1)
-        ? `<div style="font-size:11px; color:#0284c7; font-weight:700; margin-top:2px;">${o.items.length} macam barang (${o.quantity} pcs total)</div>`
+        ? `<div class="table-secondary">${o.items.length} macam barang (${escapeHtml(o.quantity)} pcs total)</div>`
         : '';
       tr.innerHTML = `
-        <td>
-          <strong>${o.id}</strong>
-          <div style="font-size:11px; color:var(--muted);">${o.date}</div>
+        <td data-label="ID &amp; tanggal">
+          <strong class="table-primary">${escapeHtml(o.id)}</strong>
+          <div class="table-secondary">${escapeHtml(o.date)}</div>
         </td>
-        <td>
-          <strong>${escapeHtml(o.productName)}</strong>
+        <td data-label="Pelanggan &amp; produk">
+          <strong class="table-primary" title="${escapeHtml(o.productName)}">${escapeHtml(o.productName)}</strong>
           ${itemsCountBadge}
-          <div style="font-size:11px; color:var(--muted);">Pelanggan: ${escapeHtml(o.customer)}</div>
+          <div class="table-secondary">Pelanggan: ${escapeHtml(o.customer)}</div>
         </td>
-        <td>${o.quantity} pcs</td>
-        <td><strong>${money(o.netBill)}</strong></td>
-        <td>${money(o.adjustedHpp)}</td>
-        <td>
-          <span style="color:${paymentColor}; font-weight:700;">${money(o.netPaid)}</span>
-          ${o.remainingBill > 0 ? `<div style="font-size:10px; color:#dc2626;">Kurang ${money(o.remainingBill)}</div>` : ''}
-          ${overpaymentAmount > 0 ? `<div style="font-size:10px; color:#b45309;">Lebih ${money(overpaymentAmount)} · Periksa mutasi</div>` : ''}
+        <td class="table-number" data-label="Qty">${escapeHtml(o.quantity)} pcs</td>
+        <td class="table-number" data-label="Tagihan">
+          <strong>${money(effectiveBill)}</strong>
+          ${effectiveBill !== Number(o.netBill) ? `<div class="table-secondary">Awal ${money(o.netBill)}</div>` : ''}
         </td>
-        <td><strong style="color:${o.profit >= 0 ? '#16a34a' : '#dc2626'};">${money(o.profit)}</strong></td>
-        <td><span class="badge ${badgeClass}">${o.status}</span></td>
-        <td>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-dark btn-sm" data-invoice-order="${o.id}" title="Lihat &amp; Unduh Nota Pembeli (PDF/PNG)">Nota</button>
-            ${o.status !== 'Selesai' ? `<button type="button" class="btn btn-outline btn-sm" data-complete-order="${o.id}" title="Tandai Selesai">Selesai</button>` : ''}
-            <button type="button" class="btn btn-danger btn-sm" data-del-order="${o.id}" title="Hapus">Hapus</button>
+        <td class="table-number" data-label="HPP batch">${money(o.adjustedHpp)}</td>
+        <td class="table-number" data-label="Pembayaran">
+          <strong>${money(o.netPaid)}</strong>
+          <div><span class="badge ${paymentClass}">${paymentLabels[payment]}</span></div>
+          ${o.remainingBill > 0 ? `<div class="table-secondary" style="color:#dc2626;">Kurang ${money(o.remainingBill)}</div>` : ''}
+          ${overpaymentAmount > 0 ? `<div class="table-secondary" style="color:#b45309;">Lebih ${money(overpaymentAmount)} · Periksa mutasi</div>` : ''}
+        </td>
+        <td class="table-number" data-label="Laba"><strong style="color:${o.profit >= 0 ? '#16a34a' : '#dc2626'};">${money(o.profit)}</strong></td>
+        <td data-label="Status"><span class="badge ${badgeClass}">${escapeHtml(o.status)}</span></td>
+        <td data-label="Aksi">
+          <div class="table-row-actions">
+            <button type="button" class="btn btn-dark btn-sm" data-invoice-order="${escapeHtml(o.id)}" title="Lihat &amp; Unduh Nota Pembeli (PDF/PNG)">Nota</button>
+            ${o.status !== 'Selesai' ? `<button type="button" class="btn btn-outline btn-sm" data-complete-order="${escapeHtml(o.id)}" title="Tandai Selesai">Selesai</button>` : ''}
+            <button type="button" class="btn btn-danger btn-sm" data-del-order="${escapeHtml(o.id)}" title="Hapus">Hapus</button>
           </div>
         </td>
       `;
@@ -456,29 +642,30 @@
     const tbody = $('#mutations-tbody');
     if (!tbody) return;
     tbody.replaceChildren();
-    if (!mutations.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Belum ada mutasi kas.</td></tr>`;
+    const view = prepareTable('mutations', mutations);
+    if (!view.rows.length) {
+      emptyTable(tbody, 5, 'mutations', view);
       return;
     }
 
-    for (const m of mutations) {
+    for (const m of view.rows) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>
-          <strong>${m.id}</strong>
-          <div style="font-size:11px; color:var(--muted);">${m.date}</div>
+        <td data-label="ID &amp; tanggal">
+          <strong class="table-primary">${escapeHtml(m.id)}</strong>
+          <div class="table-secondary">${escapeHtml(m.date)}</div>
         </td>
-        <td>
-          <strong>${m.type}</strong>
-          <div style="font-size:11px; color:var(--muted);">${m.description || ''} ${m.orderId ? `(${m.orderId})` : ''}</div>
+        <td data-label="Jenis &amp; keterangan">
+          <strong class="table-primary">${escapeHtml(m.type)}</strong>
+          <div class="table-secondary">${escapeHtml(m.description)} ${m.orderId ? `(${escapeHtml(m.orderId)})` : ''}</div>
         </td>
-        <td>
-          <span class="badge badge-info">${m.fromAccount} → ${m.toAccount}</span>
-          ${m.advanceCode ? `<div style="font-size:10px; color:#92400e;">Talangan: ${m.advanceCode}</div>` : ''}
+        <td data-label="Aliran akun">
+          <span class="badge badge-info">${escapeHtml(m.fromAccount)} → ${escapeHtml(m.toAccount)}</span>
+          ${m.advanceCode ? `<div class="table-secondary" style="color:#92400e;">Talangan: ${escapeHtml(m.advanceCode)}</div>` : ''}
         </td>
-        <td><strong>${money(m.amount)}</strong></td>
-        <td>
-          <button type="button" class="btn btn-danger btn-sm" data-del-mut="${m.id}">Hapus</button>
+        <td class="table-number" data-label="Nominal"><strong>${money(m.amount)}</strong></td>
+        <td data-label="Aksi">
+          <button type="button" class="btn btn-danger btn-sm" data-del-mut="${escapeHtml(m.id)}">Hapus</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -507,26 +694,27 @@
     if (!uData) return;
     const wagesList = uData.wages || [];
 
-    if (!wagesList.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--muted);">Belum ada catatan jam kerja tercatat.</td></tr>`;
+    const view = prepareTable('wages', wagesList);
+    if (!view.rows.length) {
+      emptyTable(tbody, 5, 'wages', view);
       return;
     }
 
-    for (const w of wagesList) {
+    for (const w of view.rows) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>
-          <strong>${w.orderId || '-'}</strong>
-          <div style="font-size:11px; color:var(--muted);">${w.date}</div>
+        <td data-label="Tanggal &amp; order">
+          <strong class="table-primary">${escapeHtml(w.orderId || '-')}</strong>
+          <div class="table-secondary">${escapeHtml(w.date)}</div>
         </td>
-        <td>
-          <strong>${w.worker === 'Saya' ? 'Saya (Naufal)' : 'Partner'}</strong>
-          ${w.task ? `<div style="font-size:11px; color:var(--muted);">${w.task}</div>` : ''}
+        <td data-label="Pekerja &amp; pekerjaan">
+          <strong class="table-primary">${escapeHtml(window.CetakinAdminTables.workerLabel(w.worker))}</strong>
+          ${w.task ? `<div class="table-secondary">${escapeHtml(w.task)}</div>` : ''}
         </td>
-        <td>${w.minutes} mnt</td>
-        <td><strong>${money(w.amount)}</strong></td>
-        <td>
-          <button type="button" class="btn btn-danger btn-sm" data-del-wage="${w.id}" title="Hapus catatan upah">Hapus</button>
+        <td class="table-number" data-label="Durasi">${escapeHtml(w.minutes)} mnt</td>
+        <td class="table-number" data-label="Upah"><strong>${money(w.amount)}</strong></td>
+        <td data-label="Aksi">
+          <button type="button" class="btn btn-danger btn-sm" data-del-wage="${escapeHtml(w.id)}" title="Hapus catatan upah">Hapus</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -922,7 +1110,7 @@
   });
 
   function runJasaPrintCalc() {
-    if (!window.CetakinFinance) return;
+    if (!window.CetakinFinance?.DEFAULT_SETTINGS) return;
     const settings = state.dashboard?.settings || window.CetakinFinance.DEFAULT_SETTINGS;
     const res = window.CetakinFinance.calculateJasaPrint({
       units: $('#cj-units').value,
@@ -961,7 +1149,7 @@
   }
 
   function runClickerCalc() {
-    if (!window.CetakinFinance) return;
+    if (!window.CetakinFinance?.DEFAULT_SETTINGS) return;
     const settings = state.dashboard?.settings || window.CetakinFinance.DEFAULT_SETTINGS;
     const res = window.CetakinFinance.calculateClicker({
       buttons: $('#cc-buttons').value,
@@ -987,17 +1175,18 @@
 
   function populateRoboPresets() {
     const picker = $('#cr-preset-picker');
-    if (!picker || !window.CetakinFinance?.ROBOTIKA_PRESETS) return;
+    if (!picker || !window.CetakinFinance?.DEFAULT_SETTINGS) return;
     if (picker.dataset.populated === 'true') return;
 
     picker.replaceChildren();
     const defaultOpt = document.createElement('option');
     defaultOpt.value = '';
-    defaultOpt.textContent = '-- Mode Kustom / Pilih dari 94 Komponen Ter-Audit --';
+    const presets = window.CetakinFinance.ROBOTIKA_PRESETS;
+    defaultOpt.textContent = presets.length ? `-- Mode Kustom / Pilih dari ${presets.length} Komponen Ter-Audit --` : '-- Mode Kustom --';
     picker.appendChild(defaultOpt);
 
-    for (let i = 0; i < window.CetakinFinance.ROBOTIKA_PRESETS.length; i++) {
-      const p = window.CetakinFinance.ROBOTIKA_PRESETS[i];
+    for (let i = 0; i < presets.length; i++) {
+      const p = presets[i];
       const opt = document.createElement('option');
       opt.value = i;
       const unitLabel = p.sellUnitQty > 1 ? ` (${p.sellUnitQty} pcs/paket)` : '';
@@ -1006,10 +1195,15 @@
       picker.appendChild(opt);
     }
     picker.dataset.populated = 'true';
+    const initialPreset = presets.findIndex((preset) => preset.sku === 'ESP' && preset.sellUnitQty === 1);
+    if (initialPreset !== -1) {
+      picker.value = String(initialPreset);
+      applyRoboPreset(presets[initialPreset]);
+    }
   }
 
   function runRoboCalc() {
-    if (!window.CetakinFinance) return;
+    if (!window.CetakinFinance?.DEFAULT_SETTINGS) return;
     const settings = state.dashboard?.settings || window.CetakinFinance.DEFAULT_SETTINGS;
     const res = window.CetakinFinance.calculateRobotikaItem({
       units: $('#cr-units').value,
@@ -1119,15 +1313,7 @@
   $('#calc-clicker-form')?.addEventListener('input', runClickerCalc);
   $('#calc-robo-form')?.addEventListener('input', runRoboCalc);
 
-  $('#cr-preset-picker')?.addEventListener('change', (e) => {
-    const idx = e.target.value;
-    if (idx === '' || !window.CetakinFinance?.ROBOTIKA_PRESETS) {
-      state.activeRoboPreset = null;
-      return;
-    }
-    const p = window.CetakinFinance.ROBOTIKA_PRESETS[Number(idx)];
-    if (!p) return;
-
+  function applyRoboPreset(p) {
     state.activeRoboPreset = p;
     $('#cr-name').value = p.name;
     $('#cr-units').value = p.sellUnitQty || 1;
@@ -1136,7 +1322,16 @@
     $('#cr-pack-unit').value = Math.round(p.kemasan);
     $('#cr-target-margin').value = 0.20;
     $('#cr-sell-unit').value = p.hargaJualUsulan;
+  }
 
+  $('#cr-preset-picker')?.addEventListener('change', (e) => {
+    const idx = e.target.value;
+    const preset = idx === '' ? null : window.CetakinFinance?.ROBOTIKA_PRESETS[Number(idx)];
+    if (!preset) {
+      state.activeRoboPreset = null;
+      return;
+    }
+    applyRoboPreset(preset);
     runRoboCalc();
   });
 
@@ -1340,6 +1535,8 @@
     const t = $('#pf-type').value;
     $('#pf-category-wrap').hidden = t !== 'robotika';
     $('#pf-origin-wrap').hidden = t !== 'gantungan-kunci';
+    $('#pf-category').required = t === 'robotika';
+    $('#pf-origin').required = t === 'gantungan-kunci';
   }
   $('#pf-type')?.addEventListener('change', syncProductModalType);
 

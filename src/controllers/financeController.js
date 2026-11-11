@@ -46,6 +46,14 @@ async function getDashboard(req, res, next) {
       units: {}
     };
 
+    if (req.query.calculator === '1') {
+      result.calculatorConfig = {
+        DEFAULT_SETTINGS: financeCore.DEFAULT_SETTINGS,
+        CLICKER_PRESETS: financeCore.CLICKER_PRESETS,
+        ROBOTIKA_PRESETS: canAccessUnit(user, 'robotika') ? financeCore.ROBOTIKA_PRESETS : []
+      };
+    }
+
     if (canAccessUnit(user, '3d-print')) {
       result.units['3d-print'] = financeCore.computeUnitSummary(db, '3d-print', filterMonth || null);
     }
@@ -56,6 +64,7 @@ async function getDashboard(req, res, next) {
       result.sharedQris = financeCore.computeSharedQrisReconciliation(db);
     }
 
+    res.setHeader('Cache-Control', 'no-store');
     return res.json(result);
   } catch (err) {
     next(err);

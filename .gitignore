@@ -5,6 +5,7 @@ Thumbs.db
 
 # Vercel
 .vercel
+/dist-public/
 
 # Node (jika ada tool kedepannya)
 node_modules/

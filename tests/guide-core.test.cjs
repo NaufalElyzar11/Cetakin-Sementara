@@ -5,6 +5,7 @@ const path = require('node:path');
 const core = require('../guide-core.js');
 const data = require('../guide-data.js');
 const products = require('../data/guide-products.json');
+const apiProducts = require('../data/catalog-seed.json');
 const root = path.resolve(__dirname, '..');
 
 test('every sensor, driver and actuator in the supplied workbook has a guide', () => {
@@ -24,13 +25,31 @@ test('SKU mapping is unique, references real workbook products, and excludes unr
   assert.equal(core.forProduct({id:'01-044',type:'robotika',guide_id:'invalid'}),null);
 });
 test('L298N variants share a guide, and discovery works by model, function and SKU', () => {
-  assert.equal(core.forProduct({id:'01-037',type:'robotika'}).id, 'l298n');
-  assert.equal(core.forProduct({id:'01-038',type:'robotika'}).id, 'l298n');
+  for (const p of products.filter(({ id }) => ['01-037', '01-038'].includes(id))) {
+    assert.equal(core.forProduct(p).id, 'l298n');
+  }
+  assert.equal(core.forProduct(apiProducts.find(({ id }) => id === '01-038')), null);
   assert.ok(core.filter({q:'SERVO'}).some(g=>g.id==='mg90s'));
   assert.deepEqual(core.filter({q:'01-044'}).map(g=>g.id),['hc-sr04']);
+  assert.deepEqual(core.filter({q:'01-033'}).map(g=>g.id),['hc-sr501']);
   assert.ok(core.filter({q:'kelembapan tanah'}).some(g=>g.id==='kelembapan-tanah'));
   assert.equal(core.filter({q:'<script>alert(1)</script>'}).length,0);
   assert.ok(core.filter({group:'Sensor'}).every(g=>g.group==='Sensor'));
+});
+test('guide shop links resolve the intended model across API and workbook SKUs', () => {
+  const oldIds = {
+    '01-032': '01-033', '01-033': '01-034', '01-034': '01-035',
+    '01-036': '01-037', '01-037': '01-038', '01-039': '01-040',
+  };
+  for (const guide of data.guides) {
+    for (const { id } of guide.shopProducts) {
+      assert.equal(core.resolveProduct(apiProducts, guide.id, id)?.id, id, `${guide.id} API`);
+      assert.equal(core.resolveProduct(products, guide.id, id)?.id, oldIds[id] || id, `${guide.id} workbook`);
+    }
+  }
+  const reusedId = { ...apiProducts.find(({ id }) => id === '01-033'), id: '01-032' };
+  assert.equal(core.resolveProduct([reusedId], 'mq-2', '01-032'), null);
+  assert.equal(core.resolveProduct(apiProducts, 'arduino-awal', '01-035'), null);
 });
 test('published HTML contains complete content without JavaScript and has no missing local targets', () => {
   const pages=['panduan.html',...data.guides.map(g=>`panduan/${g.id}.html`)];
@@ -48,6 +67,12 @@ test('published HTML contains complete content without JavaScript and has no mis
   for (const g of data.guides) {
     const html=fs.readFileSync(path.join(root,'panduan',g.id+'.html'),'utf8');
     for (const id of ['kenali','siapkan','wiring','langkah','masalah','lanjutan','referensi']) assert.ok(html.includes(`id="${id}"`));
+    const linkedProducts = new Set([...html.matchAll(/href="\.\.\/produk\.html\?([^"]+)"/g)].map(([, query]) => {
+      const params = new URLSearchParams(query.replace(/&amp;/g, '&'));
+      assert.equal(params.get('panduan'), g.id);
+      return params.get('id');
+    }));
+    assert.deepEqual(linkedProducts, new Set(g.shopProducts.map(({ id }) => id)), `Product links for ${g.id}`);
     assert.match(html,/<svg class="wiring-svg"/);
     assert.ok(g.steps.length>=4 && g.tips.length>=3 && g.sources.length);
     if (g.code) assert.ok(html.includes('id="main-code"'));
